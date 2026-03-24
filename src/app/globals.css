@@ -1,26 +1,429 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* ============================================
+   PRYTON HOOD LIFE — Lo-Fi Manga Theme
+   Black & white manga base + season accent color
+   Halftone textures, hand-drawn borders, speech bubbles
+   ============================================ */
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* --- Surface Colors (manga B&W base) --- */
+  --color-bg-primary: #0d0d0d;
+  --color-bg-secondary: #141414;
+  --color-bg-card: #1a1a1a;
+  --color-bg-card-hover: #202020;
+  --color-bg-overlay: rgba(0, 0, 0, 0.9);
+
+  /* --- Text Colors (high contrast manga) --- */
+  --color-text-primary: #ededed;
+  --color-text-secondary: #999999;
+  --color-text-muted: #555555;
+
+  /* --- Season accent (overridden by JS) --- */
+  --color-accent: var(--season-accent, #ff2d7b);
+  --color-accent-glow: var(--season-glow, rgba(255, 45, 123, 0.4));
+
+  /* --- Neon Accents (kept for compatibility) --- */
+  --color-neon-pink: var(--season-accent, #ff2d7b);
+  --color-neon-green: #39ff14;
+  --color-neon-yellow: #ffe600;
+  --color-neon-cyan: #00f0ff;
+  --color-neon-orange: #ff6b2b;
+  --color-neon-purple: #b347ff;
+
+  /* --- Semantic Colors --- */
+  --color-success: #39ff14;
+  --color-danger: #ff3b3b;
+  --color-warning: #ffe600;
+  --color-info: #00f0ff;
+  --color-gold: #ffd700;
+
+  /* --- Stat Bar Colors --- */
+  --color-health: #ff3b3b;
+  --color-energy: #ffe600;
+  --color-hunger: #ff6b2b;
+  --color-mood: #b347ff;
+  --color-stability: #00f0ff;
+
+  /* --- Font Families (manga-style) --- */
+  --font-display: var(--font-marker), "Impact", sans-serif;
+  --font-body: "Inter", "Arial", sans-serif;
+  --font-mono: "JetBrains Mono", "Courier New", monospace;
+
+  /* --- Spacing & Radius --- */
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+
+  /* --- Shadows --- */
+  --shadow-manga: 3px 3px 0px rgba(255, 255, 255, 0.08);
+  --shadow-manga-accent: 3px 3px 0px var(--season-glow, rgba(255, 45, 123, 0.4));
+  --shadow-card: 2px 2px 0px rgba(255, 255, 255, 0.05);
+  --shadow-card-hover: 3px 3px 0px var(--season-glow, rgba(255, 45, 123, 0.4));
+
+  /* --- Tailwind color tokens --- */
+  --color-background: var(--color-bg-primary);
+  --color-foreground: var(--color-text-primary);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ============================================
+   Base Styles
+   ============================================ */
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
+  min-height: 100dvh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Halftone dot pattern overlay (manga signature) */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 8px 8px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Season-driven content filter */
+main[data-season-content] {
+  filter: var(--season-filter, none);
+  transition: filter 1.5s ease;
+}
+
+/* ============================================
+   Scrollbar (minimal manga)
+   ============================================ */
+
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--color-text-muted); border-radius: 1px; }
+
+/* ============================================
+   Manga Card System
+   ============================================ */
+
+/* Base card — thick hand-drawn border feel */
+.card-street {
+  background: var(--color-bg-card);
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  transition: all 0.15s ease;
+  position: relative;
+}
+
+.card-street:hover {
+  background: var(--color-bg-card-hover);
+  border-color: var(--season-accent, #ff2d7b);
+  box-shadow: var(--shadow-card-hover);
+}
+
+.card-street:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0px var(--season-glow, rgba(255, 45, 123, 0.4));
+}
+
+/* Manga panel — dashed border like comic panel */
+.manga-panel {
+  background: var(--color-bg-card);
+  border: 2px dashed rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-sm);
+  position: relative;
+}
+
+/* Speech bubble (spirit messages) */
+.speech-bubble {
+  background: #1a1a1a;
+  border: 2px solid var(--season-accent, #ff2d7b);
+  border-radius: 8px;
+  position: relative;
+  box-shadow: 3px 3px 0px var(--season-glow, rgba(255, 45, 123, 0.4));
+}
+
+.speech-bubble::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 20px;
+  width: 14px;
+  height: 14px;
+  background: #1a1a1a;
+  border-left: 2px solid var(--season-accent, #ff2d7b);
+  border-top: 2px solid var(--season-accent, #ff2d7b);
+  transform: rotate(45deg);
+}
+
+/* Impact frame — for critical moments / god mode */
+.impact-frame {
+  border: 3px solid white;
+  box-shadow: 4px 4px 0px white, -2px -2px 0px white;
+  position: relative;
+}
+
+.impact-frame::after {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  pointer-events: none;
+}
+
+/* ============================================
+   Neon Text (season-aware)
+   ============================================ */
+
+.neon-text-accent {
+  color: var(--season-accent, #ff2d7b);
+  text-shadow: 0 0 8px var(--season-glow, rgba(255, 45, 123, 0.4));
+}
+
+.neon-text-gold {
+  color: var(--color-gold);
+  text-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+}
+
+.neon-text-pink { color: var(--season-accent, #ff2d7b); text-shadow: 0 0 8px var(--season-glow, rgba(255, 45, 123, 0.4)); }
+.neon-text-green { color: var(--color-neon-green); text-shadow: 0 0 8px rgba(57, 255, 20, 0.6); }
+.neon-text-cyan { color: var(--color-neon-cyan); text-shadow: 0 0 8px rgba(0, 240, 255, 0.6); }
+
+/* Season accent override for active nav items */
+[data-season="autumn"] { --season-accent: #c47a3a; --season-glow: rgba(196, 122, 58, 0.4); }
+[data-season="winter"] { --season-accent: #4a7dff; --season-glow: rgba(74, 125, 255, 0.3); }
+[data-season="spring"] { --season-accent: #39ff14; --season-glow: rgba(57, 255, 20, 0.4); }
+[data-season="summer"] { --season-accent: #ff2d7b; --season-glow: rgba(255, 45, 123, 0.4); }
+
+/* ============================================
+   Manga Typography
+   ============================================ */
+
+.manga-title {
+  font-family: var(--font-display);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.manga-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+/* SFX text (manga sound effects) */
+.sfx-text {
+  font-family: var(--font-display);
+  color: var(--season-accent, #ff2d7b);
+  text-shadow:
+    2px 2px 0px rgba(0,0,0,0.8),
+    0 0 10px var(--season-glow, rgba(255, 45, 123, 0.4));
+  transform: rotate(-3deg);
+}
+
+/* ============================================
+   Stat Bars (manga-style — thick, squared)
+   ============================================ */
+
+.stat-bar {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.stat-bar-fill {
+  height: 100%;
+  border-radius: 0px;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Hatching pattern for manga feel */
+  background-image: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 3px,
+    rgba(0,0,0,0.15) 3px,
+    rgba(0,0,0,0.15) 4px
+  );
+}
+
+/* Pulse animation for critical stats */
+@keyframes pulse-critical {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.stat-critical {
+  animation: pulse-critical 0.8s ease-in-out infinite;
+}
+
+/* ============================================
+   Manga Animations
+   ============================================ */
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-3px); }
+  20%, 40%, 60%, 80% { transform: translateX(3px); }
+}
+
+@keyframes manga-enter {
+  0% { opacity: 0; transform: scale(0.9) rotate(-1deg); clip-path: inset(0 100% 0 0); }
+  60% { clip-path: inset(0 0 0 0); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); clip-path: inset(0 0 0 0); }
+}
+
+@keyframes speed-lines {
+  0% { background-position: 0 0; }
+  100% { background-position: -200px 0; }
+}
+
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  92% { opacity: 1; }
+  93% { opacity: 0.2; }
+  94% { opacity: 1; }
+  96% { opacity: 0.6; }
+  97% { opacity: 1; }
+}
+
+@keyframes slide-up {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-shake { animation: shake 0.4s ease; }
+.animate-manga-enter { animation: manga-enter 0.4s ease-out; }
+.animate-flicker { animation: flicker 3s infinite; }
+.animate-slide-up { animation: slide-up 0.3s ease-out; }
+.animate-fade-in { animation: fade-in 0.2s ease-out; }
+
+/* Speed lines background for action moments */
+.speed-lines {
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 4px,
+    rgba(255,255,255,0.02) 4px,
+    rgba(255,255,255,0.02) 5px
+  );
+}
+
+/* Halftone overlay for images/backgrounds */
+.halftone {
+  position: relative;
+}
+.halftone::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(255,255,255,0.08) 1px, transparent 1px);
+  background-size: 4px 4px;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+}
+
+/* Cross-hatch pattern for dark areas */
+.crosshatch {
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(255,255,255,0.03) 3px, rgba(255,255,255,0.03) 4px),
+    repeating-linear-gradient(90deg, transparent, transparent 3px, rgba(255,255,255,0.03) 3px, rgba(255,255,255,0.03) 4px);
+}
+
+/* ============================================
+   Telegram Mini App overrides
+   ============================================ */
+
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 16px);
+}
+
+.safe-area-top {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+html {
+  overscroll-behavior: none;
+}
+
+/* ============================================
+   Manga-specific border utilities
+   ============================================ */
+
+.border-manga {
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  box-shadow: var(--shadow-manga);
+}
+
+.border-manga-accent {
+  border: 2px solid var(--season-accent, #ff2d7b);
+  box-shadow: var(--shadow-manga-accent);
+}
+
+.border-dashed-manga {
+  border: 2px dashed rgba(255, 255, 255, 0.12);
+}
+
+/* Action lines radiating from center */
+.action-lines {
+  background: repeating-conic-gradient(
+    transparent 0deg 8deg,
+    rgba(255,255,255,0.015) 8deg 10deg
+  );
+}
+
+/* Ink splatter dots (decorative) */
+.ink-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--season-accent, #ff2d7b);
+  border-radius: 50%;
+  box-shadow: 0 0 4px var(--season-glow, rgba(255, 45, 123, 0.4));
+}
+
+/* Chapter/Season divider */
+.chapter-divider {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-text-muted);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.chapter-divider::before,
+.chapter-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--color-text-muted),
+    var(--color-text-muted) 4px,
+    transparent 4px,
+    transparent 8px
+  );
 }
