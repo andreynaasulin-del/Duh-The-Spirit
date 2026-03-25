@@ -48,6 +48,32 @@ export const ACTIONS: ActionDef[] = [
   { id: 'shoot_video', icon: 'video', title: 'Снять клип', meta: '+подписчики, –5000₽ (4ч)', time: 240, effects: { cash: -5000, subscribers: [30, 80], respect: [5, 15], energy: -35 }, paths: { music: 3 }, category: 'club' },
   { id: 'club_party', icon: 'party-popper', title: 'Тусовка в клубе', meta: '+настрой, –стабильность (3ч)', time: 180, effects: { mood: 25, stability: -15, energy: -20, health: -5 }, paths: { chaos: 1 }, category: 'club' },
   { id: 'sell_merch', icon: 'shirt', title: 'Продать мерч', meta: '+кэш за респект (1ч)', time: 60, effects: { cash: [200, 800] }, paths: { music: 1 }, category: 'club' },
+
+  // === Магазин ===
+  { id: 'buy_food', icon: 'apple', title: 'Купить еду', meta: '+сытость, –300₽', time: 15, effects: { hunger: 40, cash: -300 }, paths: { survival: 1 }, category: 'shop' },
+  { id: 'buy_clothes', icon: 'shirt', title: 'Новая одежда', meta: '+респект, –2000₽', time: 30, effects: { respect: [3, 8], cash: -2000, mood: 10 }, paths: { survival: 1 }, category: 'shop' },
+  { id: 'buy_phone', icon: 'smartphone', title: 'Новый телефон', meta: '+подписчики, –5000₽', time: 30, effects: { subscribers: [20, 50], cash: -5000 }, paths: { music: 1 }, category: 'shop' },
+  { id: 'buy_meds', icon: 'pill', title: 'Таблетки', meta: '+стабильность, –800₽', time: 15, effects: { stability: 30, anxiety: -20, cash: -800 }, paths: { survival: 2 }, category: 'shop' },
+  { id: 'sell_stuff', icon: 'package', title: 'Продать барахло', meta: '+₽100–400', time: 30, effects: { cash: [100, 400] }, paths: { survival: 1 }, category: 'shop' },
+  { id: 'buy_studio_gear', icon: 'headphones', title: 'Студийное оборудование', meta: '+качество записи, –8000₽', time: 60, effects: { cash: -8000, releases: 1, respect: [2, 5] }, paths: { music: 2 }, category: 'shop' },
+
+  // === Казино ===
+  { id: 'slot_machine', icon: 'cherry', title: 'Автоматы', meta: 'шанс x3 ставки (15м)', time: 15, effects: { cash: [-200, 600], mood: [-10, 20] }, paths: { chaos: 1 }, category: 'casino' },
+  { id: 'dice_game', icon: 'dice-5', title: 'Кости', meta: 'удвоить или потерять (30м)', time: 30, effects: { cash: [-500, 1000], mood: [-15, 25] }, paths: { chaos: 2 }, category: 'casino' },
+  { id: 'card_game', icon: 'spade', title: 'Карты', meta: 'блэкджек, –1000₽ ставка (1ч)', time: 60, effects: { cash: [-1000, 2000], respect: [0, 5], mood: [-20, 30] }, paths: { chaos: 2 }, category: 'casino' },
+  { id: 'casino_bar', icon: 'wine', title: 'Бар казино', meta: '+настрой, –стабильность (1ч)', time: 60, effects: { mood: 20, stability: -15, health: -5, cash: -300 }, paths: { chaos: 1 }, category: 'casino' },
+
+  // === Доктор ===
+  { id: 'therapy_session', icon: 'brain', title: 'Сеанс терапии', meta: '+стабильность, +адекватность, –2000₽ (2ч)', time: 120, effects: { stability: 30, adequacy: 20, anxiety: -25, cash: -2000 }, paths: { survival: 3 }, category: 'doctor' },
+  { id: 'get_prescription', icon: 'pill', title: 'Получить рецепт', meta: '+стабильность, –1000₽ (1ч)', time: 60, effects: { stability: 20, cash: -1000 }, paths: { survival: 2 }, category: 'doctor' },
+  { id: 'full_checkup', icon: 'stethoscope', title: 'Полный осмотр', meta: '+HP, –3000₽ (3ч)', time: 180, effects: { health: 40, cash: -3000 }, paths: { survival: 2 }, category: 'doctor' },
+  { id: 'rehab_session', icon: 'heart-pulse', title: 'Курс восстановления', meta: '–ломка, –5000₽ (4ч)', time: 240, effects: { withdrawal: -50, health: 20, stability: 15, cash: -5000 }, paths: { survival: 3 }, category: 'doctor' },
+
+  // === Тюрьма ===
+  { id: 'prison_workout', icon: 'dumbbell', title: 'Качалка во дворе', meta: '+HP, +респект (2ч)', time: 120, effects: { health: 15, respect: [2, 5], energy: -25 }, paths: { survival: 2 }, category: 'prison' },
+  { id: 'prison_read', icon: 'book', title: 'Читать книги', meta: '+адекватность, +стабильность (3ч)', time: 180, effects: { adequacy: 20, stability: 15, mood: 5 }, paths: { survival: 2 }, category: 'prison' },
+  { id: 'prison_gang', icon: 'users', title: 'Связи в камере', meta: '+респект, риск (2ч)', time: 120, effects: { respect: [5, 15], health: [-10, 0], stability: -10 }, paths: { chaos: 3 }, category: 'prison' },
+  { id: 'prison_write', icon: 'edit-3', title: 'Писать тексты', meta: '+релизы (для выхода) (3ч)', time: 180, effects: { releases: 1, mood: 15, stability: 10 }, paths: { music: 3 }, category: 'prison' },
 ];
 
 export function getAction(id: string): ActionDef | undefined {

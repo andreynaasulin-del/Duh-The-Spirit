@@ -22,7 +22,7 @@ export interface ActionDef {
   time: number;
   effects: Record<string, number | [number, number]>;
   paths?: Record<string, number>;
-  category: 'home' | 'street' | 'farm' | 'club' | 'music' | 'survival' | 'creative' | 'special';
+  category: 'home' | 'street' | 'farm' | 'club' | 'shop' | 'casino' | 'doctor' | 'prison' | 'music' | 'survival' | 'creative' | 'special';
   condition?: string;
   requires?: string[];
   minStats?: Record<string, number>;

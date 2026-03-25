@@ -1,7 +1,7 @@
 'use client';
 
-import { StarsShop } from '@/components/shop/StarsShop';
+import { ShopView } from '@/components/locations/shop/ShopView';
 
 export default function ShopPage() {
-  return <StarsShop />;
+  return <ShopView />;
 }
