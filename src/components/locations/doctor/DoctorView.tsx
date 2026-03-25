@@ -117,8 +117,8 @@ export function DoctorView() {
           className="w-11 h-11 flex items-center justify-center shrink-0 border-2"
           style={{
             borderColor: '#00ff88',
-            boxShadow: '3px 3px 0px rgba(0,255,136,0.3)',
-            borderRadius: '2px',
+            boxShadow: '0 0 16px rgba(0,255,136,0.3)',
+            borderRadius: '10px',
           }}
         >
           <HeartPulse className="w-6 h-6" style={{ color: '#00ff88' }} />
@@ -196,7 +196,7 @@ export function DoctorView() {
           >
             <div
               className="w-8 h-8 flex items-center justify-center shrink-0 border border-white/10"
-              style={{ borderRadius: '2px' }}
+              style={{ borderRadius: '10px' }}
             >
               <t.icon className="w-4 h-4" style={{ color: '#00ff88' }} />
             </div>
@@ -204,7 +204,7 @@ export function DoctorView() {
               <div className="flex items-center gap-2">
                 <p className="text-sm font-bold text-text-primary truncate">{t.title}</p>
                 {t.risk && (
-                  <span className="text-[8px] font-bold px-1 py-0.5 text-warning border border-warning" style={{ borderRadius: '1px' }}>
+                  <span className="text-[8px] font-bold px-1 py-0.5 text-warning border border-warning" style={{ borderRadius: '8px' }}>
                     РИСК
                   </span>
                 )}

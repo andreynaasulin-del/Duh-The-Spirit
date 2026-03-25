@@ -38,8 +38,8 @@ export function ShopView() {
           className="w-11 h-11 flex items-center justify-center shrink-0 border-2"
           style={{
             borderColor: season.theme.accentColor,
-            boxShadow: `3px 3px 0px ${season.theme.accentGlow}`,
-            borderRadius: '2px',
+            boxShadow: `0 0 16px ${season.theme.accentGlow}`,
+            borderRadius: '10px',
           }}
         >
           <ShoppingCart className="w-6 h-6" style={{ color: season.theme.accentColor }} />
@@ -89,7 +89,7 @@ export function ShopView() {
                 (busyAction === action.id || cantAfford) ? 'opacity-30 pointer-events-none' : ''
               }`}
             >
-              <div className="w-8 h-8 flex items-center justify-center shrink-0 border border-white/10" style={{ borderRadius: '2px' }}>
+              <div className="w-8 h-8 flex items-center justify-center shrink-0 border border-white/10" style={{ borderRadius: '10px' }}>
                 <Icon className="w-4 h-4" style={{ color: isBuy ? 'var(--color-warning)' : 'var(--color-neon-green)' }} />
               </div>
               <div className="flex-1 min-w-0">

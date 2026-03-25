@@ -57,7 +57,7 @@ export function ReferralCard({ telegramId, referralCount = 0 }: ReferralCardProp
             style={{
               color: season.theme.accentColor,
               border: `1px solid ${season.theme.accentColor}44`,
-              borderRadius: '1px',
+              borderRadius: '8px',
             }}
           >
             {referralCount} чел.
@@ -75,7 +75,7 @@ export function ReferralCard({ telegramId, referralCount = 0 }: ReferralCardProp
         style={{
           background: 'rgba(255,255,255,0.03)',
           border: '1px solid rgba(255,255,255,0.06)',
-          borderRadius: '2px',
+          borderRadius: '10px',
         }}
       >
         <span className="truncate flex-1">{link}</span>
@@ -91,7 +91,7 @@ export function ReferralCard({ telegramId, referralCount = 0 }: ReferralCardProp
             background: copied ? 'rgba(0,255,136,0.1)' : 'rgba(255,255,255,0.03)',
             border: `1px solid ${copied ? 'var(--color-neon-green)' : 'rgba(255,255,255,0.1)'}`,
             color: copied ? 'var(--color-neon-green)' : 'var(--color-text-secondary)',
-            borderRadius: '2px',
+            borderRadius: '10px',
           }}
         >
           {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
@@ -106,7 +106,7 @@ export function ReferralCard({ telegramId, referralCount = 0 }: ReferralCardProp
             background: `${season.theme.accentColor}15`,
             border: `1px solid ${season.theme.accentColor}44`,
             color: season.theme.accentColor,
-            borderRadius: '2px',
+            borderRadius: '10px',
           }}
         >
           <Share2 className="w-3.5 h-3.5" />

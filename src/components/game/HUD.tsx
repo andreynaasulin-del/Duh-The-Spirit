@@ -78,7 +78,7 @@ export function HUD() {
               color: season.theme.accentColor,
               borderColor: season.theme.accentColor,
               boxShadow: `2px 2px 0px ${season.theme.accentGlow}`,
-              borderRadius: '2px',
+              borderRadius: '10px',
             }}
           >
             {season.name}

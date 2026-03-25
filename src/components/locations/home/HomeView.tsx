@@ -10,6 +10,7 @@ import { useKPIs, useHome, useGameStore, useSeason } from '@/stores/game-store';
 import { useAction } from '@/hooks/useAction';
 import { getActionsByCategory } from '@/config/actions';
 import { ReferralCard } from '@/components/game/ReferralCard';
+import { QuestPanel } from '@/components/ui/QuestPanel';
 
 const ICON_MAP: Record<string, React.ElementType> = {
   'moon': Moon, 'coffee': Coffee, 'dumbbell': Dumbbell, 'spray-can': Sparkles,
@@ -43,7 +44,7 @@ function ActionCard({ icon: Icon, title, meta, onClick, disabled, index }: Actio
     >
       <div
         className="w-8 h-8 flex items-center justify-center shrink-0 border border-white/10"
-        style={{ borderRadius: '2px' }}
+        style={{ borderRadius: '10px' }}
       >
         <Icon className="w-4 h-4" style={{ color: 'var(--color-accent)' }} />
       </div>
@@ -92,8 +93,8 @@ export function HomeView() {
           className="w-11 h-11 flex items-center justify-center shrink-0 border-2"
           style={{
             borderColor: season.theme.accentColor,
-            boxShadow: `3px 3px 0px ${season.theme.accentGlow}`,
-            borderRadius: '2px',
+            boxShadow: `0 0 16px ${season.theme.accentGlow}`,
+            borderRadius: '10px',
           }}
         >
           <Skull className="w-6 h-6" style={{ color: season.theme.accentColor }} />
@@ -149,6 +150,9 @@ export function HomeView() {
       <div className="chapter-divider">
         <span>{season.subtitle}</span>
       </div>
+
+      {/* === QUESTS === */}
+      <QuestPanel />
 
       {/* === ACTIONS === */}
       <div>

@@ -102,7 +102,7 @@ export function DialogOverlay({ npc, startNode = 'start', onClose }: DialogOverl
             style={{
               borderColor: npc.color,
               boxShadow: `0 0 20px ${npc.color}40`,
-              borderRadius: '2px',
+              borderRadius: '10px',
               backgroundColor: 'rgba(0,0,0,0.6)',
             }}
           >
@@ -159,7 +159,7 @@ export function DialogOverlay({ npc, startNode = 'start', onClose }: DialogOverl
                 whileTap={{ scale: 0.97 }}
                 onClick={() => handleResponse(response)}
                 className="w-full text-left p-3 border border-white/10 hover:border-white/30 transition-colors"
-                style={{ borderRadius: '2px', backgroundColor: 'rgba(255,255,255,0.03)' }}
+                style={{ borderRadius: '10px', backgroundColor: 'rgba(255,255,255,0.03)' }}
               >
                 <p className="text-sm text-text-secondary">{response.text}</p>
                 {response.effect && (

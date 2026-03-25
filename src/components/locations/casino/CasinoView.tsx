@@ -105,8 +105,8 @@ export function CasinoView() {
           className="w-11 h-11 flex items-center justify-center shrink-0 border-2"
           style={{
             borderColor: '#ffd700',
-            boxShadow: '3px 3px 0px rgba(255,215,0,0.3)',
-            borderRadius: '2px',
+            boxShadow: '0 0 16px rgba(255,215,0,0.3)',
+            borderRadius: '10px',
           }}
         >
           <Dice1 className="w-6 h-6" style={{ color: '#ffd700' }} />
@@ -184,7 +184,7 @@ export function CasinoView() {
               : 'linear-gradient(135deg, #ffd70022, #ff8c0022)',
             border: '2px solid #ffd70066',
             color: spinning ? 'var(--color-text-muted)' : '#ffd700',
-            borderRadius: '2px',
+            borderRadius: '10px',
           }}
         >
           {spinning ? '...' : 'КРУТИТЬ'}
@@ -209,7 +209,7 @@ export function CasinoView() {
                 background: bet === b ? '#ffd70015' : 'rgba(255,255,255,0.03)',
                 border: `1px solid ${bet === b ? '#ffd70066' : 'rgba(255,255,255,0.06)'}`,
                 color: bet === b ? '#ffd700' : 'var(--color-text-muted)',
-                borderRadius: '2px',
+                borderRadius: '10px',
               }}
             >
               ₽{b}

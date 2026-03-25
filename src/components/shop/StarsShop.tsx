@@ -43,7 +43,7 @@ function ProductCard({ product, onBuy, isBuying, status, index }: ProductCardPro
           className="w-10 h-10 flex items-center justify-center shrink-0 border"
           style={{
             borderColor: season.theme.accentColor,
-            borderRadius: '2px',
+            borderRadius: '10px',
           }}
         >
           <Icon className="w-5 h-5" style={{ color: season.theme.accentColor }} />
@@ -65,7 +65,7 @@ function ProductCard({ product, onBuy, isBuying, status, index }: ProductCardPro
             : `linear-gradient(135deg, ${season.theme.accentColor}22, ${season.theme.accentGlow}22)`,
           border: `1px solid ${season.theme.accentColor}44`,
           color: season.theme.accentColor,
-          borderRadius: '2px',
+          borderRadius: '10px',
           opacity: isBuying ? 0.5 : 1,
         }}
       >
@@ -105,8 +105,8 @@ export function StarsShop() {
           className="w-11 h-11 flex items-center justify-center shrink-0 border-2"
           style={{
             borderColor: '#FFD700',
-            boxShadow: '3px 3px 0px rgba(255,215,0,0.3)',
-            borderRadius: '2px',
+            boxShadow: '0 0 16px rgba(255,215,0,0.3)',
+            borderRadius: '10px',
           }}
         >
           <Star className="w-6 h-6" style={{ color: '#FFD700' }} fill="#FFD700" />

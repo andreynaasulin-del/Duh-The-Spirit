@@ -92,7 +92,7 @@ export function NPCEncounter({ location }: NPCEncounterProps) {
                 className="w-10 h-10 flex items-center justify-center text-xl shrink-0 border"
                 style={{
                   borderColor: `${npc.color}60`,
-                  borderRadius: '2px',
+                  borderRadius: '10px',
                   backgroundColor: `${npc.color}10`,
                 }}
               >
@@ -106,7 +106,7 @@ export function NPCEncounter({ location }: NPCEncounterProps) {
                     style={{
                       color: rep > 20 ? 'var(--color-neon-green)' : rep < 0 ? 'var(--color-danger)' : 'var(--color-text-muted)',
                       border: `1px solid ${rep > 20 ? 'var(--color-neon-green)' : rep < 0 ? 'var(--color-danger)' : 'rgba(255,255,255,0.1)'}`,
-                      borderRadius: '1px',
+                      borderRadius: '8px',
                     }}
                   >
                     {rep > 0 ? '+' : ''}{rep}

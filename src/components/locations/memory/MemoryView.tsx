@@ -43,8 +43,8 @@ export function MemoryView() {
           className="w-11 h-11 flex items-center justify-center shrink-0 border-2"
           style={{
             borderColor: season.theme.accentColor,
-            boxShadow: `3px 3px 0px ${season.theme.accentGlow}`,
-            borderRadius: '2px',
+            boxShadow: `0 0 16px ${season.theme.accentGlow}`,
+            borderRadius: '10px',
           }}
         >
           <Brain className="w-6 h-6" style={{ color: season.theme.accentColor }} />
@@ -129,13 +129,13 @@ export function MemoryView() {
                 {stat.value}/{stat.max}
               </span>
             </div>
-            <div className="w-full h-1.5 bg-white/5" style={{ borderRadius: '1px' }}>
+            <div className="w-full h-1.5 bg-white/5" style={{ borderRadius: '8px' }}>
               <div
                 className="h-full transition-all duration-300"
                 style={{
                   width: `${Math.min(100, (stat.value / stat.max) * 100)}%`,
                   backgroundColor: stat.color,
-                  borderRadius: '1px',
+                  borderRadius: '8px',
                 }}
               />
             </div>

@@ -70,7 +70,7 @@ function ActionCard({ icon: Icon, title, meta, onClick, disabled, index, risk }:
     >
       <div
         className="w-8 h-8 flex items-center justify-center shrink-0 border border-white/10"
-        style={{ borderRadius: '2px' }}
+        style={{ borderRadius: '10px' }}
       >
         <Icon className="w-4 h-4" style={{ color: 'var(--season-accent, #ff2d7b)' }} />
       </div>
@@ -83,7 +83,7 @@ function ActionCard({ icon: Icon, title, meta, onClick, disabled, index, risk }:
               style={{
                 color: riskColor,
                 border: `1px solid ${riskColor}`,
-                borderRadius: '1px',
+                borderRadius: '8px',
               }}
             >
               {riskLabel}
@@ -160,8 +160,8 @@ export function StreetView() {
           className="w-11 h-11 flex items-center justify-center shrink-0 border-2"
           style={{
             borderColor: season.theme.accentColor,
-            boxShadow: `3px 3px 0px ${season.theme.accentGlow}`,
-            borderRadius: '2px',
+            boxShadow: `0 0 16px ${season.theme.accentGlow}`,
+            borderRadius: '10px',
           }}
         >
           <MapPin className="w-6 h-6" style={{ color: season.theme.accentColor }} />
@@ -196,7 +196,7 @@ export function StreetView() {
                 backgroundColor: i < dangerLevel
                   ? (dangerLevel >= 4 ? 'var(--color-danger)' : dangerLevel >= 2 ? 'var(--color-warning)' : 'var(--color-neon-green)')
                   : 'rgba(255,255,255,0.06)',
-                borderRadius: '1px',
+                borderRadius: '8px',
                 transition: 'background-color 0.3s',
               }}
             />

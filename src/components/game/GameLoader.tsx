@@ -28,7 +28,7 @@ export function GameLoader({ children }: GameLoaderProps) {
       <div className="min-h-dvh flex flex-col items-center justify-center gap-4 bg-bg-primary">
         <div
           className="w-12 h-12 border-2 flex items-center justify-center"
-          style={{ borderColor: '#ff2d7b', borderRadius: '2px' }}
+          style={{ borderColor: '#ff2d7b', borderRadius: '10px' }}
         >
           <Skull className="w-6 h-6 animate-pulse" style={{ color: '#ff2d7b' }} />
         </div>

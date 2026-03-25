@@ -102,8 +102,8 @@ export function PrisonView() {
           className="w-11 h-11 flex items-center justify-center shrink-0 border-2"
           style={{
             borderColor: '#ff4444',
-            boxShadow: '3px 3px 0px rgba(255,68,68,0.3)',
-            borderRadius: '2px',
+            boxShadow: '0 0 16px rgba(255,68,68,0.3)',
+            borderRadius: '10px',
           }}
         >
           <Lock className="w-6 h-6" style={{ color: '#ff4444' }} />
@@ -138,12 +138,12 @@ export function PrisonView() {
                 {daysLeft} {daysLeft === 1 ? 'ДЕНЬ' : daysLeft < 5 ? 'ДНЯ' : 'ДНЕЙ'} ОСТАЛОСЬ
               </span>
             </div>
-            <div className="w-full h-2 bg-white/5" style={{ borderRadius: '1px' }}>
+            <div className="w-full h-2 bg-white/5" style={{ borderRadius: '8px' }}>
               <motion.div
                 className="h-full bg-danger"
                 style={{
                   width: `${Math.max(5, 100 - (daysLeft / 30) * 100)}%`,
-                  borderRadius: '1px',
+                  borderRadius: '8px',
                 }}
                 animate={{ width: `${Math.max(5, 100 - (daysLeft / 30) * 100)}%` }}
               />
@@ -196,7 +196,7 @@ export function PrisonView() {
               >
                 <div
                   className="w-8 h-8 flex items-center justify-center shrink-0 border border-white/10"
-                  style={{ borderRadius: '2px' }}
+                  style={{ borderRadius: '10px' }}
                 >
                   <action.icon className="w-4 h-4" style={{ color: action.risk ? 'var(--color-danger)' : '#ff4444' }} />
                 </div>
@@ -204,7 +204,7 @@ export function PrisonView() {
                   <div className="flex items-center gap-2">
                     <p className="text-sm font-bold text-text-primary truncate">{action.title}</p>
                     {action.risk && (
-                      <span className="text-[8px] font-bold px-1 py-0.5 text-danger border border-danger" style={{ borderRadius: '1px' }}>
+                      <span className="text-[8px] font-bold px-1 py-0.5 text-danger border border-danger" style={{ borderRadius: '8px' }}>
                         РИСК
                       </span>
                     )}

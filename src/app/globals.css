@@ -51,16 +51,16 @@
   --font-mono: "JetBrains Mono", "Courier New", monospace;
 
   /* --- Spacing & Radius --- */
-  --radius-sm: 2px;
-  --radius-md: 4px;
-  --radius-lg: 8px;
-  --radius-xl: 12px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
 
   /* --- Shadows --- */
-  --shadow-manga: 3px 3px 0px rgba(255, 255, 255, 0.08);
-  --shadow-manga-accent: 3px 3px 0px var(--season-glow, rgba(255, 45, 123, 0.4));
-  --shadow-card: 2px 2px 0px rgba(255, 255, 255, 0.05);
-  --shadow-card-hover: 3px 3px 0px var(--season-glow, rgba(255, 45, 123, 0.4));
+  --shadow-manga: 0 2px 16px rgba(0, 0, 0, 0.25);
+  --shadow-manga-accent: 0 0 20px var(--season-glow, rgba(255, 45, 123, 0.2));
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.2);
+  --shadow-card-hover: 0 4px 24px rgba(0, 0, 0, 0.3), 0 0 16px var(--season-glow, rgba(255, 45, 123, 0.15));
 
   /* --- Tailwind color tokens --- */
   --color-background: var(--color-bg-primary);
@@ -117,72 +117,100 @@ main[data-season-content] {
 ::-webkit-scrollbar-thumb { background: var(--color-text-muted); border-radius: 1px; }
 
 /* ============================================
-   Manga Card System
+   Card System — Glass + Gradient
    ============================================ */
 
-/* Base card — thick hand-drawn border feel */
+/* Base card — glass morphism */
 .card-street {
-  background: var(--color-bg-card);
-  border: 2px solid rgba(255, 255, 255, 0.12);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-card);
-  transition: all 0.15s ease;
+  background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
+  overflow: hidden;
+}
+
+.card-street::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%, var(--season-glow, rgba(255, 45, 123, 0.1)) 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
 }
 
 .card-street:hover {
-  background: var(--color-bg-card-hover);
-  border-color: var(--season-accent, #ff2d7b);
-  box-shadow: var(--shadow-card-hover);
+  background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%);
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.05);
+  transform: translateY(-1px);
+}
+
+.card-street:hover::before {
+  opacity: 1;
 }
 
 .card-street:active {
-  transform: translate(1px, 1px);
-  box-shadow: 1px 1px 0px var(--season-glow, rgba(255, 45, 123, 0.4));
+  transform: translateY(0) scale(0.99);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
-/* Manga panel — dashed border like comic panel */
+/* Panel — subtle glass with glow border */
 .manga-panel {
-  background: var(--color-bg-card);
-  border: 2px dashed rgba(255, 255, 255, 0.15);
-  border-radius: var(--radius-sm);
+  background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(0,0,0,0.1) 100%);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
   position: relative;
 }
 
-/* Speech bubble (spirit messages) */
+/* Speech bubble — modern floating */
 .speech-bubble {
-  background: #1a1a1a;
-  border: 2px solid var(--season-accent, #ff2d7b);
-  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(30,30,30,0.95) 0%, rgba(20,20,20,0.98) 100%);
+  border: 1px solid var(--season-accent, #ff2d7b);
+  border-radius: 16px;
   position: relative;
-  box-shadow: 3px 3px 0px var(--season-glow, rgba(255, 45, 123, 0.4));
+  box-shadow:
+    0 0 20px var(--season-glow, rgba(255, 45, 123, 0.15)),
+    0 8px 32px rgba(0,0,0,0.4);
 }
 
 .speech-bubble::before {
   content: '';
   position: absolute;
-  top: -8px;
-  left: 20px;
-  width: 14px;
-  height: 14px;
-  background: #1a1a1a;
-  border-left: 2px solid var(--season-accent, #ff2d7b);
-  border-top: 2px solid var(--season-accent, #ff2d7b);
+  top: -7px;
+  left: 24px;
+  width: 12px;
+  height: 12px;
+  background: rgba(30,30,30,0.95);
+  border-left: 1px solid var(--season-accent, #ff2d7b);
+  border-top: 1px solid var(--season-accent, #ff2d7b);
   transform: rotate(45deg);
 }
 
-/* Impact frame — for critical moments / god mode */
+/* Impact frame — for critical moments */
 .impact-frame {
-  border: 3px solid white;
-  box-shadow: 4px 4px 0px white, -2px -2px 0px white;
+  border: 2px solid white;
+  box-shadow: 0 0 30px rgba(255,255,255,0.15), inset 0 0 30px rgba(255,255,255,0.05);
+  border-radius: 12px;
   position: relative;
 }
 
 .impact-frame::after {
   content: '';
   position: absolute;
-  inset: -6px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  inset: -4px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
   pointer-events: none;
 }
 
@@ -243,25 +271,17 @@ main[data-season-content] {
    ============================================ */
 
 .stat-bar {
-  height: 8px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 1px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 3px;
   overflow: hidden;
 }
 
 .stat-bar-fill {
   height: 100%;
-  border-radius: 0px;
+  border-radius: 3px;
   transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  /* Hatching pattern for manga feel */
-  background-image: repeating-linear-gradient(
-    90deg,
-    transparent,
-    transparent 3px,
-    rgba(0,0,0,0.15) 3px,
-    rgba(0,0,0,0.15) 4px
-  );
+  box-shadow: 0 0 8px currentColor;
 }
 
 /* Pulse animation for critical stats */
@@ -373,17 +393,17 @@ html {
    ============================================ */
 
 .border-manga {
-  border: 2px solid rgba(255, 255, 255, 0.15);
-  box-shadow: var(--shadow-manga);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 2px 16px rgba(0,0,0,0.2);
 }
 
 .border-manga-accent {
-  border: 2px solid var(--season-accent, #ff2d7b);
-  box-shadow: var(--shadow-manga-accent);
+  border: 1px solid var(--season-accent, #ff2d7b);
+  box-shadow: 0 0 20px var(--season-glow, rgba(255, 45, 123, 0.15));
 }
 
 .border-dashed-manga {
-  border: 2px dashed rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 /* Action lines radiating from center */
@@ -407,7 +427,7 @@ html {
 .chapter-divider {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
   color: var(--color-text-muted);
   font-size: 10px;
   letter-spacing: 0.2em;
@@ -419,11 +439,5 @@ html {
   content: '';
   flex: 1;
   height: 1px;
-  background: repeating-linear-gradient(
-    90deg,
-    var(--color-text-muted),
-    var(--color-text-muted) 4px,
-    transparent 4px,
-    transparent 8px
-  );
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
 }

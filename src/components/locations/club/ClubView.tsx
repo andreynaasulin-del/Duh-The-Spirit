@@ -56,7 +56,7 @@ function ActionCard({ icon: Icon, title, meta, onClick, disabled, index }: Actio
     >
       <div
         className="w-8 h-8 flex items-center justify-center shrink-0 border border-white/10"
-        style={{ borderRadius: '2px' }}
+        style={{ borderRadius: '10px' }}
       >
         <Icon className="w-4 h-4" style={{ color: 'var(--season-accent, #ff2d7b)' }} />
       </div>
@@ -107,8 +107,8 @@ export function ClubView() {
           className="w-11 h-11 flex items-center justify-center shrink-0 border-2"
           style={{
             borderColor: season.theme.accentColor,
-            boxShadow: `3px 3px 0px ${season.theme.accentGlow}`,
-            borderRadius: '2px',
+            boxShadow: `0 0 16px ${season.theme.accentGlow}`,
+            borderRadius: '10px',
           }}
         >
           <Music className="w-6 h-6" style={{ color: season.theme.accentColor }} />
@@ -135,13 +135,13 @@ export function ClubView() {
           </span>
         </div>
         {/* Career progress bar */}
-        <div className="w-full h-2 bg-white/5 mb-2" style={{ borderRadius: '1px' }}>
+        <div className="w-full h-2 bg-white/5 mb-2" style={{ borderRadius: '8px' }}>
           <motion.div
             className="h-full"
             style={{
               width: `${(careerLevel / 10) * 100}%`,
               background: `linear-gradient(90deg, ${season.theme.accentColor}, ${season.theme.accentGlow})`,
-              borderRadius: '1px',
+              borderRadius: '8px',
             }}
             initial={{ width: 0 }}
             animate={{ width: `${(careerLevel / 10) * 100}%` }}
