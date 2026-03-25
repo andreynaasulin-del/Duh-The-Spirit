@@ -9,6 +9,7 @@ import {
 import { useGameStore, useStats, useKPIs, useSeason } from '@/stores/game-store';
 import { useAction } from '@/hooks/useAction';
 import { getActionsByCategory } from '@/config/actions';
+import { NPCEncounter } from '@/components/ui/NPCEncounter';
 
 const ICON_MAP: Record<string, React.ElementType> = {
   'mic': Mic, 'sliders': SlidersHorizontal, 'mic-2': Mic2,
@@ -201,6 +202,9 @@ export function ClubView() {
       <div className="chapter-divider">
         <span>{season.subtitle}</span>
       </div>
+
+      {/* === NPC ENCOUNTERS === */}
+      <NPCEncounter location="club" />
 
       {/* === ACTIONS === */}
       <div className="space-y-1.5">

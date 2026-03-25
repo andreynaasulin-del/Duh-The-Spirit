@@ -11,6 +11,7 @@ import { useGameStore, useStats, useKPIs, useSeason } from '@/stores/game-store'
 import { useAction } from '@/hooks/useAction';
 import { getActionsByCategory } from '@/config/actions';
 import { getCurrentSeason } from '@/config/seasons';
+import { NPCEncounter } from '@/components/ui/NPCEncounter';
 
 const ICON_MAP: Record<string, React.ElementType> = {
   'zap': Zap, 'shopping-bag': ShoppingBag, 'crosshair': Crosshair,
@@ -248,6 +249,9 @@ export function StreetView() {
       <div className="chapter-divider">
         <span>{season.subtitle}</span>
       </div>
+
+      {/* === NPC ENCOUNTERS === */}
+      <NPCEncounter location="street" />
 
       {/* === ACTIONS === */}
       <div>

@@ -7,6 +7,7 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import { useGameStore, useStats, useKPIs, useSeason, useStatus } from '@/stores/game-store';
+import { NPCEncounter } from '@/components/ui/NPCEncounter';
 
 interface PrisonAction {
   id: string;
@@ -174,6 +175,9 @@ export function PrisonView() {
               </p>
             </div>
           </div>
+
+          {/* NPC */}
+          <NPCEncounter location="prison" />
 
           {/* Actions */}
           <div className="chapter-divider"><span>ДЕЙСТВИЯ</span></div>
