@@ -3,9 +3,11 @@
 import { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import {
-  HeartPulse, Brain, Pill, ShieldCheck, ChevronRight, AlertTriangle,
+  HeartPulse, Brain, Pill, ShieldCheck, ChevronRight, AlertTriangle, MessageCircle,
 } from 'lucide-react';
 import { useGameStore, useStats, useKPIs, useSeason } from '@/stores/game-store';
+import { DoctorChat } from '@/components/ui/DoctorChat';
+import { Portal } from '@/components/ui/Portal';
 
 interface Treatment {
   id: string;
@@ -61,6 +63,7 @@ const TREATMENTS: Treatment[] = [
 export function DoctorView() {
   const [busyId, setBusyId] = useState<string | null>(null);
   const [lastResult, setLastResult] = useState<string | null>(null);
+  const [showChat, setShowChat] = useState(false);
   const stats = useStats();
   const kpis = useKPIs();
   const season = useSeason();
@@ -132,6 +135,36 @@ export function DoctorView() {
           </p>
         </div>
       </div>
+
+      {/* Talk to Doc button */}
+      <motion.button
+        whileTap={{ scale: 0.97 }}
+        onClick={() => setShowChat(true)}
+        className="w-full p-4 flex items-center gap-3 text-left"
+        style={{
+          background: 'rgba(0,230,180,0.06)',
+          border: '2px solid rgba(0,230,180,0.3)',
+          borderRadius: '12px',
+        }}
+      >
+        <div className="w-10 h-10 flex items-center justify-center text-xl rounded-full"
+          style={{ backgroundColor: 'rgba(0,230,180,0.1)', border: '1px solid #00e6b4' }}
+        >
+          🧠
+        </div>
+        <div className="flex-1">
+          <p className="text-sm font-bold text-white">Поговорить с Доком</p>
+          <p className="text-[10px] text-text-muted">Анонимно • Без осуждения • AI-терапевт</p>
+        </div>
+        <MessageCircle className="w-5 h-5" style={{ color: '#00e6b4' }} />
+      </motion.button>
+
+      {/* AI Chat overlay */}
+      {showChat && (
+        <Portal>
+          <DoctorChat onClose={() => setShowChat(false)} />
+        </Portal>
+      )}
 
       {/* Patient status */}
       <div className="manga-panel p-3">
