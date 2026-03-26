@@ -12,7 +12,7 @@
  * - New user: +300₽ cash (welcome bonus)
  */
 
-const BOT_USERNAME = 'PrytonGameBot'; // Replace with actual bot username
+const BOT_USERNAME = 'duhthespiritbot';
 
 export const REFERRAL_REWARDS = {
   referrer: { cash: 500, respect: 5 },

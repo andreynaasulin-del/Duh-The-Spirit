@@ -1,5 +1,5 @@
 // ============================================
-// Pryton Hood Life Game — Core Game Types
+// Duh The Spirit — Core Game Types
 // ============================================
 
 // --- Stats ---

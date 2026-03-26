@@ -26,13 +26,13 @@ const marker = Permanent_Marker({
 });
 
 export const metadata: Metadata = {
-  title: "Hood Life | ДУХ",
-  description: "Интерактивная художественная новелла о поиске себя. Telegram Mini App.",
-  keywords: ["game", "rpg", "telegram", "mini app", "novel", "interactive fiction"],
-  authors: [{ name: "@duhdeveloperhub" }],
+  title: "Duh The Spirit",
+  description: "Выживай. Зарабатывай. Не теряй рассудок.",
+  keywords: ["game", "rpg", "telegram", "mini app", "interactive fiction", "rapper"],
+  authors: [{ name: "@duhthespiritbot" }],
   openGraph: {
-    title: "Pryton Hood Life",
-    description: "Выживай. Зарабатывай. Не теряй адекватность.",
+    title: "Duh The Spirit",
+    description: "Выживай. Зарабатывай. Не теряй рассудок.",
     type: "website",
   },
 };

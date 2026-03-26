@@ -123,7 +123,7 @@ export function AgeGate({ children }: AgeGateProps) {
         )}
 
         <p className="text-text-muted text-[10px] text-center mt-2">
-          Pryton Hood Life v5.0 — художественная интерактивная новелла
+          Duh The Spirit — интерактивная новелла
         </p>
       </div>
     </div>
