@@ -46,6 +46,18 @@ function formatTime(minutes: number): string {
   return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
 }
 
+function getUserInfo() {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = localStorage.getItem('pryton_user');
+    if (raw) return JSON.parse(raw);
+    // Fallback: try Telegram WebApp
+    const tg = window.Telegram?.WebApp?.initDataUnsafe?.user;
+    if (tg) return { username: tg.username || tg.first_name, telegram_id: tg.id, photo_url: tg.photo_url };
+  } catch {}
+  return null;
+}
+
 export function HUD() {
   const stats = useStats();
   const kpis = useKPIs();
@@ -55,6 +67,7 @@ export function HUD() {
   const daysLeft = getDaysUntilNextSeason(day);
   const progress = getSeasonProgress(day);
   const isSaving = useGameStore((s) => s.isSaving);
+  const user = getUserInfo();
 
   return (
     <header className="sticky top-0 z-40 bg-bg-primary/95 backdrop-blur-sm safe-area-top">
@@ -86,7 +99,23 @@ export function HUD() {
           <span className="text-[9px] text-text-muted font-mono">{daysLeft}д</span>
         </div>
 
-        <span className="text-sm font-bold font-mono neon-text-gold">₽{formatCash(kpis.cash)}</span>
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-bold font-mono neon-text-gold">₽{formatCash(kpis.cash)}</span>
+          {user && (
+            <div className="flex items-center gap-1.5">
+              {user.photo_url ? (
+                <img src={user.photo_url} alt="" className="w-5 h-5 rounded-full border border-white/20" />
+              ) : (
+                <div
+                  className="w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold border border-white/20"
+                  style={{ backgroundColor: season.theme.accentColor + '30', color: season.theme.accentColor }}
+                >
+                  {(user.username || user.telegram_first_name || '?')[0].toUpperCase()}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Season progress bar (thin line) */}

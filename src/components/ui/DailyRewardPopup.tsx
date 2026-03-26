@@ -14,9 +14,12 @@ export function DailyRewardPopup() {
   const daily = useGameStore((s) => s.state.daily);
 
   useEffect(() => {
-    // Check if reward available on mount
+    // Check localStorage first — prevents popup spam on page reloads
+    const localClaim = localStorage.getItem('duh_last_claim');
+    const today = getTodayDate();
+    if (localClaim === today) return; // Already claimed today
+
     if (daily && canClaimToday(daily.lastClaimDate)) {
-      // Small delay so UI loads first
       const timer = setTimeout(() => setShow(true), 1500);
       return () => clearTimeout(timer);
     }
@@ -48,7 +51,10 @@ export function DailyRewardPopup() {
       },
     });
 
-    store.addLog(`🎁 Ежедневная награда: День ${currentStreak}`, 'good');
+    // Persist to localStorage to prevent repeat popups
+    localStorage.setItem('duh_last_claim', getTodayDate());
+
+    store.addLog(`Ежедневная награда: День ${currentStreak}`, 'good');
     setClaimed(true);
     setTimeout(() => setShow(false), 2000);
   };
