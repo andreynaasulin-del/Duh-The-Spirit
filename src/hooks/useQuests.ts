@@ -100,11 +100,11 @@ export function useQuests() {
             return (progress[key] || 0) >= obj.target;
           }
           case 'kpi_reached': {
-            const val = (store.state.kpis as Record<string, number>)[obj.kpi || ''] ?? 0;
+            const val = (store.state.kpis as unknown as Record<string, number>)[obj.kpi || ''] ?? 0;
             return val >= obj.target;
           }
           case 'stat_reached': {
-            const val = (store.state.stats as Record<string, number>)[obj.stat || ''] ?? 0;
+            const val = (store.state.stats as unknown as Record<string, number>)[obj.stat || ''] ?? 0;
             return val >= obj.target;
           }
           default:

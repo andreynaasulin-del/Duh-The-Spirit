@@ -94,9 +94,9 @@ export function QuestPanel() {
                       if (obj.type === 'action_completed') {
                         current = getObjectiveProgress(quest.id, obj.id);
                       } else if (obj.type === 'kpi_reached') {
-                        current = Math.min((kpis as Record<string, number>)[obj.kpi || ''] ?? 0, obj.target);
+                        current = Math.min((kpis as unknown as Record<string, number>)[obj.kpi || ''] ?? 0, obj.target);
                       } else if (obj.type === 'stat_reached') {
-                        current = Math.min((stats as Record<string, number>)[obj.stat || ''] ?? 0, obj.target);
+                        current = Math.min((stats as unknown as Record<string, number>)[obj.stat || ''] ?? 0, obj.target);
                       }
                       const done = current >= obj.target;
                       const pct = Math.min(current / obj.target * 100, 100);
