@@ -30,7 +30,7 @@ export const INITIAL_STATE: GameState = {
     shards: [],
   },
   kpis: {
-    cash: 1000000, // TODO: revert to 5000 after testing
+    cash: 5000,
     respect: 0,
     fame: 0,
     releases: 0,

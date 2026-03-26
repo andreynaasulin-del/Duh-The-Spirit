@@ -18,6 +18,7 @@ interface GameLoaderProps {
  */
 export function GameLoader({ children }: GameLoaderProps) {
   const [mounted, setMounted] = useState(false);
+  const [authDone, setAuthDone] = useState(false);
   useGamePersistence();
   const isLoaded = useGameStore((s) => s.isLoaded);
   const day = useGameStore((s) => s.state.day);
@@ -27,6 +28,45 @@ export function GameLoader({ children }: GameLoaderProps) {
 
   useEffect(() => {
     setMounted(true);
+
+    // Auto-register user on game load
+    async function autoAuth() {
+      // Skip if already registered this session
+      if (localStorage.getItem('duh_user')) {
+        setAuthDone(true);
+        return;
+      }
+
+      const tg = window.Telegram?.WebApp;
+      const initData = tg?.initData;
+
+      if (!initData) {
+        // Not in Telegram — dev mode, skip auth
+        setAuthDone(true);
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/auth/telegram', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ initData }),
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success) {
+            localStorage.setItem('duh_user', JSON.stringify(data.user));
+          }
+        }
+      } catch (e) {
+        console.error('Auto-auth failed:', e);
+      }
+
+      setAuthDone(true);
+    }
+
+    autoAuth();
   }, []);
 
   // Check for ending

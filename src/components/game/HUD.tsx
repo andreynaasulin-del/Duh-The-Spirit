@@ -49,7 +49,7 @@ function formatTime(minutes: number): string {
 function getUserInfo() {
   if (typeof window === 'undefined') return null;
   try {
-    const raw = localStorage.getItem('pryton_user');
+    const raw = localStorage.getItem('duh_user') || localStorage.getItem('pryton_user');
     if (raw) return JSON.parse(raw);
     // Fallback: try Telegram WebApp
     const tg = window.Telegram?.WebApp?.initDataUnsafe?.user;
