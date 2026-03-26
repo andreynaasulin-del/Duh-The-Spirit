@@ -9,6 +9,7 @@ import {
 import { useGameStore, useStats, useKPIs, useSeason } from '@/stores/game-store';
 import { useAction } from '@/hooks/useAction';
 import { getActionsByCategory } from '@/config/actions';
+import { StarsShop } from '@/components/shop/StarsShop';
 
 const ICON_MAP: Record<string, React.ElementType> = {
   'apple': Apple, 'shirt': Shirt, 'smartphone': Smartphone, 'pill': Pill,
@@ -104,6 +105,10 @@ export function ShopView() {
           );
         })}
       </div>
+
+      {/* === TELEGRAM STARS SHOP === */}
+      <div className="chapter-divider"><span>⭐ Премиум</span></div>
+      <StarsShop />
     </motion.div>
   );
 }
