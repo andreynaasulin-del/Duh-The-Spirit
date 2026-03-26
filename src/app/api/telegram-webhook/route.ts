@@ -2,6 +2,20 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const WEBHOOK_SECRET = process.env.TELEGRAM_WEBHOOK_SECRET;
+const ADMIN_IDS = ['7984904430'];
+
+async function sendMessage(chatId: string | number, text: string, replyMarkup?: object) {
+  await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      chat_id: chatId,
+      text,
+      parse_mode: 'HTML',
+      ...(replyMarkup && { reply_markup: replyMarkup }),
+    }),
+  });
+}
 
 export async function POST(req: NextRequest) {
   // Verify webhook signature if configured
@@ -12,6 +26,60 @@ export async function POST(req: NextRequest) {
 
   try {
     const update = await req.json();
+
+    // Handle bot commands
+    if (update.message?.text) {
+      const text = update.message.text;
+      const fromId = String(update.message.from?.id);
+      const chatId = update.message.chat.id;
+
+      // /start — welcome + play button
+      if (text === '/start' || text === '/play') {
+        await sendMessage(chatId,
+          '👻 <b>Duh The Spirit</b>\n\nВыживай. Зарабатывай. Не теряй рассудок.\n\nНажми кнопку ниже чтобы начать:',
+          { inline_keyboard: [[{ text: '🎮 Играть', web_app: { url: 'https://www.duhthespirit.app/' } }]] }
+        );
+        return NextResponse.json({ ok: true });
+      }
+
+      // /gift <telegram_id> <amount> — admin only
+      if (text.startsWith('/gift') && ADMIN_IDS.includes(fromId)) {
+        const parts = text.split(' ');
+        const targetId = parts[1];
+        const amount = parseInt(parts[2] || '0');
+
+        if (!targetId || !amount || amount <= 0) {
+          await sendMessage(chatId, '❌ Формат: /gift <telegram_id> <сумма>\nПример: /gift 809291523 50000');
+          return NextResponse.json({ ok: true });
+        }
+
+        // Call our gift API
+        const baseUrl = 'https://www.duhthespirit.app';
+        const res = await fetch(`${baseUrl}/api/admin/gift`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ adminId: fromId, targetTelegramId: targetId, amount }),
+        });
+
+        const data = await res.json();
+        if (data.success) {
+          await sendMessage(chatId, `✅ Подарок отправлен!\n\n👤 ${data.gift.to}\n💰 +${amount.toLocaleString('ru')}₽`);
+        } else {
+          await sendMessage(chatId, `❌ Ошибка: ${data.error}`);
+        }
+        return NextResponse.json({ ok: true });
+      }
+
+      // /help
+      if (text === '/help') {
+        let helpText = '👻 <b>Duh The Spirit</b>\n\n/play — Открыть игру\n/help — Помощь';
+        if (ADMIN_IDS.includes(fromId)) {
+          helpText += '\n\n🔑 <b>Админ:</b>\n/gift &lt;id&gt; &lt;сумма&gt; — Подарить деньги игроку\n/stats — Статистика (скоро)';
+        }
+        await sendMessage(chatId, helpText);
+        return NextResponse.json({ ok: true });
+      }
+    }
 
     // Handle pre_checkout_query — MUST respond within 10 seconds
     if (update.pre_checkout_query) {
