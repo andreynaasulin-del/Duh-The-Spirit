@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useCallback } from 'react';
 import { useGameStore } from '@/stores/game-store';
-import { useSupabase } from '@/components/providers/SupabaseProvider';
 import { createInitialState } from '@/config/initial-state';
 import { GAME_CONFIG, GAME_VERSION } from '@/config/constants';
 import type { GameState } from '@/types/game';
@@ -19,7 +18,6 @@ import type { GameState } from '@/types/game';
  * Uses Supabase client directly — RLS ensures users can only access own data.
  */
 export function useGamePersistence() {
-  const supabase = useSupabase();
   const loadState = useGameStore((s) => s.loadState);
   const setState = useGameStore((s) => s.setState);
   const setSaving = useGameStore((s) => s.setSaving);
@@ -36,7 +34,8 @@ export function useGamePersistence() {
   const getUserId = useCallback((): string | null => {
     if (userIdRef.current) return userIdRef.current;
     try {
-      const raw = localStorage.getItem('pryton_user');
+      // Check both keys (new and legacy)
+      const raw = localStorage.getItem('duh_user') || localStorage.getItem('pryton_user');
       if (!raw) return null;
       const user = JSON.parse(raw);
       userIdRef.current = user.id || null;
@@ -52,14 +51,13 @@ export function useGamePersistence() {
     return `${state.day}:${state.time}:${state.kpis.cash}:${state.stats.health}:${state.stats.energy}`;
   }, []);
 
-  // --- SAVE ---
+  // --- SAVE (via API route with service role) ---
   const saveGame = useCallback(async (force = false): Promise<boolean> => {
     const userId = getUserId();
     if (!userId) return false;
     if (isSavingRef.current && !force) return false;
-    if (connectionFailedRef.current) return false; // don't retry after network failure
+    if (connectionFailedRef.current) return false;
 
-    // Check if state actually changed
     const currentHash = getStateHash();
     if (!force && currentHash === lastSaveHashRef.current) return true;
 
@@ -69,20 +67,14 @@ export function useGamePersistence() {
     try {
       const state = useGameStore.getState().state;
 
-      const { error } = await supabase
-        .from('game_states')
-        .upsert(
-          {
-            user_id: userId,
-            state: state as unknown as Record<string, unknown>,
-            version: GAME_VERSION,
-            last_saved_at: new Date().toISOString(),
-          },
-          { onConflict: 'user_id' }
-        );
+      const res = await fetch('/api/game/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, state }),
+      });
 
-      if (error) {
-        console.warn('[Save] Supabase error:', error.message);
+      if (!res.ok) {
+        console.warn('[Save] API error:', res.status);
         return false;
       }
 
@@ -90,9 +82,8 @@ export function useGamePersistence() {
       markSaved();
       return true;
     } catch {
-      // Network failure — stop retrying until page reload
       if (!connectionFailedRef.current) {
-        console.warn('[Save] Network unavailable — saves paused until reconnect');
+        console.warn('[Save] Network unavailable');
         connectionFailedRef.current = true;
       }
       return false;
@@ -100,63 +91,52 @@ export function useGamePersistence() {
       isSavingRef.current = false;
       setSaving(false);
     }
-  }, [supabase, getUserId, getStateHash, setSaving, markSaved]);
+  }, [getUserId, getStateHash, setSaving, markSaved]);
 
-  // --- LOAD ---
+  // --- LOAD (via API route with service role) ---
   const loadGame = useCallback(async (): Promise<boolean> => {
     const userId = getUserId();
     if (!userId) {
-      // No user — start fresh
       loadState(createInitialState());
       return true;
     }
 
     try {
-      const { data, error } = await supabase
-        .from('game_states')
-        .select('state, version')
-        .eq('user_id', userId)
-        .single();
+      const res = await fetch('/api/game/load', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId }),
+      });
 
-      if (error) {
-        if (error.code === 'PGRST116') {
-          // No saved state — create initial and save
-          const initial = createInitialState();
-          loadState(initial);
-          // Save initial state to DB
-          await supabase.from('game_states').insert({
-            user_id: userId,
-            state: initial as unknown as Record<string, unknown>,
-            version: GAME_VERSION,
-          });
-          return true;
-        }
-        console.warn('[Load] Supabase error:', error.message);
+      if (!res.ok) {
+        console.warn('[Load] API error:', res.status);
         loadState(createInitialState());
         return false;
       }
 
-      if (data?.state) {
-        // Merge saved state with initial to fill any new fields (version upgrades)
-        const saved = data.state as unknown as GameState;
+      const { state: savedState } = await res.json();
+
+      if (savedState) {
+        const saved = savedState as GameState;
         const initial = createInitialState();
         const merged: GameState = { ...initial, ...saved };
 
-        // Ensure nested objects are merged too
+        // Ensure nested objects are merged
         merged.stats = { ...initial.stats, ...saved.stats };
         merged.kpis = { ...initial.kpis, ...saved.kpis };
         merged.paths = { ...initial.paths, ...saved.paths };
-        merged.spirit = { ...initial.spirit, ...saved.spirit };
-        merged.neuro = { ...initial.neuro, ...saved.neuro };
-        merged.farm = { ...initial.farm, ...saved.farm };
-        merged.prison = { ...initial.prison, ...saved.prison };
-        merged.casino = { ...initial.casino, ...saved.casino };
-        merged.doctor = { ...initial.doctor, ...saved.doctor };
-        merged.syndicate = { ...initial.syndicate, ...saved.syndicate };
-        merged.home = { ...initial.home, ...saved.home };
-        merged.quests = { ...initial.quests, ...saved.quests };
-        merged.music = { ...initial.music, ...saved.music };
-        merged.world = { ...initial.world, ...saved.world };
+        merged.spirit = { ...initial.spirit, ...(saved.spirit || {}) };
+        merged.neuro = { ...initial.neuro, ...(saved.neuro || {}) };
+        merged.farm = { ...initial.farm, ...(saved.farm || {}) };
+        merged.prison = { ...initial.prison, ...(saved.prison || {}) };
+        merged.casino = { ...initial.casino, ...(saved.casino || {}) };
+        merged.doctor = { ...initial.doctor, ...(saved.doctor || {}) };
+        merged.syndicate = { ...initial.syndicate, ...(saved.syndicate || {}) };
+        merged.home = { ...initial.home, ...(saved.home || {}) };
+        merged.quests = { ...initial.quests, ...(saved.quests || {}) };
+        merged.music = { ...initial.music, ...(saved.music || {}) };
+        merged.world = { ...initial.world, ...(saved.world || {}) };
+        merged.daily = { ...initial.daily, ...(saved.daily || {}) };
         merged.version = GAME_VERSION;
 
         setState(merged);
@@ -164,17 +144,24 @@ export function useGamePersistence() {
         return true;
       }
 
-      loadState(createInitialState());
+      // No saved state — create initial and save
+      const initial = createInitialState();
+      loadState(initial);
+      await fetch('/api/game/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, state: initial }),
+      });
       return true;
     } catch {
       if (!connectionFailedRef.current) {
-        console.warn('[Load] Network unavailable — using local state');
+        console.warn('[Load] Network unavailable');
         connectionFailedRef.current = true;
       }
       loadState(createInitialState());
       return false;
     }
-  }, [supabase, getUserId, loadState, setState]);
+  }, [getUserId, loadState, setState]);
 
   // --- AUTO-SAVE INTERVAL ---
   useEffect(() => {
