@@ -31,15 +31,21 @@ export function NavBar() {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 bg-bg-primary/95 backdrop-blur-sm border-t-2 border-white/10 safe-area-bottom">
-      <div className="flex items-center justify-around px-1 py-1 max-w-lg mx-auto overflow-x-auto scrollbar-none">
+      <div
+        className="flex items-center px-1 py-1 max-w-lg mx-auto overflow-x-auto"
+        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}
+      >
         {NAV_ITEMS.map(({ href, icon: Icon, label }) => {
           const isActive = pathname === href || pathname?.startsWith(href + '/');
 
           return (
             <button
               key={href}
-              onClick={() => router.push(href)}
-              className="flex flex-col items-center gap-0.5 px-1.5 py-1 min-w-[40px] transition-all relative"
+              onClick={() => {
+                window.Telegram?.WebApp?.HapticFeedback?.selectionChanged?.();
+                router.push(href);
+              }}
+              className="flex flex-col items-center gap-0.5 px-1 py-1 min-w-[38px] shrink-0 transition-all relative"
             >
               {/* Active indicator — manga accent box */}
               {isActive && (

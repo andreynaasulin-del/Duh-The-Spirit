@@ -13,9 +13,13 @@ interface Particle {
   char?: string;
 }
 
+// Reduce particles on mobile for performance
+const isMobile = typeof window !== 'undefined' && window.innerWidth < 500;
+const MOBILE_FACTOR = isMobile ? 0.4 : 1;
+
 const SEASON_CONFIG = {
   autumn: {
-    count: 20,
+    count: Math.round(20 * MOBILE_FACTOR),
     chars: ['🍂', '🍁'],
     color: '#ff8c42',
     sizeRange: [10, 18],
@@ -23,7 +27,7 @@ const SEASON_CONFIG = {
     driftRange: [-0.5, 0.5],
   },
   winter: {
-    count: 30,
+    count: Math.round(30 * MOBILE_FACTOR),
     chars: ['❄', '·', '•'],
     color: '#a8c8ff',
     sizeRange: [4, 12],
@@ -31,7 +35,7 @@ const SEASON_CONFIG = {
     driftRange: [-0.8, 0.8],
   },
   spring: {
-    count: 15,
+    count: Math.round(15 * MOBILE_FACTOR),
     chars: ['✦', '⚡', '★'],
     color: '#ff2d7b',
     sizeRange: [6, 14],
@@ -39,7 +43,7 @@ const SEASON_CONFIG = {
     driftRange: [-1.0, 1.0],
   },
   summer: {
-    count: 10,
+    count: Math.round(10 * MOBILE_FACTOR),
     chars: ['♪', '♫', '🔥'],
     color: '#ffd700',
     sizeRange: [8, 14],

@@ -66,6 +66,9 @@ export function useAction() {
     // Advance time
     advanceTime(action.time);
 
+    // Haptic feedback on mobile
+    try { window.Telegram?.WebApp?.HapticFeedback?.impactOccurred?.('light'); } catch {}
+
     // Log
     addLog(`${action.title}: ${action.meta}`, 'neutral');
     addToast(action.title, 'success');
