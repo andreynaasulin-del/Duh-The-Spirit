@@ -30,10 +30,15 @@ export const metadata: Metadata = {
   description: "Выживай. Зарабатывай. Не теряй рассудок.",
   keywords: ["game", "rpg", "telegram", "mini app", "interactive fiction", "rapper"],
   authors: [{ name: "@duhthespiritbot" }],
+  icons: {
+    icon: '/favicon.jpg',
+    apple: '/apple-touch-icon.jpg',
+  },
   openGraph: {
     title: "Duh The Spirit",
     description: "Выживай. Зарабатывай. Не теряй рассудок.",
     type: "website",
+    images: [{ url: '/og-image.jpg', width: 512, height: 512 }],
   },
 };
 
