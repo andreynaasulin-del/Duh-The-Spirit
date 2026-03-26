@@ -48,7 +48,7 @@ export function DailyRewardPopup() {
       },
     });
 
-    store.addLog(`🎁 Ежедневная награда: День ${currentStreak}`, 'success');
+    store.addLog(`🎁 Ежедневная награда: День ${currentStreak}`, 'good');
     setClaimed(true);
     setTimeout(() => setShow(false), 2000);
   };

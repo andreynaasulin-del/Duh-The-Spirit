@@ -120,7 +120,7 @@ export function useQuests() {
         const quest = getQuest(questId);
         if (!quest) continue;
         applyRewards(store, quest.rewards);
-        store.addLog(`✅ Квест выполнен: ${quest.title}`, 'success');
+        store.addLog(`✅ Квест выполнен: ${quest.title}`, 'good');
       }
 
       store.setState({

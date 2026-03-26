@@ -74,7 +74,7 @@ export function useSpirit() {
           store.updateKPI('cash', value);
         }
       }
-      store.addLog(`👁️ ${sab.description}`, 'warning');
+      store.addLog(`👁️ ${sab.description}`, 'danger');
       // Clear sabotage after 4 seconds
       setTimeout(() => setSabotage(null), 4000);
       return sab;
