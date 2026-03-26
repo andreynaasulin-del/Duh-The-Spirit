@@ -61,7 +61,9 @@ export default function RootLayout({
       className={`${inter.variable} ${jetbrains.variable} ${marker.variable} dark`}
       suppressHydrationWarning
     >
-      <head />
+      <head>
+        <script src="https://telegram.org/js/telegram-web-app.js" />
+      </head>
       <body className="min-h-dvh bg-bg-primary text-text-primary overflow-x-hidden" suppressHydrationWarning>
         <TelegramProvider>
           <SupabaseProvider>
