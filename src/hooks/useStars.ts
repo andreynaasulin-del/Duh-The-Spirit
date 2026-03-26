@@ -38,10 +38,12 @@ export function useStars() {
       const tg = window.Telegram?.WebApp;
 
       if (!tg?.openInvoice) {
-        // Dev mode — simulate successful purchase
-        applyProductEffects(product);
-        setStatus('success');
-        setTimeout(() => setStatus('idle'), 2000);
+        // Not inside Telegram — cannot process real payment
+        setStatus('error');
+        setTimeout(() => {
+          setStatus('idle');
+          setActiveProduct(null);
+        }, 2000);
         return;
       }
 
