@@ -12,6 +12,8 @@ import { getActionsByCategory } from '@/config/actions';
 import { ReferralCard } from '@/components/game/ReferralCard';
 import { QuestPanel } from '@/components/ui/QuestPanel';
 import { ComicBubble } from '@/components/ui/ComicBubble';
+import { useSpirit } from '@/hooks/useSpirit';
+import { SpiritSabotagePopup } from '@/components/ui/SpiritSabotage';
 
 const ICON_MAP: Record<string, React.ElementType> = {
   'moon': Moon, 'coffee': Coffee, 'dumbbell': Dumbbell, 'spray-can': Sparkles,
@@ -67,22 +69,24 @@ export function HomeView() {
   const { executeAction } = useAction();
 
   const homeActions = getActionsByCategory('home');
+  const { whisper, sabotage, fetchWhisper, checkSabotage } = useSpirit();
 
   const handleAction = (actionId: string) => {
     setBusyAction(actionId);
     const success = executeAction(actionId);
+    if (success) {
+      // Spirit reacts to action + may sabotage
+      checkSabotage();
+      fetchWhisper(actionId);
+    }
     setTimeout(() => setBusyAction(null), success ? 500 : 200);
   };
 
-  const spiritMessages = [
-    'Ещё один день в этой дыре. Хочешь выбраться — действуй.',
-    'Тишина... Слишком тихая. Что-то случится.',
-    'Я чувствую, как ты слабеешь. Не останавливайся.',
-    'Это место — твоя колыбель и твоя клетка.',
-  ];
-  const spiritMsg = spiritMessages[Math.floor(spirit.rage / 30) % spiritMessages.length];
+  const spiritMsg = whisper || 'Ещё один день в этой дыре. Хочешь выбраться — действуй.';
 
   return (
+    <>
+    <SpiritSabotagePopup sabotage={sabotage} />
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -190,5 +194,6 @@ export function HomeView() {
         }
       />
     </motion.div>
+    </>
   );
 }
