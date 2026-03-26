@@ -56,6 +56,50 @@ export const NPCS: NPCDef[] = [
           { text: 'Не, хочу по-нормальному.', effect: { relationship: -5 } },
         ],
       },
+      // --- WINTER dialogs ---
+      winter_block: {
+        text: 'Ты пропал на две недели. Я думал всё, сдулся. Что случилось?',
+        speaker: 'Шэдоу',
+        responses: [
+          { text: 'Тревога. Не мог встать с кровати.', next: 'winter_honest', effect: { relationship: 5 } },
+          { text: 'Был занят. Работаю.', effect: { relationship: -5 } },
+          { text: 'Не твоё дело.', effect: { relationship: -15 } },
+        ],
+      },
+      winter_honest: {
+        text: 'Знаю это чувство. Зимой всё тяжелее. Но музыка — это и есть терапия. Давай запишем что-нибудь про это.',
+        speaker: 'Шэдоу',
+        responses: [
+          { text: 'Про тревогу? Это... честно.', effect: { relationship: 15, path_music: 5, mood: 20, stability: 10 } },
+          { text: 'Не хочу выворачивать душу.', effect: { relationship: 0, path_music: 1 } },
+        ],
+      },
+      // --- SPRING dialogs ---
+      spring_fire: {
+        text: 'Брат, ты за ночь написал больше чем за весь прошлый месяц. Это гениально. Но... ты спишь вообще?',
+        speaker: 'Шэдоу',
+        responses: [
+          { text: 'Сон для слабых. Давай ещё трек!', effect: { relationship: 5, path_music: 3, energy: -15, stability: -10 } },
+          { text: 'Ты прав, надо притормозить.', next: 'spring_slow', effect: { relationship: 10 } },
+        ],
+      },
+      spring_slow: {
+        text: 'Я видел как люди сгорают. Не хочу чтобы ты стал одним из них. Давай запишем альбом — но по-умному.',
+        speaker: 'Шэдоу',
+        responses: [
+          { text: 'Ладно. Качество важнее скорости.', effect: { relationship: 15, path_music: 5, stability: 15 } },
+          { text: 'Нет. Пока горит — нужно записывать.', effect: { relationship: -5, path_music: 3, stability: -15 } },
+        ],
+      },
+      // --- SUMMER dialogs ---
+      summer_album: {
+        text: 'Альбом готов. 12 треков. Я слушал его три раза подряд. Это... это что-то новое.',
+        speaker: 'Шэдоу',
+        responses: [
+          { text: 'Мы сделали это.', effect: { relationship: 20, mood: 30, path_music: 5 } },
+          { text: 'Это только начало.', effect: { relationship: 10, path_music: 3, fame: 5 } },
+        ],
+      },
     },
   },
 
@@ -104,6 +148,50 @@ export const NPCS: NPCDef[] = [
         responses: [
           { text: 'Ценю. Буду иметь в виду.', effect: { relationship: 15, respect: 10 } },
           { text: 'Я сам себе крыша.', effect: { relationship: -5, respect: 5, path_survival: 2 } },
+        ],
+      },
+      // --- WINTER dialogs ---
+      winter_test: {
+        text: 'Зима — время крыс. Половина людей сливается. Ты ещё здесь. Это уже говорит о чём-то.',
+        speaker: 'Зэф',
+        responses: [
+          { text: 'Я не бегу.', effect: { relationship: 10, respect: 5, path_chaos: 2 } },
+          { text: 'Может, стоило бы.', effect: { relationship: -5, path_survival: 3 } },
+        ],
+      },
+      winter_paranoia: {
+        text: 'Кто-то стучит. Я чувствую. Если узнаю кто — ему конец. Ты что-нибудь слышал?',
+        speaker: 'Зэф',
+        responses: [
+          { text: 'Ничего не знаю.', effect: { relationship: 0 } },
+          { text: 'Проверь парня с третьего этажа.', effect: { relationship: 15, respect: 5, path_chaos: 5, stability: -10 } },
+          { text: 'Может, паранойя? Зима давит на всех.', effect: { relationship: -10, stability: 5 } },
+        ],
+      },
+      // --- SPRING dialogs ---
+      spring_power: {
+        text: 'Весна. Все просыпаются. И все хотят кусок. Пора показать кто тут главный.',
+        speaker: 'Зэф',
+        responses: [
+          { text: 'Я с тобой. Что нужно?', effect: { relationship: 15, path_chaos: 5, respect: 5 } },
+          { text: 'Я думаю, пора мне отойти от дел.', next: 'spring_leave', effect: { relationship: -20 } },
+        ],
+      },
+      spring_leave: {
+        text: '...Отойти? Из этого не уходят. Ты или в деле — или ты проблема. Подумай хорошо.',
+        speaker: 'Зэф',
+        responses: [
+          { text: 'Ладно, я остаюсь.', effect: { relationship: 5, path_chaos: 3, stability: -15 } },
+          { text: 'Мне нужен перерыв. Не угрожай мне.', effect: { relationship: -25, respect: 10, path_survival: 5 } },
+        ],
+      },
+      // --- SUMMER dialogs ---
+      summer_throne: {
+        text: 'Я устал. Район высосал всё. Может, пора кому-то молодому... Тебе.',
+        speaker: 'Зэф',
+        responses: [
+          { text: 'Я готов.', effect: { relationship: 20, respect: 20, path_chaos: 10, stability: -15 } },
+          { text: 'Не хочу твою корону. Она проклята.', effect: { relationship: -10, path_survival: 10, stability: 10 } },
         ],
       },
     },
@@ -232,6 +320,66 @@ export const NPCS: NPCDef[] = [
           { text: 'Я умею читать. Это моё.', effect: { stability: 15, mood: 20, path_music: 3 } },
           { text: 'Я умею выживать.', effect: { stability: 15, mood: 10, path_survival: 3 } },
           { text: 'Я ничего не умею.', effect: { stability: -5, mood: -15 } },
+        ],
+      },
+      // --- WINTER dialogs ---
+      winter_dark: {
+        text: 'Тьма внутри гуще, чем снаружи. Зима проверяет на прочность. Не каждый проходит.',
+        speaker: 'Дух',
+        responses: [
+          { text: 'Я пройду.', effect: { stability: 10, mood: 10 } },
+          { text: 'Я уже не уверен.', next: 'winter_doubt' },
+        ],
+      },
+      winter_doubt: {
+        text: 'Сомнение — это нормально. Это значит, ты ещё чувствуешь. Мёртвые не сомневаются.',
+        speaker: 'Дух',
+        responses: [
+          { text: 'Странное утешение. Но спасибо.', effect: { stability: 15, mood: 5 } },
+          { text: 'Иногда хочется ничего не чувствовать.', effect: { stability: -10, mood: -10 } },
+        ],
+      },
+      // --- SPRING dialogs ---
+      spring_warning: {
+        text: 'Ты сейчас летишь. Всё кажется возможным. Я тоже чувствую этот огонь. Но огонь сжигает.',
+        speaker: 'Дух',
+        responses: [
+          { text: 'Я контролирую это.', effect: { stability: -5, mood: 10, path_music: 2 } },
+          { text: 'Что мне делать?', next: 'spring_advice' },
+          { text: 'Не мешай. Мне хорошо.', effect: { stability: -15, mood: 20 } },
+        ],
+      },
+      spring_advice: {
+        text: 'Записывай всё. Каждую идею. Но спи. Ешь. Не забывай что ты — человек, не машина.',
+        speaker: 'Дух',
+        responses: [
+          { text: 'Ты прав. Баланс.', effect: { stability: 15, mood: 5, path_survival: 3, path_music: 2 } },
+          { text: 'Баланс — для скучных людей.', effect: { stability: -10, path_chaos: 2 } },
+        ],
+      },
+      // --- SUMMER dialogs ---
+      summer_reflect: {
+        text: 'Год прошёл. Посмотри на себя. Ты всё ещё тот парень из первого дня? Или кто-то другой?',
+        speaker: 'Дух',
+        responses: [
+          { text: 'Я стал сильнее.', effect: { stability: 10, mood: 15, respect: 3 } },
+          { text: 'Я потерял себя.', next: 'summer_lost' },
+          { text: 'Я просто выжил. Пока что.', effect: { stability: 5, path_survival: 3 } },
+        ],
+      },
+      summer_lost: {
+        text: 'Потерять себя — это первый шаг к тому чтобы найти. Настоящего. Того, кем хотел стать.',
+        speaker: 'Дух',
+        responses: [
+          { text: 'Может, ещё не поздно.', effect: { stability: 20, mood: 20, path_music: 3, path_survival: 3 } },
+          { text: 'Уже поздно.', effect: { stability: -15, mood: -20 } },
+        ],
+      },
+      summer_final: {
+        text: 'Это был наш год. Какой бы он ни был — ты прожил его. Не каждый может это сказать.',
+        speaker: 'Дух',
+        responses: [
+          { text: 'Спасибо, Дух.', effect: { stability: 10, mood: 10 } },
         ],
       },
     },
