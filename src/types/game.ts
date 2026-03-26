@@ -159,6 +159,8 @@ export interface QuestState {
   active: string[];
   completed: string[];
   available: string[];
+  /** Tracks action counts: { "questId:objectiveId": count } */
+  progress: Record<string, number>;
 }
 
 // --- Music ---

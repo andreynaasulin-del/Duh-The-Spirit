@@ -67,6 +67,7 @@ export const INITIAL_STATE: GameState = {
     active: [],
     completed: [],
     available: [],
+    progress: {},
   },
   inventory: [],
   achievements: {},

@@ -5,6 +5,7 @@ import { useGameStore, resolveEffect } from '@/stores/game-store';
 import { useUIStore } from '@/stores/ui-store';
 import { getAction } from '@/config/actions';
 import type { StatKey, KPIKey, PathKey } from '@/types/game';
+import { useQuests } from './useQuests';
 
 const STAT_KEYS: StatKey[] = ['health', 'energy', 'hunger', 'mood', 'withdrawal', 'stability', 'adequacy', 'anxiety', 'trip', 'synchronization'];
 const KPI_KEYS: KPIKey[] = ['cash', 'respect', 'fame', 'releases', 'subscribers'];
@@ -18,6 +19,7 @@ export function useAction() {
   const stats = useGameStore((s) => s.state.stats);
   const kpis = useGameStore((s) => s.state.kpis);
   const addToast = useUIStore((s) => s.addToast);
+  const { trackAction } = useQuests();
 
   const executeAction = useCallback((actionId: string): boolean => {
     const action = getAction(actionId);
@@ -67,6 +69,9 @@ export function useAction() {
     // Log
     addLog(`${action.title}: ${action.meta}`, 'neutral');
     addToast(action.title, 'success');
+
+    // Track for quest progress
+    trackAction(actionId);
 
     return true;
   }, [updateStat, updateKPI, updatePath, advanceTime, addLog, stats, kpis, addToast]);

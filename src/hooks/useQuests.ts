@@ -3,18 +3,20 @@
 import { useCallback } from 'react';
 import { useGameStore } from '@/stores/game-store';
 import { QUESTS, getAvailableQuests, getQuest } from '@/config/quests';
-import type { ActiveQuest, QuestDef, QuestRewards } from '@/types/quest';
+import type { QuestDef, QuestRewards } from '@/types/quest';
+
+/** Progress key format: "questId:objectiveId" */
+function progressKey(questId: string, objId: string): string {
+  return `${questId}:${objId}`;
+}
 
 export function useQuests() {
   const quests = useGameStore((s) => s.state.quests);
-  const state = useGameStore((s) => s.state);
 
-  // Get active quest objects with full data
   const activeQuests = quests.active
     .map(id => getQuest(id))
     .filter(Boolean) as QuestDef[];
 
-  // Get available (can be accepted) quests
   const available = getAvailableQuests(quests.completed, quests.active);
 
   // Accept a quest
@@ -27,97 +29,115 @@ export function useQuests() {
 
     if (current.active.includes(questId) || current.completed.includes(questId)) return;
 
+    // Initialize progress counters for action_completed objectives
+    const newProgress = { ...current.progress };
+    for (const obj of quest.objectives) {
+      if (obj.type === 'action_completed') {
+        newProgress[progressKey(questId, obj.id)] = 0;
+      }
+    }
+
     store.setState({
       ...store.state,
       quests: {
         ...current,
         active: [...current.active, questId],
         available: current.available.filter(id => id !== questId),
+        progress: newProgress,
       },
     });
 
     store.addLog(`Новый квест: ${quest.title}`, 'info');
   }, []);
 
-  // Track progress on an action (called after executing any action)
+  // Track an action — call this after EVERY action execution
   const trackAction = useCallback((actionId: string) => {
     const store = useGameStore.getState();
     const current = store.state.quests;
-    let changed = false;
-    const completedNow: string[] = [];
+    const newProgress = { ...current.progress };
+    let progressChanged = false;
 
-    // Check each active quest's objectives
-    const updatedActive = [...current.active];
-
+    // Increment counters for matching objectives
     for (const questId of current.active) {
       const quest = getQuest(questId);
       if (!quest) continue;
 
       for (const obj of quest.objectives) {
         if (obj.type === 'action_completed' && obj.actionId === actionId) {
-          // Increment action counter in quest progress
-          // We track progress in a simple way using the store
-          changed = true;
+          const key = progressKey(questId, obj.id);
+          newProgress[key] = (newProgress[key] || 0) + 1;
+          progressChanged = true;
         }
       }
     }
 
-    // For now, we use a simple approach: check if quest can be completed
-    // based on current game state after the action
+    // Update progress in state
+    if (progressChanged) {
+      store.setState({
+        ...store.state,
+        quests: { ...store.state.quests, progress: newProgress },
+      });
+    }
+
+    // Check if any quest is now complete
+    checkCompletions(newProgress);
+  }, []);
+
+  // Check all active quests for completion
+  const checkCompletions = useCallback((progress: Record<string, number>) => {
+    const store = useGameStore.getState();
+    const current = store.state.quests;
+    const completedNow: string[] = [];
+
     for (const questId of current.active) {
       const quest = getQuest(questId);
       if (!quest) continue;
 
-      const allComplete = quest.objectives.every(obj => {
+      const allDone = quest.objectives.every(obj => {
         switch (obj.type) {
+          case 'action_completed': {
+            const key = progressKey(questId, obj.id);
+            return (progress[key] || 0) >= obj.target;
+          }
           case 'kpi_reached': {
-            const kpiVal = (store.state.kpis as Record<string, number>)[obj.kpi || ''] ?? 0;
-            return kpiVal >= obj.target;
+            const val = (store.state.kpis as Record<string, number>)[obj.kpi || ''] ?? 0;
+            return val >= obj.target;
           }
           case 'stat_reached': {
-            const statVal = (store.state.stats as Record<string, number>)[obj.stat || ''] ?? 0;
-            return statVal >= obj.target;
-          }
-          case 'action_completed': {
-            // Track via action count in state — simplified: count actions from log
-            const actionCount = store.state.log.filter(
-              l => l.text.toLowerCase().includes(actionId.toLowerCase())
-            ).length;
-            // Simplified: if the user did the action, consider it progress
-            return actionCount >= obj.target || actionId === obj.actionId;
+            const val = (store.state.stats as Record<string, number>)[obj.stat || ''] ?? 0;
+            return val >= obj.target;
           }
           default:
             return false;
         }
       });
 
-      if (allComplete) {
-        completedNow.push(questId);
-      }
+      if (allDone) completedNow.push(questId);
     }
 
     if (completedNow.length > 0) {
-      const newCompleted = [...current.completed, ...completedNow];
-      const newActive = current.active.filter(id => !completedNow.includes(id));
-
-      // Apply rewards
       for (const questId of completedNow) {
         const quest = getQuest(questId);
         if (!quest) continue;
         applyRewards(store, quest.rewards);
-        store.addLog(`Квест выполнен: ${quest.title}`, 'success');
+        store.addLog(`✅ Квест выполнен: ${quest.title}`, 'success');
       }
 
       store.setState({
         ...store.state,
         quests: {
           ...store.state.quests,
-          active: newActive,
-          completed: newCompleted,
+          active: current.active.filter(id => !completedNow.includes(id)),
+          completed: [...current.completed, ...completedNow],
         },
       });
     }
   }, []);
+
+  // Get progress for a specific objective
+  const getObjectiveProgress = useCallback((questId: string, objId: string): number => {
+    return quests.progress[progressKey(questId, objId)] || 0;
+  }, [quests.progress]);
 
   return {
     activeQuests,
@@ -126,6 +146,7 @@ export function useQuests() {
     totalCount: Object.keys(QUESTS).length,
     acceptQuest,
     trackAction,
+    getObjectiveProgress,
   };
 }
 

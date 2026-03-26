@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Target, CheckCircle, Circle, ChevronDown, ChevronUp, Star, Swords, Music } from 'lucide-react';
 import { useQuests } from '@/hooks/useQuests';
+import { useGameStore } from '@/stores/game-store';
 import { getQuest } from '@/config/quests';
 import { getNPC } from '@/config/npcs';
 
@@ -14,7 +15,9 @@ const PATH_ICONS: Record<string, React.ElementType> = {
 };
 
 export function QuestPanel() {
-  const { activeQuests, available, completedCount, totalCount, acceptQuest } = useQuests();
+  const { activeQuests, available, completedCount, totalCount, acceptQuest, getObjectiveProgress } = useQuests();
+  const kpis = useGameStore((s) => s.state.kpis);
+  const stats = useGameStore((s) => s.state.stats);
   const [expanded, setExpanded] = useState(true);
   const [showAvailable, setShowAvailable] = useState(false);
 
@@ -84,16 +87,45 @@ export function QuestPanel() {
 
                   <p className="text-[11px] text-text-muted leading-relaxed">{quest.description}</p>
 
-                  {/* Objectives */}
-                  <div className="space-y-1">
-                    {quest.objectives.map(obj => (
-                      <div key={obj.id} className="flex items-center gap-2">
-                        <Circle className="w-3 h-3 text-text-muted shrink-0" />
-                        <span className="text-[10px] text-text-secondary">
-                          {obj.description || obj.id}
-                        </span>
-                      </div>
-                    ))}
+                  {/* Objectives with progress */}
+                  <div className="space-y-1.5">
+                    {quest.objectives.map(obj => {
+                      let current = 0;
+                      if (obj.type === 'action_completed') {
+                        current = getObjectiveProgress(quest.id, obj.id);
+                      } else if (obj.type === 'kpi_reached') {
+                        current = Math.min((kpis as Record<string, number>)[obj.kpi || ''] ?? 0, obj.target);
+                      } else if (obj.type === 'stat_reached') {
+                        current = Math.min((stats as Record<string, number>)[obj.stat || ''] ?? 0, obj.target);
+                      }
+                      const done = current >= obj.target;
+                      const pct = Math.min(current / obj.target * 100, 100);
+
+                      return (
+                        <div key={obj.id} className="space-y-0.5">
+                          <div className="flex items-center gap-2">
+                            {done
+                              ? <CheckCircle className="w-3 h-3 shrink-0" style={{ color: 'var(--color-neon-green)' }} />
+                              : <Circle className="w-3 h-3 text-text-muted shrink-0" />
+                            }
+                            <span className={`text-[10px] flex-1 ${done ? 'text-neon-green line-through' : 'text-text-secondary'}`}>
+                              {obj.description || obj.id}
+                            </span>
+                            <span className="text-[9px] font-mono text-text-muted">
+                              {current}/{obj.target}
+                            </span>
+                          </div>
+                          {!done && (
+                            <div className="ml-5 h-1 rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(255,255,255,0.06)' }}>
+                              <div
+                                className="h-full rounded-full transition-all duration-300"
+                                style={{ width: `${pct}%`, backgroundColor: 'var(--season-accent)' }}
+                              />
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
 
                   {/* Rewards preview */}
