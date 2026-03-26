@@ -11,6 +11,7 @@ import { useAction } from '@/hooks/useAction';
 import { getActionsByCategory } from '@/config/actions';
 import { ReferralCard } from '@/components/game/ReferralCard';
 import { QuestPanel } from '@/components/ui/QuestPanel';
+import { ComicBubble } from '@/components/ui/ComicBubble';
 
 const ICON_MAP: Record<string, React.ElementType> = {
   'moon': Moon, 'coffee': Coffee, 'dumbbell': Dumbbell, 'spray-can': Sparkles,
@@ -109,19 +110,21 @@ export function HomeView() {
         </div>
       </div>
 
-      {/* === SPIRIT SPEECH BUBBLE === */}
-      <div className="speech-bubble p-4 mt-4">
-        <div className="flex items-start gap-3">
-          <Skull className="w-5 h-5 shrink-0 mt-0.5 animate-flicker" style={{ color: season.theme.accentColor }} />
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-widest mb-1.5" style={{ color: season.theme.accentColor }}>
-              Дух шепчет
-            </p>
-            <p className="text-sm text-text-secondary leading-relaxed italic">
-              &laquo;{spiritMsg}&raquo;
-            </p>
+      {/* === SPIRIT SPEECH BUBBLE (comic style) === */}
+      <div className="mt-4">
+        <ComicBubble variant="thought" color={season.theme.accentColor}>
+          <div className="flex items-start gap-3">
+            <Skull className="w-5 h-5 shrink-0 mt-0.5 animate-flicker" style={{ color: season.theme.accentColor }} />
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-widest mb-1.5" style={{ color: season.theme.accentColor }}>
+                Дух шепчет
+              </p>
+              <p className="text-sm text-text-secondary leading-relaxed italic">
+                &laquo;{spiritMsg}&raquo;
+              </p>
+            </div>
           </div>
-        </div>
+        </ComicBubble>
       </div>
 
       {/* === QUICK STATS (manga panels) === */}
