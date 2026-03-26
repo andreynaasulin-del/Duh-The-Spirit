@@ -17,14 +17,19 @@ const PAYOUTS: Record<string, number> = {
   '💀💀💀': -1, // lose everything bet
 };
 
-type BetSize = 100 | 500 | 1000;
+type BetSize = 100 | 500 | 1000 | 'custom';
 
 export function CasinoView() {
   const [reels, setReels] = useState(['❓', '❓', '❓']);
   const [spinning, setSpinning] = useState(false);
   const [bet, setBet] = useState<BetSize>(100);
+  const [customBet, setCustomBet] = useState('');
   const [lastResult, setLastResult] = useState<{ win: boolean; amount: number } | null>(null);
   const [spinCount, setSpinCount] = useState(0);
+  const [activeGame, setActiveGame] = useState<'slots' | 'coinflip'>('slots');
+  const [coinResult, setCoinResult] = useState<'heads' | 'tails' | null>(null);
+  const [coinFlipping, setCoinFlipping] = useState(false);
+  const [coinChoice, setCoinChoice] = useState<'heads' | 'tails'>('heads');
 
   const kpis = useKPIs();
   const season = useSeason();
@@ -32,17 +37,69 @@ export function CasinoView() {
   const addLog = useGameStore((s) => s.addLog);
   const advanceTime = useGameStore((s) => s.advanceTime);
 
+  const getBetAmount = (): number => {
+    if (bet === 'custom') {
+      const parsed = parseInt(customBet);
+      return isNaN(parsed) || parsed <= 0 ? 0 : parsed;
+    }
+    return bet;
+  };
+
+  // === COIN FLIP ===
+  const flipCoin = useCallback(() => {
+    if (coinFlipping) return;
+    const amount = getBetAmount();
+    if (!amount || kpis.cash < amount) {
+      setLastResult({ win: false, amount: 0 });
+      return;
+    }
+
+    setCoinFlipping(true);
+    setLastResult(null);
+    setCoinResult(null);
+    updateKPI('cash', -amount);
+    advanceTime(5);
+
+    // Animate
+    let tick = 0;
+    const interval = setInterval(() => {
+      tick++;
+      setCoinResult(Math.random() < 0.5 ? 'heads' : 'tails');
+      if (tick >= 12) {
+        clearInterval(interval);
+        // 48% win chance (slight house edge)
+        const result: 'heads' | 'tails' = Math.random() < 0.48 ? coinChoice : (coinChoice === 'heads' ? 'tails' : 'heads');
+        setCoinResult(result);
+
+        const won = result === coinChoice;
+        if (won) {
+          const winAmount = amount * 2;
+          updateKPI('cash', winAmount);
+          addLog(`Монетка: выиграл ₽${winAmount}!`, 'good');
+          setLastResult({ win: true, amount: winAmount });
+        } else {
+          addLog(`Монетка: проиграл ₽${amount}`, 'neutral');
+          setLastResult({ win: false, amount: -amount });
+        }
+        setSpinCount(c => c + 1);
+        setCoinFlipping(false);
+      }
+    }, 100);
+  }, [coinFlipping, coinChoice, kpis.cash, bet, customBet, updateKPI, addLog, advanceTime]);
+
+  // === SLOTS ===
   const spin = useCallback(() => {
     if (spinning) return;
-    if (kpis.cash < bet) {
+    const amount = getBetAmount();
+    if (!amount || kpis.cash < amount) {
       setLastResult({ win: false, amount: 0 });
       return;
     }
 
     setSpinning(true);
     setLastResult(null);
-    updateKPI('cash', -bet);
-    advanceTime(15); // 15 min per spin
+    updateKPI('cash', -amount);
+    advanceTime(15);
 
     // Animate reels
     let tick = 0;
@@ -70,22 +127,22 @@ export function CasinoView() {
 
         let winAmount = 0;
         if (multiplier > 0) {
-          winAmount = bet * multiplier;
+          winAmount = amount * multiplier;
           updateKPI('cash', winAmount);
           addLog(`Казино: выиграл ₽${winAmount}!`, 'good');
         } else if (multiplier === -1) {
           addLog('Казино: 💀💀💀 — полный провал', 'danger');
         } else if (twoMatch) {
-          winAmount = Math.round(bet * 0.5);
+          winAmount = Math.round(amount * 0.5);
           updateKPI('cash', winAmount);
           addLog(`Казино: частичное совпадение, +₽${winAmount}`, 'info');
         } else {
-          addLog(`Казино: проиграл ₽${bet}`, 'neutral');
+          addLog(`Казино: проиграл ₽${amount}`, 'neutral');
         }
 
         setLastResult({
           win: winAmount > 0,
-          amount: winAmount > 0 ? winAmount : -bet,
+          amount: winAmount > 0 ? winAmount : -amount,
         });
         setSpinCount((c) => c + 1);
         setSpinning(false);
@@ -121,8 +178,28 @@ export function CasinoView() {
         </div>
       </div>
 
+      {/* Game Tabs */}
+      <div className="flex gap-2">
+        {(['slots', 'coinflip'] as const).map((game) => (
+          <button
+            key={game}
+            onClick={() => setActiveGame(game)}
+            className="flex-1 py-2.5 text-xs font-bold tracking-wider"
+            style={{
+              background: activeGame === game ? '#ffd70015' : 'rgba(255,255,255,0.03)',
+              border: `1px solid ${activeGame === game ? '#ffd70066' : 'rgba(255,255,255,0.06)'}`,
+              color: activeGame === game ? '#ffd700' : 'var(--color-text-muted)',
+              borderRadius: '10px',
+            }}
+          >
+            {game === 'slots' ? '🎰 СЛОТЫ' : '🪙 МОНЕТКА'}
+          </button>
+        ))}
+      </div>
+
       {/* Slot Machine */}
-      <div className="manga-panel p-6">
+      {activeGame === 'slots' && (
+        <div className="manga-panel p-6">
         {/* Reels */}
         <div className="flex justify-center gap-3 mb-4">
           {reels.map((symbol, i) => (
@@ -190,6 +267,102 @@ export function CasinoView() {
           {spinning ? '...' : 'КРУТИТЬ'}
         </motion.button>
       </div>
+      )}
+
+      {/* Coin Flip */}
+      {activeGame === 'coinflip' && (
+        <div className="manga-panel p-6">
+          {/* Coin display */}
+          <div className="flex justify-center mb-4">
+            <motion.div
+              className="w-24 h-24 flex items-center justify-center text-5xl"
+              style={{
+                background: 'rgba(255,215,0,0.08)',
+                border: '2px solid rgba(255,215,0,0.3)',
+                borderRadius: '50%',
+              }}
+              animate={coinFlipping ? { rotateY: [0, 180, 360], scale: [1, 1.1, 1] } : {}}
+              transition={coinFlipping ? { repeat: Infinity, duration: 0.3 } : {}}
+            >
+              {coinResult === 'heads' ? '👑' : coinResult === 'tails' ? '💀' : '🪙'}
+            </motion.div>
+          </div>
+
+          {/* Result */}
+          <AnimatePresence>
+            {lastResult && !coinFlipping && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0 }}
+                className="text-center mb-4"
+              >
+                {lastResult.win ? (
+                  <div className="flex items-center justify-center gap-2">
+                    <TrendingUp className="w-5 h-5" style={{ color: 'var(--color-neon-green)' }} />
+                    <span className="text-lg font-bold font-mono" style={{ color: 'var(--color-neon-green)' }}>
+                      +₽{lastResult.amount}
+                    </span>
+                  </div>
+                ) : lastResult.amount === 0 ? (
+                  <p className="text-xs text-danger font-bold">НЕДОСТАТОЧНО СРЕДСТВ</p>
+                ) : (
+                  <div className="flex items-center justify-center gap-2">
+                    <TrendingDown className="w-5 h-5 text-danger" />
+                    <span className="text-lg font-bold font-mono text-danger">
+                      ₽{lastResult.amount}
+                    </span>
+                  </div>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Choice */}
+          <div className="flex gap-2 mb-4">
+            <button
+              onClick={() => setCoinChoice('heads')}
+              className="flex-1 py-3 text-sm font-bold"
+              style={{
+                background: coinChoice === 'heads' ? '#ffd70015' : 'rgba(255,255,255,0.03)',
+                border: `2px solid ${coinChoice === 'heads' ? '#ffd70066' : 'rgba(255,255,255,0.06)'}`,
+                color: coinChoice === 'heads' ? '#ffd700' : 'var(--color-text-muted)',
+                borderRadius: '10px',
+              }}
+            >
+              👑 Орёл
+            </button>
+            <button
+              onClick={() => setCoinChoice('tails')}
+              className="flex-1 py-3 text-sm font-bold"
+              style={{
+                background: coinChoice === 'tails' ? '#ffd70015' : 'rgba(255,255,255,0.03)',
+                border: `2px solid ${coinChoice === 'tails' ? '#ffd70066' : 'rgba(255,255,255,0.06)'}`,
+                color: coinChoice === 'tails' ? '#ffd700' : 'var(--color-text-muted)',
+                borderRadius: '10px',
+              }}
+            >
+              💀 Решка
+            </button>
+          </div>
+
+          {/* Flip button */}
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={flipCoin}
+            disabled={coinFlipping}
+            className="w-full py-3 text-sm font-bold tracking-widest"
+            style={{
+              background: coinFlipping ? 'rgba(255,255,255,0.05)' : 'linear-gradient(135deg, #ffd70022, #ff8c0022)',
+              border: '2px solid #ffd70066',
+              color: coinFlipping ? 'var(--color-text-muted)' : '#ffd700',
+              borderRadius: '10px',
+            }}
+          >
+            {coinFlipping ? '...' : 'БРОСИТЬ x2'}
+          </motion.button>
+        </div>
+      )}
 
       {/* Bet selector */}
       <div className="manga-panel p-3">
@@ -200,7 +373,7 @@ export function CasinoView() {
           </span>
         </div>
         <div className="flex gap-2">
-          {([100, 500, 1000] as BetSize[]).map((b) => (
+          {([100, 500, 1000] as const).map((b) => (
             <button
               key={b}
               onClick={() => setBet(b)}
@@ -215,7 +388,35 @@ export function CasinoView() {
               ₽{b}
             </button>
           ))}
+          <button
+            onClick={() => setBet('custom')}
+            className="flex-1 py-2 text-xs font-bold tracking-wider"
+            style={{
+              background: bet === 'custom' ? '#ffd70015' : 'rgba(255,255,255,0.03)',
+              border: `1px solid ${bet === 'custom' ? '#ffd70066' : 'rgba(255,255,255,0.06)'}`,
+              color: bet === 'custom' ? '#ffd700' : 'var(--color-text-muted)',
+              borderRadius: '10px',
+            }}
+          >
+            СВОЯ
+          </button>
         </div>
+        {bet === 'custom' && (
+          <input
+            type="number"
+            value={customBet}
+            onChange={(e) => setCustomBet(e.target.value)}
+            placeholder="Сумма ставки..."
+            className="mt-2 w-full py-2 px-3 text-sm font-mono text-center"
+            style={{
+              background: 'rgba(255,255,255,0.03)',
+              border: '1px solid #ffd70044',
+              color: '#ffd700',
+              borderRadius: '10px',
+              outline: 'none',
+            }}
+          />
+        )}
       </div>
 
       {/* Stats */}
