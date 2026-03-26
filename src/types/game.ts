@@ -254,6 +254,13 @@ export interface GameState {
 
   jailTime?: number;
   stages: Stage[];
+
+  // Daily rewards
+  daily: {
+    lastClaimDate: string; // ISO date "2026-03-26"
+    streak: number;        // consecutive days
+    totalLogins: number;
+  };
 }
 
 // --- Profile ---

@@ -127,6 +127,11 @@ export const INITIAL_STATE: GameState = {
     },
   },
   stages: JSON.parse(JSON.stringify(STAGES)),
+  daily: {
+    lastClaimDate: '',
+    streak: 0,
+    totalLogins: 0,
+  },
 };
 
 export function createInitialState(): GameState {

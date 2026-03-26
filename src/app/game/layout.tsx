@@ -7,6 +7,7 @@ import { SeasonThemeProvider } from '@/components/providers/SeasonThemeProvider'
 import { GameLoader } from '@/components/game/GameLoader';
 import { SeasonParticles } from '@/components/effects/SeasonParticles';
 import { SeasonTransition } from '@/components/ui/SeasonTransition';
+import { DailyRewardPopup } from '@/components/ui/DailyRewardPopup';
 
 export default function GameLayout({ children }: { children: ReactNode }) {
   return (
@@ -15,6 +16,7 @@ export default function GameLayout({ children }: { children: ReactNode }) {
         <div className="min-h-dvh flex flex-col bg-bg-primary relative">
           <SeasonParticles />
           <SeasonTransition />
+          <DailyRewardPopup />
           <HUD />
           <main className="flex-1 overflow-y-auto pb-20">
             {children}
