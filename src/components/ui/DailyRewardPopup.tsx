@@ -14,15 +14,17 @@ export function DailyRewardPopup() {
   const daily = useGameStore((s) => s.state.daily);
 
   useEffect(() => {
-    // Check localStorage first — prevents popup spam on page reloads
-    const localClaim = localStorage.getItem('duh_last_claim');
     const today = getTodayDate();
-    if (localClaim === today) return; // Already claimed today
 
-    if (daily && canClaimToday(daily.lastClaimDate)) {
-      const timer = setTimeout(() => setShow(true), 1500);
-      return () => clearTimeout(timer);
-    }
+    // Check multiple storage methods — TG Mini App can clear localStorage
+    const localClaim = localStorage.getItem('duh_last_claim');
+    const cookieClaim = document.cookie.split(';').find(c => c.trim().startsWith('duh_claim='))?.split('=')[1];
+
+    if (localClaim === today || cookieClaim === today) return;
+    if (daily && !canClaimToday(daily.lastClaimDate)) return;
+
+    const timer = setTimeout(() => setShow(true), 1500);
+    return () => clearTimeout(timer);
   }, [daily]);
 
   if (!daily) return null;
@@ -51,8 +53,10 @@ export function DailyRewardPopup() {
       },
     });
 
-    // Persist to localStorage to prevent repeat popups
-    localStorage.setItem('duh_last_claim', getTodayDate());
+    // Persist to localStorage + cookie to survive TG Mini App reloads
+    const today = getTodayDate();
+    localStorage.setItem('duh_last_claim', today);
+    document.cookie = `duh_claim=${today};path=/;max-age=86400;SameSite=Lax`;
 
     store.addLog(`Ежедневная награда: День ${currentStreak}`, 'good');
     setClaimed(true);
