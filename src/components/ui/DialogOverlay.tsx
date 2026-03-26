@@ -102,13 +102,22 @@ export function DialogOverlay({ npc, startNode = 'start', onClose }: DialogOverl
   const bubbleVariant = isSpirit ? 'thought' as const : 'speech' as const;
 
   return (
-    <AnimatePresence>
+    <div
+      className="flex flex-col overflow-y-auto"
+      style={{
+        position: 'fixed',
+        inset: 0,
+        width: '100%',
+        height: '100%',
+        backgroundColor: '#000000',
+        zIndex: 99999,
+      }}
+    >
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex flex-col"
-        style={{ backgroundColor: 'rgba(0,0,0,0.9)' }}
+        className="flex flex-col flex-1 min-h-full"
       >
         {/* === TOP: NPC AVATAR with halftone bg === */}
         <div className="relative flex-shrink-0 pt-8 pb-4 flex flex-col items-center">
@@ -258,6 +267,6 @@ export function DialogOverlay({ npc, startNode = 'start', onClose }: DialogOverl
           )}
         </div>
       </motion.div>
-    </AnimatePresence>
+    </div>
   );
 }

@@ -7,6 +7,7 @@ import type { NPCDef } from '@/types/npc';
 import { getNPCsByLocation } from '@/config/npcs';
 import { useGameStore, useStats } from '@/stores/game-store';
 import { DialogOverlay } from './DialogOverlay';
+import { Portal } from './Portal';
 
 interface NPCEncounterProps {
   location: string;
@@ -119,13 +120,15 @@ export function NPCEncounter({ location }: NPCEncounterProps) {
         })}
       </div>
 
-      {/* Dialog overlay */}
+      {/* Dialog overlay — rendered via Portal to escape overflow:auto */}
       {activeNPC && (
-        <DialogOverlay
-          npc={activeNPC}
-          startNode={activeNode}
-          onClose={() => setActiveNPC(null)}
-        />
+        <Portal>
+          <DialogOverlay
+            npc={activeNPC}
+            startNode={activeNode}
+            onClose={() => setActiveNPC(null)}
+          />
+        </Portal>
       )}
     </>
   );
