@@ -3,6 +3,8 @@
 import { motion } from 'framer-motion';
 import { Brain, Calendar, TrendingUp, Music, Skull, Shield, Star } from 'lucide-react';
 import { useGameStore, useStats, useKPIs, useSeason } from '@/stores/game-store';
+import { Leaderboard } from '@/components/ui/Leaderboard';
+import { BattlePass } from '@/components/ui/BattlePass';
 
 export function MemoryView() {
   const season = useSeason();
@@ -117,6 +119,12 @@ export function MemoryView() {
           <p className="text-2xl font-bold font-mono mt-1" style={{ color: 'var(--color-danger)' }}>{paths.chaos}</p>
         </div>
       </div>
+
+      {/* Battle Pass */}
+      <BattlePass />
+
+      {/* Leaderboard */}
+      <Leaderboard />
 
       {/* All stats */}
       <div className="chapter-divider"><span>ПОКАЗАТЕЛИ</span></div>
