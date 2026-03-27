@@ -72,7 +72,7 @@ export const QUESTS: Record<string, QuestDef> = {
     description: 'Шэдоу дал бит — тёмный, как этот район. Запиши два куплета. Покажи что ты не просто ещё один голос.',
     type: 'main',
     objectives: [
-      { id: 'record', type: 'action_completed', target: 2, actionId: 'record_verse', description: 'Записать 2 куплета' },
+      { id: 'record', type: 'action_completed', target: 2, actionId: 'record_track', description: 'Записать 2 куплета' },
     ],
     rewards: { cash: 1000, fame: 10, respect: 5, path_music: 5 },
     unlocks: ['ch2_release_track'],
@@ -115,7 +115,7 @@ export const QUESTS: Record<string, QuestDef> = {
     description: 'Посылка. Не спрашивай что внутри. Доставь через район и не попадись. Зэф платит 5К.',
     type: 'main',
     objectives: [
-      { id: 'delivery', type: 'action_completed', target: 1, actionId: 'dark_scheme', description: 'Выполнить доставку' },
+      { id: 'delivery', type: 'action_completed', target: 1, actionId: 'hack_atm', description: 'Выполнить доставку' },
       { id: 'cash_up', type: 'kpi_reached', target: 8000, kpi: 'cash', description: 'Накопить 8,000₽' },
     ],
     rewards: { cash: 5000, respect: 15, path_chaos: 10, stability: -15 },
@@ -166,7 +166,7 @@ export const QUESTS: Record<string, QuestDef> = {
     description: 'Шэдоу знает одного МС из соседнего района. Фит может вытянуть тебя из ямы. Но нужно доказать что ты стоишь его времени.',
     type: 'main',
     objectives: [
-      { id: 'record_feat', type: 'action_completed', target: 2, actionId: 'record_verse', description: 'Записать 2 куплета для фита' },
+      { id: 'record_feat', type: 'action_completed', target: 2, actionId: 'record_track', description: 'Записать 2 куплета для фита' },
       { id: 'fame_req', type: 'kpi_reached', target: 40, kpi: 'fame', description: 'Набрать 40 славы' },
     ],
     rewards: { cash: 2000, fame: 25, respect: 10, path_music: 8 },
@@ -196,7 +196,7 @@ export const QUESTS: Record<string, QuestDef> = {
     description: 'Зэф проверяет тебя на прочность. Район замёрз — но дела не ждут. Одна ночная операция. Без права на ошибку.',
     type: 'main',
     objectives: [
-      { id: 'night_op', type: 'action_completed', target: 2, actionId: 'dark_scheme', description: 'Две тёмные схемы подряд' },
+      { id: 'night_op', type: 'action_completed', target: 2, actionId: 'hack_atm', description: 'Две тёмные схемы подряд' },
       { id: 'cash_up', type: 'kpi_reached', target: 15000, kpi: 'cash', description: 'Накопить 15,000₽' },
     ],
     rewards: { cash: 10000, respect: 20, path_chaos: 12, stability: -20 },
@@ -232,7 +232,7 @@ export const QUESTS: Record<string, QuestDef> = {
     description: 'Мозг горит. Идеи фонтаном. За ночь — три трека. Шэдоу не успевает сводить. Это мания — и она прекрасна.',
     type: 'main',
     objectives: [
-      { id: 'record_5', type: 'action_completed', target: 5, actionId: 'record_verse', description: 'Записать 5 куплетов' },
+      { id: 'record_5', type: 'action_completed', target: 5, actionId: 'record_track', description: 'Записать 5 куплетов' },
       { id: 'fame_exp', type: 'kpi_reached', target: 80, kpi: 'fame', description: 'Набрать 80 славы' },
     ],
     rewards: { cash: 5000, fame: 40, path_music: 15, stability: -10 },
@@ -263,7 +263,7 @@ export const QUESTS: Record<string, QuestDef> = {
     type: 'main',
     objectives: [
       { id: 'respect_dom', type: 'kpi_reached', target: 80, kpi: 'respect', description: 'Набрать 80 респекта' },
-      { id: 'schemes', type: 'action_completed', target: 3, actionId: 'dark_scheme', description: '3 крупных операции' },
+      { id: 'schemes', type: 'action_completed', target: 3, actionId: 'hack_atm', description: '3 крупных операции' },
     ],
     rewards: { cash: 15000, respect: 40, path_chaos: 20, stability: -25 },
     unlocks: ['su_throne'],
@@ -350,7 +350,7 @@ export const QUESTS: Record<string, QuestDef> = {
     description: 'Тело — инструмент. Держи его в форме.',
     type: 'side',
     objectives: [
-      { id: 'workout', type: 'action_completed', target: 3, actionId: 'home_workout', description: 'Тренировка 3 раза' },
+      { id: 'workout', type: 'action_completed', target: 3, actionId: 'workout_home', description: 'Тренировка 3 раза' },
     ],
     rewards: { energy: 20, stability: 10, path_survival: 3 },
   },
@@ -374,7 +374,7 @@ export const QUESTS: Record<string, QuestDef> = {
     description: 'Испытай удачу. Но помни — казино всегда в плюсе.',
     type: 'side',
     objectives: [
-      { id: 'spin', type: 'action_completed', target: 5, actionId: 'casino_spin', description: 'Крутить слоты 5 раз' },
+      { id: 'spin', type: 'action_completed', target: 5, actionId: 'slot_machine', description: 'Крутить слоты 5 раз' },
     ],
     rewards: { cash: 1000, path_chaos: 2 },
   },
@@ -440,13 +440,13 @@ export const QUESTS: Record<string, QuestDef> = {
   side_studio_rat: {
     id: 'side_studio_rat', npc: 'shadow', title: 'Студийная крыса',
     description: 'Жить в студии. Записать 5 куплетов.', type: 'side',
-    objectives: [{ id: 'rec5', type: 'action_completed', target: 5, actionId: 'record_verse', description: 'Запись: 5 куплетов' }],
+    objectives: [{ id: 'rec5', type: 'action_completed', target: 5, actionId: 'record_track', description: 'Запись: 5 куплетов' }],
     rewards: { fame: 15, cash: 2000, path_music: 8 },
   },
   side_dark_grind: {
     id: 'side_dark_grind', npc: 'zef', title: 'Теневой бизнес',
     description: 'Три операции подряд. Зэф будет доволен.', type: 'side',
-    objectives: [{ id: 'dark3', type: 'action_completed', target: 3, actionId: 'dark_scheme', description: 'Темные схемы: 3 раза' }],
+    objectives: [{ id: 'dark3', type: 'action_completed', target: 3, actionId: 'hack_atm', description: 'Темные схемы: 3 раза' }],
     rewards: { cash: 8000, respect: 12, path_chaos: 8, stability: -15 },
   },
 
@@ -523,7 +523,7 @@ export const QUESTS: Record<string, QuestDef> = {
     id: 'npc_shadow_trust', npc: 'shadow', title: 'Доверие Шэдоу',
     description: 'Шэдоу начинает доверять. Запиши 3 куплета и подними славу.', type: 'side',
     objectives: [
-      { id: 'rec3', type: 'action_completed', target: 3, actionId: 'record_verse', description: 'Записать 3 куплета' },
+      { id: 'rec3', type: 'action_completed', target: 3, actionId: 'record_track', description: 'Записать 3 куплета' },
       { id: 'fame15', type: 'kpi_reached', target: 15, kpi: 'fame', description: 'Слава > 15' },
     ],
     rewards: { fame: 10, path_music: 5, respect: 5 },
@@ -534,7 +534,7 @@ export const QUESTS: Record<string, QuestDef> = {
     description: 'Зэф проверяет. 3 хастла и 2 темные схемы.', type: 'side',
     objectives: [
       { id: 'hustle3', type: 'action_completed', target: 3, actionId: 'street_hustle', description: 'Хастл: 3 раза' },
-      { id: 'dark2', type: 'action_completed', target: 2, actionId: 'dark_scheme', description: 'Темные схемы: 2 раза' },
+      { id: 'dark2', type: 'action_completed', target: 2, actionId: 'hack_atm', description: 'Темные схемы: 2 раза' },
     ],
     rewards: { cash: 5000, respect: 15, path_chaos: 8 },
     minRelationship: 15,
@@ -551,7 +551,7 @@ export const QUESTS: Record<string, QuestDef> = {
     id: 'npc_bones_wisdom', npc: 'bones', title: 'Уроки Бонса',
     description: 'Бонс учит выживать. Тренировки + медитация.', type: 'side',
     objectives: [
-      { id: 'train2', type: 'action_completed', target: 2, actionId: 'home_workout', description: 'Тренировки: 2 раза' },
+      { id: 'train2', type: 'action_completed', target: 2, actionId: 'workout_home', description: 'Тренировки: 2 раза' },
       { id: 'med2', type: 'action_completed', target: 2, actionId: 'meditate', description: 'Медитация: 2 раза' },
     ],
     rewards: { stability: 20, energy: 15, path_survival: 8 },
@@ -565,7 +565,7 @@ export const QUESTS: Record<string, QuestDef> = {
     id: 'challenge_no_sleep', npc: 'spirit', title: 'Бессонная ночь',
     description: 'Не спи целый игровой день. Запиши 3 трека за ночь.', type: 'side',
     objectives: [
-      { id: 'rec3night', type: 'action_completed', target: 3, actionId: 'record_verse', description: 'Записать 3 куплета за день' },
+      { id: 'rec3night', type: 'action_completed', target: 3, actionId: 'record_track', description: 'Записать 3 куплета за день' },
     ],
     rewards: { fame: 15, path_music: 5, energy: -30 },
   },

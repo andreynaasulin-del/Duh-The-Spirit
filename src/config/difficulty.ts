@@ -95,7 +95,6 @@ export const DIFFICULTIES: Record<DifficultyMode, DifficultyConfig> = {
 
 // Actions that increase suspicion
 export const SUSPICIOUS_ACTIONS: Record<string, number> = {
-  dark_scheme: 15,
   hack_atm: 20,
   alley_fight: 10,
   street_hustle: 5,

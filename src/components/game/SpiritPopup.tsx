@@ -73,23 +73,23 @@ const SPIRIT_LINES: Record<string, string[]> = {
 const SPIRIT_ACTIONS: Record<string, { text: string; action: string }[]> = {
   autumn: [
     { text: '💊 Позвонить Алхимику', action: 'call_dealer' },
-    { text: '🎰 Попытать удачу в казино', action: 'casino_spin' },
+    { text: '🎰 Попытать удачу в казино', action: 'slot_machine' },
     { text: '😴 Забить на всё и лечь спать', action: 'sleep' },
   ],
   winter: [
     { text: '💊 Таблетки от тревоги (Алхимик)', action: 'call_dealer' },
-    { text: '🔪 Тёмная схема (быстрые деньги)', action: 'dark_scheme' },
+    { text: '🔪 Тёмная схема (быстрые деньги)', action: 'hack_atm' },
     { text: '🏃 Уйти в тень (пропустить день)', action: 'sleep' },
   ],
   spring: [
-    { text: '🎤 Записать 3 трека за ночь!', action: 'record_verse' },
-    { text: '💰 Вложить ВСЁ в схему Зэфа', action: 'dark_scheme' },
-    { text: '🎰 Поставить по-крупному!', action: 'casino_spin' },
+    { text: '🎤 Записать 3 трека за ночь!', action: 'record_track' },
+    { text: '💰 Вложить ВСЁ в схему Зэфа', action: 'hack_atm' },
+    { text: '🎰 Поставить по-крупному!', action: 'slot_machine' },
   ],
   summer: [
-    { text: '🌙 Ещё одна бессонная ночь', action: 'record_verse' },
+    { text: '🌙 Ещё одна бессонная ночь', action: 'record_track' },
     { text: '💊 Энергетик от Алхимика', action: 'call_dealer' },
-    { text: '🔥 Тёмная схема на всё', action: 'dark_scheme' },
+    { text: '🔥 Тёмная схема на всё', action: 'hack_atm' },
   ],
 };
 

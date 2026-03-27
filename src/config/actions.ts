@@ -48,6 +48,7 @@ export const ACTIONS: ActionDef[] = [
   { id: 'shoot_video', icon: 'video', title: 'Снять клип', meta: '+подписчики, –5000₽ (4ч)', time: 240, effects: { cash: -5000, subscribers: [30, 80], respect: [5, 15], energy: -35 }, paths: { music: 3 }, category: 'club' },
   { id: 'club_party', icon: 'party-popper', title: 'Тусовка в клубе', meta: '+настрой, –стабильность (3ч)', time: 180, effects: { mood: 25, stability: -15, energy: -20, health: -5 }, paths: { chaos: 1 }, category: 'club' },
   { id: 'sell_merch', icon: 'shirt', title: 'Продать мерч', meta: '+кэш за респект (1ч)', time: 60, effects: { cash: [200, 800] }, paths: { music: 1 }, category: 'club' },
+  { id: 'release_track', icon: 'upload', title: 'Выпустить трек', meta: '+слава, +подписчики (2ч)', time: 120, effects: { fame: [10, 25], subscribers: [20, 50], respect: [3, 10], energy: -15 }, paths: { music: 5 }, category: 'club' },
 
   // === Магазин ===
   { id: 'buy_food', icon: 'apple', title: 'Купить еду', meta: '+сытость, –300₽', time: 15, effects: { hunger: 40, cash: -300 }, paths: { survival: 1 }, category: 'shop' },
