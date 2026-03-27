@@ -8,6 +8,7 @@ import type { StatKey, KPIKey, PathKey } from '@/types/game';
 import { useQuests } from './useQuests';
 import { rollRandomEvent } from '@/config/random-events';
 import { getCurrentSeason } from '@/config/seasons';
+import { SUSPICIOUS_ACTIONS, DIFFICULTIES, shouldArrest, getSuspicionLevel } from '@/config/difficulty';
 
 const STAT_KEYS: StatKey[] = ['health', 'energy', 'hunger', 'mood', 'withdrawal', 'stability', 'adequacy', 'anxiety', 'trip', 'synchronization'];
 const KPI_KEYS: KPIKey[] = ['cash', 'respect', 'fame', 'releases', 'subscribers'];
@@ -77,6 +78,37 @@ export function useAction() {
 
     // Track for quest progress
     trackAction(actionId);
+
+    // Suspicion increase for shady actions
+    const suspicionGain = SUSPICIOUS_ACTIONS[actionId];
+    if (suspicionGain) {
+      const store = useGameStore.getState();
+      const currentSuspicion = store.state.suspicionLevel ?? 0;
+      const newSuspicion = Math.min(100, currentSuspicion + suspicionGain);
+      store.setState({
+        ...store.state,
+        suspicionLevel: newSuspicion,
+      });
+
+      const level = getSuspicionLevel(newSuspicion);
+      if (newSuspicion >= 40) {
+        addToast(`⚠️ ${level.label}: ${level.description}`, 'warning');
+      }
+
+      // Check for arrest
+      const difficulty = DIFFICULTIES[store.state.difficulty ?? 'medium'];
+      if (shouldArrest(newSuspicion, difficulty)) {
+        // Arrested! Redirect to prison
+        store.setState({
+          ...store.state,
+          suspicionLevel: Math.max(0, newSuspicion - 40),
+          status: 'ARRESTED',
+        });
+        addToast('🚔 АРЕСТ! Тебя забрали.', 'error');
+        addLog('🚔 Арестован. Район не прощает.', 'danger');
+        try { window.Telegram?.WebApp?.HapticFeedback?.notificationOccurred?.('error'); } catch {}
+      }
+    }
 
     // Random event roll
     const day = useGameStore.getState().state.day;

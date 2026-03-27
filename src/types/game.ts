@@ -218,7 +218,7 @@ export interface Stage {
 }
 
 // --- Player Status ---
-export type PlayerStatus = 'FREE' | 'PRISON' | 'HOSPITAL';
+export type PlayerStatus = 'FREE' | 'PRISON' | 'HOSPITAL' | 'ARRESTED';
 
 // ============================================
 // FULL GAME STATE
@@ -261,6 +261,12 @@ export interface GameState {
     streak: number;        // consecutive days
     totalLogins: number;
   };
+
+  // Difficulty mode
+  difficulty?: 'light' | 'medium' | 'from_street';
+
+  // Suspicion (for arrest/prison)
+  suspicionLevel?: number;
 }
 
 // --- Profile ---

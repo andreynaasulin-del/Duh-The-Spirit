@@ -1,8 +1,9 @@
 'use client';
 
-import { Heart, Zap, UtensilsCrossed, Smile, Save } from 'lucide-react';
+import { Heart, Zap, UtensilsCrossed, Smile, Save, Eye } from 'lucide-react';
 import { useStats, useKPIs, useDay, useTime, useSeason, useGameStore } from '@/stores/game-store';
 import { getDaysUntilNextSeason, getSeasonProgress } from '@/config/seasons';
+import { getSuspicionLevel } from '@/config/difficulty';
 
 interface StatBarProps {
   icon: React.ReactNode;
@@ -152,6 +153,27 @@ export function HUD() {
         <StatBar icon={<UtensilsCrossed className="w-3 h-3 text-hunger" />} value={stats.hunger} color="var(--color-hunger)" label="HN" />
         <StatBar icon={<Smile className="w-3 h-3 text-mood" />} value={stats.mood} color="var(--color-mood)" label="MD" />
       </div>
+
+      {/* Suspicion bar — only shown when > 0 */}
+      {(() => {
+        const suspicion = useGameStore.getState().state.suspicionLevel ?? 0;
+        if (suspicion <= 0) return null;
+        const level = getSuspicionLevel(suspicion);
+        return (
+          <div className="flex items-center gap-2 px-4 py-1.5 border-t border-white/5">
+            <Eye className="w-3 h-3 shrink-0" style={{ color: level.color }} />
+            <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(255,255,255,0.06)' }}>
+              <div
+                className="h-full rounded-full transition-all duration-500"
+                style={{ width: `${suspicion}%`, backgroundColor: level.color }}
+              />
+            </div>
+            <span className="text-[9px] font-bold shrink-0" style={{ color: level.color }}>
+              {level.label}
+            </span>
+          </div>
+        );
+      })()}
     </header>
   );
 }

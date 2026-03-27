@@ -8,6 +8,7 @@ import { Skull } from 'lucide-react';
 import { checkEnding } from '@/config/endings';
 import { EndingScreen } from '@/components/ui/EndingScreen';
 import { Tutorial } from '@/components/ui/Tutorial';
+import { DifficultySelect } from '@/components/ui/DifficultySelect';
 import { INITIAL_STATE } from '@/config/initial-state';
 
 interface GameLoaderProps {
@@ -21,6 +22,7 @@ interface GameLoaderProps {
 export function GameLoader({ children }: GameLoaderProps) {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
+  const [showDifficulty, setShowDifficulty] = useState(false);
   const [authDone, setAuthDone] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
   const [isDemo, setIsDemo] = useState(false);
@@ -34,8 +36,10 @@ export function GameLoader({ children }: GameLoaderProps) {
   useEffect(() => {
     setMounted(true);
 
-    // Show tutorial on first visit
-    if (!localStorage.getItem('duh_tutorial_done')) {
+    // Show difficulty select → then tutorial on first visit
+    if (!localStorage.getItem('duh_difficulty_chosen')) {
+      setShowDifficulty(true);
+    } else if (!localStorage.getItem('duh_tutorial_done')) {
       setShowTutorial(true);
     }
 
@@ -113,6 +117,21 @@ export function GameLoader({ children }: GameLoaderProps) {
         </div>
         <p className="text-text-muted text-sm font-mono tracking-wider">ЗАГРУЗКА...</p>
       </div>
+    );
+  }
+
+  // Difficulty select (first visit, before tutorial)
+  if (showDifficulty) {
+    return (
+      <DifficultySelect onSelect={(mode) => {
+        localStorage.setItem('duh_difficulty_chosen', '1');
+        const store = useGameStore.getState();
+        store.setState({ ...store.state, difficulty: mode });
+        setShowDifficulty(false);
+        if (!localStorage.getItem('duh_tutorial_done')) {
+          setShowTutorial(true);
+        }
+      }} />
     );
   }
 
