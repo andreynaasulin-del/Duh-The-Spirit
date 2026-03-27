@@ -9,6 +9,7 @@ import { checkEnding } from '@/config/endings';
 import { EndingScreen } from '@/components/ui/EndingScreen';
 import { Tutorial } from '@/components/ui/Tutorial';
 import { DifficultySelect } from '@/components/ui/DifficultySelect';
+import { Prologue } from '@/components/ui/Prologue';
 import { INITIAL_STATE } from '@/config/initial-state';
 
 interface GameLoaderProps {
@@ -22,6 +23,7 @@ interface GameLoaderProps {
 export function GameLoader({ children }: GameLoaderProps) {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
+  const [showPrologue, setShowPrologue] = useState(false);
   const [showDifficulty, setShowDifficulty] = useState(false);
   const [authDone, setAuthDone] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
@@ -36,8 +38,10 @@ export function GameLoader({ children }: GameLoaderProps) {
   useEffect(() => {
     setMounted(true);
 
-    // Show difficulty select → then tutorial on first visit
-    if (!localStorage.getItem('duh_difficulty_chosen')) {
+    // Flow: prologue → difficulty → tutorial (first visit only)
+    if (!localStorage.getItem('duh_prologue_done')) {
+      setShowPrologue(true);
+    } else if (!localStorage.getItem('duh_difficulty_chosen')) {
       setShowDifficulty(true);
     } else if (!localStorage.getItem('duh_tutorial_done')) {
       setShowTutorial(true);
@@ -117,6 +121,17 @@ export function GameLoader({ children }: GameLoaderProps) {
         </div>
         <p className="text-text-muted text-sm font-mono tracking-wider">ЗАГРУЗКА...</p>
       </div>
+    );
+  }
+
+  // Prologue (first visit, before everything)
+  if (showPrologue) {
+    return (
+      <Prologue onComplete={() => {
+        localStorage.setItem('duh_prologue_done', '1');
+        setShowPrologue(false);
+        setShowDifficulty(true);
+      }} />
     );
   }
 
