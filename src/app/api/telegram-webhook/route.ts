@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
       const chatId = update.message.chat.id;
 
       // /start — welcome + play button
-      if (text === '/start' || text === '/play') {
+      if (text.startsWith('/start') || text === '/play') {
         await sendMessage(chatId,
           '👻 <b>Duh The Spirit</b>\n\nВыживай. Зарабатывай. Не теряй рассудок.\n\nНажми кнопку ниже чтобы начать:',
           { inline_keyboard: [[{ text: '🎮 Играть', web_app: { url: 'https://www.duhthespirit.app/' } }]] }
