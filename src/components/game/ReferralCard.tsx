@@ -48,59 +48,47 @@ export function ReferralCard({ telegramId, referralCount = 0 }: ReferralCardProp
       animate={{ opacity: 1, y: 0 }}
       className="manga-panel p-4 space-y-3"
     >
-      <div className="flex items-center gap-2">
-        <Users className="w-4 h-4" style={{ color: season.theme.accentColor }} />
-        <span className="manga-label">ПРИГЛАСИ ДРУГА</span>
-        {referralCount > 0 && (
-          <span
-            className="text-[10px] font-mono font-bold ml-auto px-1.5 py-0.5"
-            style={{
-              color: season.theme.accentColor,
-              border: `1px solid ${season.theme.accentColor}44`,
-              borderRadius: '8px',
-            }}
-          >
-            {referralCount} чел.
-          </span>
-        )}
+      {/* Creator card */}
+      <div className="flex items-center gap-3 mb-3">
+        <div
+          className="w-10 h-10 rounded-full flex items-center justify-center text-lg"
+          style={{
+            background: `linear-gradient(135deg, ${season.theme.accentColor}30, ${season.theme.accentColor}10)`,
+            border: `2px solid ${season.theme.accentColor}60`,
+          }}
+        >
+          👻
+        </div>
+        <div className="flex-1">
+          <p className="text-xs font-bold text-white tracking-wide">СОЗДАТЕЛЬ ИГРЫ</p>
+          <p className="text-[10px] text-text-muted">@duhdeveloper</p>
+        </div>
       </div>
 
-      <p className="text-[11px] text-text-muted">
-        +500₽ тебе и +300₽ другу за каждого приглашённого
-      </p>
-
-      {/* Link display */}
-      <div
-        className="flex items-center gap-2 p-2 text-[10px] font-mono text-text-muted truncate"
-        style={{
-          background: 'rgba(255,255,255,0.03)',
-          border: '1px solid rgba(255,255,255,0.06)',
-          borderRadius: '10px',
-        }}
-      >
-        <span className="truncate flex-1">{link}</span>
-      </div>
-
-      {/* Action buttons */}
+      {/* Links */}
       <div className="flex gap-2">
-        <motion.button
+        <motion.a
+          href="https://t.me/duhdeveloper"
+          target="_blank"
+          rel="noopener noreferrer"
           whileTap={{ scale: 0.96 }}
-          onClick={handleCopy}
           className="flex-1 py-2.5 flex items-center justify-center gap-2 text-xs font-bold tracking-wider"
           style={{
-            background: copied ? 'rgba(0,255,136,0.1)' : 'rgba(255,255,255,0.03)',
-            border: `1px solid ${copied ? 'var(--color-neon-green)' : 'rgba(255,255,255,0.1)'}`,
-            color: copied ? 'var(--color-neon-green)' : 'var(--color-text-secondary)',
+            background: 'rgba(42,171,238,0.1)',
+            border: '1px solid rgba(42,171,238,0.3)',
+            color: '#2AABEE',
             borderRadius: '10px',
           }}
         >
-          {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-          {copied ? 'СКОПИРОВАНО' : 'КОПИРОВАТЬ'}
-        </motion.button>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.12.03-1.99 1.27-5.62 3.72-.53.36-1.01.54-1.44.53-.47-.01-1.38-.27-2.06-.49-.83-.27-1.49-.42-1.43-.88.03-.24.37-.49 1.02-.74 3.99-1.74 6.66-2.88 8-3.44 3.81-1.58 4.6-1.86 5.12-1.87.11 0 .37.03.53.17.14.12.18.28.2.47-.01.06.01.24 0 .38z"/></svg>
+          НАПИСАТЬ
+        </motion.a>
 
-        <motion.button
+        <motion.a
+          href="https://t.me/duhdeveloperhub"
+          target="_blank"
+          rel="noopener noreferrer"
           whileTap={{ scale: 0.96 }}
-          onClick={handleShare}
           className="flex-1 py-2.5 flex items-center justify-center gap-2 text-xs font-bold tracking-wider"
           style={{
             background: `${season.theme.accentColor}15`,
@@ -110,8 +98,8 @@ export function ReferralCard({ telegramId, referralCount = 0 }: ReferralCardProp
           }}
         >
           <Share2 className="w-3.5 h-3.5" />
-          ПОДЕЛИТЬСЯ
-        </motion.button>
+          КАНАЛ
+        </motion.a>
       </div>
     </motion.div>
   );
