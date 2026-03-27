@@ -37,7 +37,9 @@ export default function AuthPage() {
 
   // Load Telegram Login Widget for browser
   useEffect(() => {
-    if (status !== 'ready' || isTelegram || !widgetRef.current) return;
+    // Show widget if not inside real TG Mini App (check for actual initData, not just script presence)
+    const hasRealTgSession = isTelegram && webApp?.initData && webApp.initData.length > 20;
+    if (status !== 'ready' || hasRealTgSession || !widgetRef.current) return;
 
     // Clear previous widget
     widgetRef.current.innerHTML = '';
@@ -157,15 +159,11 @@ export default function AuthPage() {
 
           {status === 'ready' && (
             <>
-              {/* Telegram Login Widget (browser only) */}
-              {!isTelegram && (
-                <>
-                  <p className="text-text-muted text-xs text-center">
-                    Войди через Telegram чтобы сохранять прогресс
-                  </p>
-                  <div ref={widgetRef} className="flex justify-center min-h-[44px]" />
-                </>
-              )}
+              {/* Telegram Login Widget */}
+              <p className="text-text-muted text-xs text-center">
+                Войди через Telegram чтобы сохранять прогресс
+              </p>
+              <div ref={widgetRef} className="flex justify-center min-h-[44px]" />
 
               {/* Divider */}
               <div className="flex items-center gap-3 w-full">
