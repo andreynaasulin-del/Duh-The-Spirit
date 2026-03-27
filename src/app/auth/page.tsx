@@ -126,10 +126,23 @@ export default function AuthPage() {
         />
 
         <div className="text-center">
-          <h1 className="text-3xl font-black tracking-tight text-white">
-            DUH THE $PIRIT
+          <h1
+            className="text-4xl text-white relative"
+            style={{
+              fontFamily: "var(--font-marker), 'Permanent Marker', 'Marker Felt', cursive",
+              letterSpacing: '2px',
+              transform: 'rotate(-2deg)',
+              textShadow: '3px 3px 0px rgba(255,45,123,0.4), -1px -1px 0px rgba(0,0,0,0.8)',
+              WebkitTextStroke: '0.5px rgba(255,255,255,0.3)',
+              paintOrder: 'stroke fill',
+            }}
+          >
+            Duh The Spirit
           </h1>
-          <p className="text-text-muted text-sm mt-1">
+          <p
+            className="text-text-muted text-xs mt-2 uppercase tracking-[0.3em]"
+            style={{ transform: 'rotate(-1deg)' }}
+          >
             Выживай. Зарабатывай. Не теряй рассудок.
           </p>
         </div>
