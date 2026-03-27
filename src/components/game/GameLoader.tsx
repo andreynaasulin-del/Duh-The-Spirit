@@ -38,6 +38,17 @@ export function GameLoader({ children }: GameLoaderProps) {
   useEffect(() => {
     setMounted(true);
 
+    // Force reset for v2 launch (remove after first wave)
+    if (!localStorage.getItem('duh_v2_reset')) {
+      localStorage.removeItem('duh_prologue_done');
+      localStorage.removeItem('duh_difficulty_chosen');
+      localStorage.removeItem('duh_tutorial_done');
+      localStorage.removeItem('duh_user');
+      localStorage.removeItem('pryton_user');
+      localStorage.removeItem('duh_demo');
+      localStorage.setItem('duh_v2_reset', '1');
+    }
+
     // Flow: prologue → difficulty → tutorial (first visit only)
     if (!localStorage.getItem('duh_prologue_done')) {
       setShowPrologue(true);
