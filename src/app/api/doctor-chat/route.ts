@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { DOCTOR_SYSTEM_PROMPT, filterAIResponse, detectSafetyLevel } from '@/config/safety';
 
 const AI_API_KEY = process.env.AI_API_KEY || '';
-const AI_API_URL = process.env.AI_API_URL || 'https://api.openai.com/v1/chat/completions';
-const AI_MODEL = process.env.AI_MODEL || 'gpt-4o-mini';
+const AI_API_URL = process.env.AI_API_URL || 'https://openrouter.ai/api/v1/chat/completions';
+const AI_MODEL = process.env.AI_MODEL || 'deepseek/deepseek-chat-v3-0324';
 
 interface ChatMessage {
   role: 'user' | 'assistant' | 'system';

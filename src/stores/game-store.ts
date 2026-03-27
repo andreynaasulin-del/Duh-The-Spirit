@@ -222,8 +222,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
   },
 
   applyEffects: (effects) => {
-    const STAT_KEYS: StatKey[] = ['health', 'energy', 'hunger', 'mood', 'stability', 'anxiety', 'adequacy', 'withdrawal'];
-    const KPI_KEYS: KPIKey[] = ['cash', 'respect', 'subscribers', 'releases'];
+    const STAT_KEYS: StatKey[] = ['health', 'energy', 'hunger', 'mood', 'stability', 'anxiety', 'adequacy', 'withdrawal', 'trip', 'synchronization'];
+    const KPI_KEYS: KPIKey[] = ['cash', 'respect', 'fame', 'subscribers', 'releases'];
     const PATH_KEYS: PathKey[] = ['music', 'chaos', 'survival'];
     const store = get();
 
