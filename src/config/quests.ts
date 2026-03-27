@@ -182,7 +182,7 @@ export const QUESTS: Record<string, QuestDef> = {
     description: 'Тревога накрывает волнами. Район сжимается. Каждый шаг — как по минному полю. Найди способ выстоять.',
     type: 'main',
     objectives: [
-      { id: 'survive_panic', type: 'action_completed', target: 2, actionId: 'meditate', description: 'Медитировать 2 раза' },
+      { id: 'survive_panic', type: 'action_completed', target: 2, actionId: 'meditation', description: 'Медитировать 2 раза' },
       { id: 'stability_keep', type: 'stat_reached', target: 35, stat: 'stability', description: 'Удержать стабильность выше 35' },
     ],
     rewards: { stability: 20, path_survival: 5 },
@@ -362,7 +362,7 @@ export const QUESTS: Record<string, QuestDef> = {
     description: 'Среди шума район есть одно тихое место — внутри тебя.',
     type: 'side',
     objectives: [
-      { id: 'meditate', type: 'action_completed', target: 3, actionId: 'meditate', description: 'Медитировать 3 раза' },
+      { id: 'meditate', type: 'action_completed', target: 3, actionId: 'meditation', description: 'Медитировать 3 раза' },
     ],
     rewards: { stability: 20, path_survival: 5 },
   },
@@ -552,7 +552,7 @@ export const QUESTS: Record<string, QuestDef> = {
     description: 'Бонс учит выживать. Тренировки + медитация.', type: 'side',
     objectives: [
       { id: 'train2', type: 'action_completed', target: 2, actionId: 'workout_home', description: 'Тренировки: 2 раза' },
-      { id: 'med2', type: 'action_completed', target: 2, actionId: 'meditate', description: 'Медитация: 2 раза' },
+      { id: 'med2', type: 'action_completed', target: 2, actionId: 'meditation', description: 'Медитация: 2 раза' },
     ],
     rewards: { stability: 20, energy: 15, path_survival: 8 },
   },
