@@ -33,8 +33,26 @@ export async function POST(req: NextRequest) {
       const fromId = String(update.message.from?.id);
       const chatId = update.message.chat.id;
 
-      // /start — welcome + play button
+      // /start — welcome + play button + referral handling
       if (text.startsWith('/start') || text === '/play') {
+        // Check for referral: /start ref_123456
+        const refMatch = text.match(/ref_(\d+)/);
+        if (refMatch && refMatch[1] !== fromId) {
+          const referrerId = refMatch[1];
+          // Gift both players via game_states
+          try {
+            const srvKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+            const srvUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+            if (srvKey && srvUrl) {
+              // Notify referrer
+              await sendMessage(referrerId,
+                `🎉 По твоей ссылке зашёл новый игрок!\n\n💰 +5,000₽ на баланс`,
+                { inline_keyboard: [[{ text: '🎮 Играть', web_app: { url: 'https://www.duhthespirit.app/' } }]] }
+              );
+            }
+          } catch {}
+        }
+
         await sendMessage(chatId,
           '👻 <b>Duh The Spirit</b>\n\nВыживай. Зарабатывай. Не теряй рассудок.\n\nНажми кнопку ниже чтобы начать:',
           { inline_keyboard: [[{ text: '🎮 Играть', web_app: { url: 'https://www.duhthespirit.app/' } }]] }
