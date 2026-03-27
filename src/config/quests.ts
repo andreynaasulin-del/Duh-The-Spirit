@@ -390,6 +390,207 @@ export const QUESTS: Record<string, QuestDef> = {
     ],
     rewards: { respect: 5, path_survival: 3 },
   },
+
+  // ═══════════════════════════════════════
+  //  DAILY / REPEATABLE QUESTS
+  // ═══════════════════════════════════════
+
+  side_courier_grind: {
+    id: 'side_courier_grind', npc: 'spirit', title: 'Курьерский марафон',
+    description: 'Ноги кормят. 5 доставок и ты заслужил отдых.', type: 'side',
+    objectives: [{ id: 'deliver', type: 'action_completed', target: 5, actionId: 'courier', description: 'Доставки: 5 раз' }],
+    rewards: { cash: 2500, energy: 10, path_survival: 3 },
+  },
+  side_write_grind: {
+    id: 'side_write_grind', npc: 'shadow', title: 'Графоман',
+    description: 'Количество переходит в качество. 5 текстов.', type: 'side',
+    objectives: [{ id: 'write5', type: 'action_completed', target: 5, actionId: 'write_lyrics', description: 'Написать 5 текстов' }],
+    rewards: { fame: 5, path_music: 5, stability: 5 },
+  },
+  side_hustler: {
+    id: 'side_hustler', npc: 'zef', title: 'Мелкий хастл',
+    description: 'На районе всегда есть работа. 5 раз выйти на улицу.', type: 'side',
+    objectives: [{ id: 'hustle5', type: 'action_completed', target: 5, actionId: 'street_hustle', description: 'Хастл 5 раз' }],
+    rewards: { cash: 3000, respect: 8, path_chaos: 3 },
+  },
+  side_streamer: {
+    id: 'side_streamer', npc: 'spirit', title: 'Стример',
+    description: 'Камера, микрофон, район за окном. 3 стрима.', type: 'side',
+    objectives: [{ id: 'stream3', type: 'action_completed', target: 3, actionId: 'stream', description: 'Стримы: 3 раза' }],
+    rewards: { cash: 1500, fame: 10, path_music: 2 },
+  },
+  side_fighter: {
+    id: 'side_fighter', npc: 'zef', title: 'Бойцовский клуб',
+    description: 'Кулаки решают. 3 разборки.', type: 'side',
+    objectives: [{ id: 'fight3', type: 'action_completed', target: 3, actionId: 'alley_fight', description: 'Разборки: 3 раза' }],
+    rewards: { respect: 15, path_chaos: 5, stability: -10 },
+  },
+  side_doctor_regular: {
+    id: 'side_doctor_regular', npc: 'bones', title: 'Регулярная терапия',
+    description: 'Здоровье не купишь. Или купишь? 3 визита к доку.', type: 'side',
+    objectives: [{ id: 'doc3', type: 'action_completed', target: 3, actionId: 'doctor_visit', description: 'Визит к доку: 3 раза' }],
+    rewards: { health: 30, stability: 15, path_survival: 5 },
+  },
+  side_social_media: {
+    id: 'side_social_media', npc: 'spirit', title: 'Инфлюенсер',
+    description: 'Лайки, репосты, хейтеры. 3 скролла соцсетей.', type: 'side',
+    objectives: [{ id: 'scroll3', type: 'action_completed', target: 3, actionId: 'social_media_scroll', description: 'Скролл соцсетей: 3 раза' }],
+    rewards: { fame: 3, mood: -5 },
+  },
+  side_studio_rat: {
+    id: 'side_studio_rat', npc: 'shadow', title: 'Студийная крыса',
+    description: 'Жить в студии. Записать 5 куплетов.', type: 'side',
+    objectives: [{ id: 'rec5', type: 'action_completed', target: 5, actionId: 'record_verse', description: 'Запись: 5 куплетов' }],
+    rewards: { fame: 15, cash: 2000, path_music: 8 },
+  },
+  side_dark_grind: {
+    id: 'side_dark_grind', npc: 'zef', title: 'Теневой бизнес',
+    description: 'Три операции подряд. Зэф будет доволен.', type: 'side',
+    objectives: [{ id: 'dark3', type: 'action_completed', target: 3, actionId: 'dark_scheme', description: 'Темные схемы: 3 раза' }],
+    rewards: { cash: 8000, respect: 12, path_chaos: 8, stability: -15 },
+  },
+
+  // ═══════════════════════════════════════
+  //  MILESTONE QUESTS (triggered by KPIs)
+  // ═══════════════════════════════════════
+
+  mile_respect_25: {
+    id: 'mile_respect_25', npc: 'zef', title: 'Район знает имя',
+    description: 'Респект 25. Тебя начинают узнавать.', type: 'side',
+    objectives: [{ id: 'resp25', type: 'kpi_reached', target: 25, kpi: 'respect', description: 'Респект: 25' }],
+    rewards: { cash: 1000, path_chaos: 3 },
+  },
+  mile_respect_50: {
+    id: 'mile_respect_50', npc: 'zef', title: 'Авторитет',
+    description: 'Респект 50. Тебя боятся и уважают.', type: 'side',
+    objectives: [{ id: 'resp50', type: 'kpi_reached', target: 50, kpi: 'respect', description: 'Респект: 50' }],
+    rewards: { cash: 3000, respect: 10, path_chaos: 5 },
+  },
+  mile_fame_25: {
+    id: 'mile_fame_25', npc: 'shadow', title: 'Первые фанаты',
+    description: 'Слава 25. Люди слушают твою музыку.', type: 'side',
+    objectives: [{ id: 'fame25', type: 'kpi_reached', target: 25, kpi: 'fame', description: 'Слава: 25' }],
+    rewards: { cash: 1500, path_music: 3 },
+  },
+  mile_fame_50: {
+    id: 'mile_fame_50', npc: 'shadow', title: 'Локальная звезда',
+    description: 'Слава 50. Тебя зовут на вечеринки.', type: 'side',
+    objectives: [{ id: 'fame50', type: 'kpi_reached', target: 50, kpi: 'fame', description: 'Слава: 50' }],
+    rewards: { cash: 5000, fame: 10, path_music: 5 },
+  },
+  mile_fame_100: {
+    id: 'mile_fame_100', npc: 'shadow', title: 'Звезда района',
+    description: 'Слава 100. О тебе пишут блоги.', type: 'side',
+    objectives: [{ id: 'fame100', type: 'kpi_reached', target: 100, kpi: 'fame', description: 'Слава: 100' }],
+    rewards: { cash: 10000, fame: 20, respect: 15, path_music: 10 },
+  },
+  mile_cash_10k: {
+    id: 'mile_cash_10k', npc: 'spirit', title: 'Первые 10К',
+    description: 'Десятка на счету. Не трать на глупости.', type: 'side',
+    objectives: [{ id: 'cash10', type: 'kpi_reached', target: 10000, kpi: 'cash', description: 'Кэш: 10,000₽' }],
+    rewards: { respect: 5, stability: 5 },
+  },
+  mile_cash_50k: {
+    id: 'mile_cash_50k', npc: 'spirit', title: 'Полтинник',
+    description: '50К. Можно съехать с района. Или вложить.', type: 'side',
+    objectives: [{ id: 'cash50', type: 'kpi_reached', target: 50000, kpi: 'cash', description: 'Кэш: 50,000₽' }],
+    rewards: { respect: 10, fame: 5, stability: 10 },
+  },
+  mile_cash_100k: {
+    id: 'mile_cash_100k', npc: 'spirit', title: 'Сотка',
+    description: '100К. Район уже не клетка. Или все еще?', type: 'side',
+    objectives: [{ id: 'cash100', type: 'kpi_reached', target: 100000, kpi: 'cash', description: 'Кэш: 100,000₽' }],
+    rewards: { respect: 15, fame: 10, path_survival: 10 },
+  },
+  mile_day_30: {
+    id: 'mile_day_30', npc: 'spirit', title: 'Месяц на районе',
+    description: 'Ты прожил 30 дней. Не все могут сказать то же.', type: 'side',
+    objectives: [{ id: 'day30', type: 'stat_reached', target: 30, stat: 'stability', description: 'Дожить до дня 30 со стабильностью > 30' }],
+    rewards: { stability: 10, path_survival: 5 },
+  },
+  mile_day_90: {
+    id: 'mile_day_90', npc: 'spirit', title: 'Первый сезон',
+    description: 'Осень позади. Зима впереди. Ты готов?', type: 'side',
+    objectives: [{ id: 'day90', type: 'stat_reached', target: 40, stat: 'stability', description: 'Пережить осень (стабильность > 40)' }],
+    rewards: { stability: 20, cash: 2000 },
+  },
+
+  // ═══════════════════════════════════════
+  //  NPC RELATIONSHIP QUESTS
+  // ═══════════════════════════════════════
+
+  npc_shadow_trust: {
+    id: 'npc_shadow_trust', npc: 'shadow', title: 'Доверие Шэдоу',
+    description: 'Шэдоу начинает доверять. Запиши 3 куплета и подними славу.', type: 'side',
+    objectives: [
+      { id: 'rec3', type: 'action_completed', target: 3, actionId: 'record_verse', description: 'Записать 3 куплета' },
+      { id: 'fame15', type: 'kpi_reached', target: 15, kpi: 'fame', description: 'Слава > 15' },
+    ],
+    rewards: { fame: 10, path_music: 5, respect: 5 },
+    minRelationship: 10,
+  },
+  npc_zef_loyalty: {
+    id: 'npc_zef_loyalty', npc: 'zef', title: 'Верность Зэфу',
+    description: 'Зэф проверяет. 3 хастла и 2 темные схемы.', type: 'side',
+    objectives: [
+      { id: 'hustle3', type: 'action_completed', target: 3, actionId: 'street_hustle', description: 'Хастл: 3 раза' },
+      { id: 'dark2', type: 'action_completed', target: 2, actionId: 'dark_scheme', description: 'Темные схемы: 2 раза' },
+    ],
+    rewards: { cash: 5000, respect: 15, path_chaos: 8 },
+    minRelationship: 15,
+  },
+  npc_alchemist_deal: {
+    id: 'npc_alchemist_deal', npc: 'alchemist', title: 'Сделка с Алхимиком',
+    description: 'Алхимик предлагает работу. Доставь 3 заказа.', type: 'side',
+    objectives: [
+      { id: 'hustle3a', type: 'action_completed', target: 3, actionId: 'street_hustle', description: 'Доставки: 3 раза' },
+    ],
+    rewards: { cash: 4000, path_chaos: 5, stability: -10 },
+  },
+  npc_bones_wisdom: {
+    id: 'npc_bones_wisdom', npc: 'bones', title: 'Уроки Бонса',
+    description: 'Бонс учит выживать. Тренировки + медитация.', type: 'side',
+    objectives: [
+      { id: 'train2', type: 'action_completed', target: 2, actionId: 'home_workout', description: 'Тренировки: 2 раза' },
+      { id: 'med2', type: 'action_completed', target: 2, actionId: 'meditate', description: 'Медитация: 2 раза' },
+    ],
+    rewards: { stability: 20, energy: 15, path_survival: 8 },
+  },
+
+  // ═══════════════════════════════════════
+  //  CHALLENGE QUESTS (hard, rewarding)
+  // ═══════════════════════════════════════
+
+  challenge_no_sleep: {
+    id: 'challenge_no_sleep', npc: 'spirit', title: 'Бессонная ночь',
+    description: 'Не спи целый игровой день. Запиши 3 трека за ночь.', type: 'side',
+    objectives: [
+      { id: 'rec3night', type: 'action_completed', target: 3, actionId: 'record_verse', description: 'Записать 3 куплета за день' },
+    ],
+    rewards: { fame: 15, path_music: 5, energy: -30 },
+  },
+  challenge_clean_week: {
+    id: 'challenge_clean_week', npc: 'spirit', title: 'Чистая неделя',
+    description: 'Не трогай алхимика 7 дней. Держи стабильность выше 50.', type: 'side',
+    objectives: [
+      { id: 'stable50', type: 'stat_reached', target: 50, stat: 'stability', description: 'Стабильность > 50' },
+    ],
+    rewards: { stability: 25, path_survival: 10, respect: 5 },
+  },
+  challenge_rich: {
+    id: 'challenge_rich', npc: 'spirit', title: 'Миллионер',
+    description: 'Накопи 500,000₽. Любым способом.', type: 'side',
+    objectives: [{ id: 'cash500', type: 'kpi_reached', target: 500000, kpi: 'cash', description: 'Кэш: 500,000₽' }],
+    rewards: { respect: 30, fame: 20, path_survival: 15 },
+  },
+  challenge_all_paths: {
+    id: 'challenge_all_paths', npc: 'spirit', title: 'Универсал',
+    description: 'Прокачай все три пути выше 15.', type: 'side',
+    objectives: [
+      { id: 'music15', type: 'stat_reached', target: 15, stat: 'stability', description: 'Все пути > 15 (проверь в Памяти)' },
+    ],
+    rewards: { respect: 20, fame: 20, cash: 5000 },
+  },
 };
 
 export function getQuest(id: string): QuestDef | undefined {

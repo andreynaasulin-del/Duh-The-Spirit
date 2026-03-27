@@ -15,7 +15,9 @@ export interface QuestRewards {
   respect?: number;
   fame?: number;
   energy?: number;
+  health?: number;
   stability?: number;
+  mood?: number;
   adequacy?: number;
   relationship?: number;
   path_chaos?: number;

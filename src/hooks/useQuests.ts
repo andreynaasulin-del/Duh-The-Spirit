@@ -155,6 +155,8 @@ function applyRewards(store: ReturnType<typeof useGameStore.getState>, rewards: 
   if (rewards.respect) store.updateKPI('respect', rewards.respect);
   if (rewards.fame) store.updateKPI('fame', rewards.fame);
   if (rewards.energy) store.updateStat('energy', rewards.energy);
+  if (rewards.health) store.updateStat('health', rewards.health);
+  if (rewards.mood) store.updateStat('mood', rewards.mood);
   if (rewards.stability) store.updateStat('stability', rewards.stability);
   if (rewards.path_music) store.updatePath('music', rewards.path_music);
   if (rewards.path_chaos) store.updatePath('chaos', rewards.path_chaos);

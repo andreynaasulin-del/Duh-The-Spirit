@@ -1,5 +1,17 @@
 @import "tailwindcss";
 
+/* Mobile touch speed */
+* {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+button, a, [role="button"] {
+  touch-action: manipulation;
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
 /* ============================================
    PRYTON HOOD LIFE — Lo-Fi Manga Theme
    Black & white manga base + season accent color
