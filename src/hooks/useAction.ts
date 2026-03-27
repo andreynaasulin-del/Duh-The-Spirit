@@ -6,6 +6,8 @@ import { useUIStore } from '@/stores/ui-store';
 import { getAction } from '@/config/actions';
 import type { StatKey, KPIKey, PathKey } from '@/types/game';
 import { useQuests } from './useQuests';
+import { rollRandomEvent } from '@/config/random-events';
+import { getCurrentSeason } from '@/config/seasons';
 
 const STAT_KEYS: StatKey[] = ['health', 'energy', 'hunger', 'mood', 'withdrawal', 'stability', 'adequacy', 'anxiety', 'trip', 'synchronization'];
 const KPI_KEYS: KPIKey[] = ['cash', 'respect', 'fame', 'releases', 'subscribers'];
@@ -75,6 +77,25 @@ export function useAction() {
 
     // Track for quest progress
     trackAction(actionId);
+
+    // Random event roll
+    const day = useGameStore.getState().state.day;
+    const season = getCurrentSeason(day);
+    const event = rollRandomEvent(season.id);
+    if (event) {
+      // Apply event effects
+      for (const [key, val] of Object.entries(event.effect)) {
+        if (val === undefined) continue;
+        if (STAT_KEYS.includes(key as StatKey)) {
+          updateStat(key as StatKey, val);
+        } else if (['cash', 'respect', 'fame'].includes(key)) {
+          updateKPI(key as KPIKey, val);
+        }
+      }
+      const isPositive = (event.effect.mood ?? 0) > 0 || (event.effect.cash ?? 0) > 0;
+      addLog(`${event.emoji} ${event.text}`, isPositive ? 'good' : 'neutral');
+      addToast(`${event.emoji} ${event.text}`, 'info');
+    }
 
     return true;
   }, [updateStat, updateKPI, updatePath, advanceTime, addLog, stats, kpis, addToast]);
