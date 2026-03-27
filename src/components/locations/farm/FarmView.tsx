@@ -40,10 +40,10 @@ export function FarmView() {
         </div>
         <div className="flex-1">
           <h1 className="manga-title text-xl tracking-wider" style={{ color: season.theme.accentColor }}>
-            ФЕРМА
+            ЛАБОРАТОРИЯ
           </h1>
           <p className="text-[11px] text-text-muted tracking-wide">
-            Теплица, эксперименты, рискованный бизнес.
+            Крипто, эксперименты, рискованный бизнес.
           </p>
         </div>
       </div>

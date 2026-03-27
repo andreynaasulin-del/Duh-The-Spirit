@@ -17,7 +17,7 @@ const NAV_ITEMS = [
   { href: '/game/home', icon: Home, label: 'База' },
   { href: '/game/street', icon: MapPin, label: 'Улица' },
   { href: '/game/club', icon: Music, label: 'Клуб' },
-  { href: '/game/farm', icon: Cpu, label: 'Ферма' },
+  { href: '/game/farm', icon: Cpu, label: 'Лаба' },
   { href: '/game/shop', icon: ShoppingBag, label: 'Маркет' },
   { href: '/game/casino', icon: Dice5, label: 'Казино' },
   { href: '/game/doctor', icon: Stethoscope, label: 'Док' },

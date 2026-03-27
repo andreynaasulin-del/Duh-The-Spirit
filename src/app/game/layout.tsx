@@ -8,6 +8,7 @@ import { GameLoader } from '@/components/game/GameLoader';
 import { SeasonParticles } from '@/components/effects/SeasonParticles';
 import { SeasonTransition } from '@/components/ui/SeasonTransition';
 import { DailyRewardPopup } from '@/components/ui/DailyRewardPopup';
+import { SpiritPopup } from '@/components/game/SpiritPopup';
 
 export default function GameLayout({ children }: { children: ReactNode }) {
   return (
@@ -21,6 +22,7 @@ export default function GameLayout({ children }: { children: ReactNode }) {
           <main className="flex-1 overflow-y-auto pb-20">
             {children}
           </main>
+          <SpiritPopup />
           <NavBar />
         </div>
       </SeasonThemeProvider>
