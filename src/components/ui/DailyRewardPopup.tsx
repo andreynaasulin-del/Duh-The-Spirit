@@ -14,18 +14,25 @@ export function DailyRewardPopup() {
   const daily = useGameStore((s) => s.state.daily);
 
   useEffect(() => {
-    const today = getTodayDate();
+    // Wait for game state to fully load before checking
+    const timer = setTimeout(() => {
+      const today = getTodayDate();
 
-    // Check multiple storage methods — TG Mini App can clear localStorage
-    const localClaim = localStorage.getItem('duh_last_claim');
-    const cookieClaim = document.cookie.split(';').find(c => c.trim().startsWith('duh_claim='))?.split('=')[1];
+      // Check multiple storage methods
+      const localClaim = localStorage.getItem('duh_last_claim');
+      const cookieClaim = document.cookie.split(';').find(c => c.trim().startsWith('duh_claim='))?.split('=')[1];
 
-    if (localClaim === today || cookieClaim === today) return;
-    if (daily && !canClaimToday(daily.lastClaimDate)) return;
+      // Already claimed today via any method
+      if (localClaim === today || cookieClaim === today) return;
 
-    const timer = setTimeout(() => setShow(true), 1500);
+      // Game state says already claimed
+      const currentDaily = useGameStore.getState().state.daily;
+      if (currentDaily && currentDaily.lastClaimDate === today) return;
+
+      setShow(true);
+    }, 3000); // 3s delay to let save/load finish
     return () => clearTimeout(timer);
-  }, [daily]);
+  }, []);
 
   if (!daily) return null;
 
