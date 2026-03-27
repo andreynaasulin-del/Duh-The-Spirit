@@ -147,7 +147,7 @@ export function HUD() {
       </div>
 
       {/* Stat bars */}
-      <div className="grid grid-cols-4 gap-2 px-4 py-2">
+      <div className="grid grid-cols-4 gap-1.5 px-3 py-1.5">
         <StatBar icon={<Heart className="w-3 h-3 text-health" />} value={stats.health} color="var(--color-health)" label="HP" />
         <StatBar icon={<Zap className="w-3 h-3 text-energy" />} value={stats.energy} color="var(--color-energy)" label="EN" />
         <StatBar icon={<UtensilsCrossed className="w-3 h-3 text-hunger" />} value={stats.hunger} color="var(--color-hunger)" label="HN" />

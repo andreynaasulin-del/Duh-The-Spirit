@@ -52,9 +52,9 @@ export function NavBar() {
   const gameState = useGameStore((s) => s.state);
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-bg-primary/95 backdrop-blur-sm border-t-2 border-white/10 safe-area-bottom">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-bg-primary/95 backdrop-blur-sm border-t-2 border-white/10 safe-area-bottom" style={{ overflowX: 'hidden' }}>
       <div
-        className="flex items-center px-1 py-1 max-w-lg mx-auto overflow-x-auto"
+        className="flex items-center px-1 py-1 overflow-x-auto"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}
       >
         {NAV_ITEMS.map(({ href, icon: Icon, label, lockCondition, lockHint }) => {

@@ -66,8 +66,18 @@ export function useAction() {
       }
     }
 
-    // Advance time
+    // Advance time + detect season change
+    const dayBefore = useGameStore.getState().state.day;
+    const seasonBefore = getCurrentSeason(dayBefore);
     advanceTime(action.time);
+    const dayAfter = useGameStore.getState().state.day;
+    const seasonAfter = getCurrentSeason(dayAfter);
+
+    if (seasonBefore.id !== seasonAfter.id) {
+      addToast(`${seasonAfter.name}: ${seasonAfter.subtitle}`, 'info');
+      addLog(`Наступила ${seasonAfter.name}. ${seasonAfter.description}`, 'spirit');
+      try { window.Telegram?.WebApp?.HapticFeedback?.notificationOccurred?.('success'); } catch {}
+    }
 
     // Haptic feedback on mobile
     try { window.Telegram?.WebApp?.HapticFeedback?.impactOccurred?.('light'); } catch {}
