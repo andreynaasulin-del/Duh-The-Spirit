@@ -6,6 +6,7 @@ import { useGameStore } from '@/stores/game-store';
 import { Skull } from 'lucide-react';
 import { checkEnding } from '@/config/endings';
 import { EndingScreen } from '@/components/ui/EndingScreen';
+import { Tutorial } from '@/components/ui/Tutorial';
 import { INITIAL_STATE } from '@/config/initial-state';
 
 interface GameLoaderProps {
@@ -19,6 +20,7 @@ interface GameLoaderProps {
 export function GameLoader({ children }: GameLoaderProps) {
   const [mounted, setMounted] = useState(false);
   const [authDone, setAuthDone] = useState(false);
+  const [showTutorial, setShowTutorial] = useState(false);
   useGamePersistence();
   const isLoaded = useGameStore((s) => s.isLoaded);
   const day = useGameStore((s) => s.state.day);
@@ -28,6 +30,11 @@ export function GameLoader({ children }: GameLoaderProps) {
 
   useEffect(() => {
     setMounted(true);
+
+    // Show tutorial on first visit
+    if (!localStorage.getItem('duh_tutorial_done')) {
+      setShowTutorial(true);
+    }
 
     // Auto-register user on game load
     async function autoAuth() {
@@ -96,6 +103,16 @@ export function GameLoader({ children }: GameLoaderProps) {
         </div>
         <p className="text-text-muted text-sm font-mono tracking-wider">ЗАГРУЗКА...</p>
       </div>
+    );
+  }
+
+  // Tutorial (first visit only)
+  if (showTutorial) {
+    return (
+      <Tutorial onComplete={() => {
+        localStorage.setItem('duh_tutorial_done', '1');
+        setShowTutorial(false);
+      }} />
     );
   }
 
