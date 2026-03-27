@@ -24,15 +24,25 @@ export function MissionHint() {
         initial={{ opacity: 0, y: -5 }}
         animate={{ opacity: 1, y: 0 }}
         onClick={() => acceptQuest(next.id)}
-        className="w-full flex items-center gap-2.5 p-3 rounded-xl border border-dashed border-white/10"
-        style={{ background: 'rgba(224,64,251,0.05)' }}
+        className="w-full flex items-center gap-3 p-4 rounded-xl border-2 border-[#e040fb]/40"
+        style={{
+          background: 'linear-gradient(135deg, rgba(224,64,251,0.15) 0%, rgba(224,64,251,0.05) 100%)',
+          boxShadow: '0 0 20px rgba(224,64,251,0.1)',
+        }}
       >
-        <Target className="w-4 h-4 shrink-0" style={{ color: '#e040fb' }} />
-        <div className="flex-1 min-w-0">
-          <p className="text-[10px] text-white/40 uppercase tracking-wider">Новая миссия</p>
-          <p className="text-xs text-white/80 font-bold truncate">{next.title}</p>
+        <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+          style={{ backgroundColor: 'rgba(224,64,251,0.2)', border: '1px solid rgba(224,64,251,0.3)' }}
+        >
+          <Target className="w-5 h-5" style={{ color: '#e040fb' }} />
         </div>
-        <span className="text-[9px] text-[#e040fb] font-bold px-2 py-1 rounded-lg border border-[#e040fb]/30 shrink-0">
+        <div className="flex-1 min-w-0">
+          <p className="text-[11px] text-[#e040fb] uppercase tracking-wider font-black">Новая миссия</p>
+          <p className="text-sm text-white font-bold truncate">{next.title}</p>
+          <p className="text-[10px] text-white/40 truncate">{next.description}</p>
+        </div>
+        <span className="text-[10px] text-black font-black px-3 py-1.5 rounded-lg shrink-0"
+          style={{ backgroundColor: '#e040fb' }}
+        >
           ПРИНЯТЬ
         </span>
       </motion.button>

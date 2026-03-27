@@ -19,21 +19,9 @@ const SCENES = [
     size: 'text-xl',
   },
   {
-    text: 'Из под потолка\nмы все увидели красные глаза.',
+    text: 'Из под потолка\nпоявились красные глаза.',
     delay: 0,
     color: '#ff3b3b',
-    size: 'text-lg',
-  },
-  {
-    text: 'Это был паук.',
-    delay: 0,
-    color: '#aaaaaa',
-    size: 'text-base',
-  },
-  {
-    text: 'Нет.\nЭто был не паук.',
-    delay: 0,
-    color: '#ffffff',
     size: 'text-lg',
   },
   {
@@ -43,7 +31,7 @@ const SCENES = [
     size: 'text-xl',
   },
   {
-    text: 'Мы симбиоз.\nВсё это время он изучал наши страхи.',
+    text: 'Симбиоз.\nВсё это время он изучал твои страхи.',
     delay: 0,
     color: '#888888',
     size: 'text-base',
