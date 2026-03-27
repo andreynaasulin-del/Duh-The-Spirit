@@ -2,102 +2,38 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
 import { useTelegram } from '@/components/providers/TelegramProvider';
-import { Gamepad2, Eye } from 'lucide-react';
-
-const BOT_USERNAME = 'duhthespiritbot';
+import { Eye, Gamepad2 } from 'lucide-react';
 
 export default function AuthPage() {
   const router = useRouter();
   const { webApp, isReady, isTelegram } = useTelegram();
   const [status, setStatus] = useState<'loading' | 'authenticating' | 'error' | 'ready'>('loading');
   const [error, setError] = useState<string | null>(null);
-  const widgetRef = useRef<HTMLDivElement>(null);
 
-  // Auto-auth inside Telegram Mini App
   useEffect(() => {
     if (!isReady) return;
-
-    // Already logged in?
     const existing = localStorage.getItem('duh_user') || localStorage.getItem('pryton_user');
-    if (existing) {
-      router.replace('/game/home');
-      return;
-    }
-
-    // Inside Telegram — auto-authenticate
-    if (isTelegram && webApp?.initData) {
-      authenticateTelegram(webApp.initData);
-      return;
-    }
-
-    // Browser — show login options
+    if (existing) { router.replace('/game/home'); return; }
+    if (isTelegram && webApp?.initData) { authenticateTelegram(webApp.initData); return; }
     setStatus('ready');
   }, [isReady, isTelegram, webApp, router]);
-
-  // Load Telegram Login Widget for browser
-  useEffect(() => {
-    // Show widget if not inside real TG Mini App (check for actual initData, not just script presence)
-    const hasRealTgSession = isTelegram && webApp?.initData && webApp.initData.length > 20;
-    if (status !== 'ready' || hasRealTgSession || !widgetRef.current) return;
-
-    // Clear previous widget
-    widgetRef.current.innerHTML = '';
-
-    const script = document.createElement('script');
-    script.src = 'https://telegram.org/js/telegram-widget.js?22';
-    script.async = true;
-    script.setAttribute('data-telegram-login', BOT_USERNAME);
-    script.setAttribute('data-size', 'large');
-    script.setAttribute('data-radius', '12');
-    script.setAttribute('data-onauth', 'onTelegramAuth(user)');
-    script.setAttribute('data-request-access', 'write');
-    widgetRef.current.appendChild(script);
-
-    // Global callback for widget
-    (window as unknown as Record<string, unknown>).onTelegramAuth = async (user: TelegramWidgetUser) => {
-      setStatus('authenticating');
-      try {
-        const res = await fetch('/api/auth/telegram-widget', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(user),
-        });
-        const data = await res.json();
-        if (data.success) {
-          localStorage.setItem('duh_user', JSON.stringify(data.user));
-          router.replace('/game/home');
-        } else {
-          throw new Error(data.error || 'Auth failed');
-        }
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Ошибка авторизации');
-        setStatus('error');
-      }
-    };
-
-    return () => {
-      delete (window as unknown as Record<string, unknown>).onTelegramAuth;
-    };
-  }, [status, isTelegram, router]);
 
   async function authenticateTelegram(initData: string) {
     setStatus('authenticating');
     try {
       const res = await fetch('/api/auth/telegram', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ initData }),
       });
       const data = await res.json();
       if (data.success) {
         localStorage.setItem('duh_user', JSON.stringify(data.user));
         router.replace('/game/home');
-      } else {
-        throw new Error(data.error || 'Auth failed');
-      }
+      } else throw new Error(data.error || 'Auth failed');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Ошибка авторизации');
+      setError(err instanceof Error ? err.message : 'Ошибка');
       setStatus('error');
     }
   }
@@ -111,55 +47,97 @@ export default function AuthPage() {
 
   return (
     <div className="min-h-dvh flex flex-col items-center justify-center p-6 bg-black relative overflow-hidden">
-      {/* Ghost background */}
-      <div className="absolute inset-0 flex items-center justify-center opacity-[0.04] pointer-events-none">
-        <span className="text-[200px] select-none">👻</span>
+      {/* Animated smoke particles */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        {[...Array(6)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute rounded-full"
+            style={{
+              width: 120 + i * 40,
+              height: 120 + i * 40,
+              background: `radial-gradient(circle, rgba(255,45,123,${0.03 + i * 0.005}) 0%, transparent 70%)`,
+              left: `${10 + i * 15}%`,
+              top: `${20 + (i % 3) * 25}%`,
+            }}
+            animate={{
+              y: [0, -20, 10, 0],
+              x: [0, 10, -10, 0],
+              scale: [1, 1.1, 0.95, 1],
+            }}
+            transition={{
+              duration: 8 + i * 2,
+              repeat: Infinity,
+              ease: 'easeInOut',
+              delay: i * 0.5,
+            }}
+          />
+        ))}
       </div>
 
-      <div className="relative z-10 flex flex-col items-center gap-6 max-w-sm w-full">
-        {/* Logo */}
-        <img
+      <div className="relative z-10 flex flex-col items-center gap-8 max-w-sm w-full">
+        {/* Logo with float animation */}
+        <motion.img
           src="/og-image.jpg"
           alt="Duh The Spirit"
-          className="w-28 h-28 rounded-2xl border-2 border-white/10"
-          style={{ boxShadow: '0 0 40px rgba(255,45,123,0.2)' }}
+          className="w-32 h-32 rounded-2xl border-2 border-white/10"
+          style={{ boxShadow: '0 0 60px rgba(255,45,123,0.25), 0 0 120px rgba(255,45,123,0.1)' }}
+          initial={{ opacity: 0, y: 30, scale: 0.8 }}
+          animate={{
+            opacity: 1, y: 0, scale: 1,
+          }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
         />
 
-        <div className="text-center">
+        {/* Graffiti title */}
+        <motion.div
+          className="text-center"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+        >
           <h1
-            className="text-4xl text-white relative"
+            className="text-5xl text-white relative"
             style={{
-              fontFamily: "var(--font-marker), 'Permanent Marker', 'Marker Felt', cursive",
-              letterSpacing: '2px',
+              fontFamily: "var(--font-marker), 'Permanent Marker', cursive",
+              letterSpacing: '1px',
               transform: 'rotate(-2deg)',
-              textShadow: '3px 3px 0px rgba(255,45,123,0.4), -1px -1px 0px rgba(0,0,0,0.8)',
-              WebkitTextStroke: '0.5px rgba(255,255,255,0.3)',
-              paintOrder: 'stroke fill',
+              textShadow: '4px 4px 0px rgba(255,45,123,0.35), 0 0 40px rgba(255,45,123,0.15)',
             }}
           >
             Duh The Spirit
           </h1>
           <p
-            className="text-text-muted text-xs mt-2 uppercase tracking-[0.3em]"
+            className="text-white/30 text-[10px] mt-3 uppercase tracking-[0.4em] font-medium"
             style={{ transform: 'rotate(-1deg)' }}
           >
-            Выживай. Зарабатывай. Не теряй рассудок.
+            Выживай · Зарабатывай · Не теряй рассудок
           </p>
-        </div>
+        </motion.div>
 
         {/* Auth card */}
-        <div className="w-full p-6 rounded-2xl border border-white/10 bg-white/[0.02] backdrop-blur-sm flex flex-col items-center gap-5">
+        <motion.div
+          className="w-full p-6 rounded-2xl border border-white/[0.06] flex flex-col items-center gap-5"
+          style={{ background: 'linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(0,0,0,0) 100%)' }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.5 }}
+        >
           {(status === 'loading' || status === 'authenticating') && (
-            <>
-              <div className="w-8 h-8 border-2 border-[#ff2d7b] border-t-transparent rounded-full animate-spin" />
-              <p className="text-text-muted text-sm">
+            <div className="flex flex-col items-center gap-3 py-4">
+              <motion.div
+                className="w-8 h-8 border-2 border-[#ff2d7b] border-t-transparent rounded-full"
+                animate={{ rotate: 360 }}
+                transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+              />
+              <p className="text-white/40 text-sm">
                 {status === 'loading' ? 'Загрузка...' : 'Вход через Telegram...'}
               </p>
-            </>
+            </div>
           )}
 
           {status === 'error' && (
-            <>
+            <div className="flex flex-col items-center gap-3">
               <p className="text-red-400 text-sm text-center">{error}</p>
               <button
                 onClick={() => { setError(null); setStatus('ready'); }}
@@ -167,80 +145,81 @@ export default function AuthPage() {
               >
                 Попробовать снова
               </button>
-            </>
+            </div>
           )}
 
           {status === 'ready' && (
             <>
-              {/* Main CTA — open bot in Telegram */}
-              <a
+              {/* Telegram button with pulse */}
+              <motion.a
                 href="https://t.me/duhthespiritbot?start=play"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full flex items-center justify-center gap-3 px-6 py-3.5 rounded-xl text-white font-bold text-sm transition-all active:scale-[0.97]"
+                className="w-full flex items-center justify-center gap-3 px-6 py-4 rounded-xl text-white font-bold text-[15px] relative overflow-hidden"
                 style={{ backgroundColor: '#2AABEE' }}
+                whileHover={{ scale: 1.02, boxShadow: '0 0 30px rgba(42,171,238,0.4)' }}
+                whileTap={{ scale: 0.97 }}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.7 }}
               >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                {/* Shine effect */}
+                <motion.div
+                  className="absolute inset-0"
+                  style={{
+                    background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.15) 50%, transparent 100%)',
+                  }}
+                  animate={{ x: ['-100%', '200%'] }}
+                  transition={{ duration: 3, repeat: Infinity, repeatDelay: 2, ease: 'easeInOut' }}
+                />
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" className="relative z-10">
                   <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.12.03-1.99 1.27-5.62 3.72-.53.36-1.01.54-1.44.53-.47-.01-1.38-.27-2.06-.49-.83-.27-1.49-.42-1.43-.88.03-.24.37-.49 1.02-.74 3.99-1.74 6.66-2.88 8-3.44 3.81-1.58 4.6-1.86 5.12-1.87.11 0 .37.03.53.17.14.12.18.28.2.47-.01.06.01.24 0 .38z"/>
                 </svg>
-                Войти через Telegram
-              </a>
+                <span className="relative z-10">Войти через Telegram</span>
+              </motion.a>
 
-              <p className="text-text-muted text-[11px] text-center">
+              <p className="text-white/25 text-[11px] text-center">
                 Откроется бот → нажми «Играть» → прогресс сохраняется
               </p>
 
               {/* Divider */}
               <div className="flex items-center gap-3 w-full">
-                <div className="flex-1 h-px bg-white/10" />
-                <span className="text-[10px] text-text-muted uppercase tracking-wider">или</span>
-                <div className="flex-1 h-px bg-white/10" />
+                <div className="flex-1 h-px bg-white/[0.06]" />
+                <span className="text-[9px] text-white/20 uppercase tracking-wider">или</span>
+                <div className="flex-1 h-px bg-white/[0.06]" />
               </div>
 
               {/* Demo button */}
-              <button
+              <motion.button
                 onClick={enterDemo}
-                className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-xl border border-white/10 hover:border-white/20 text-text-secondary hover:text-white transition-all active:scale-[0.98]"
+                className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-xl border border-white/[0.08] text-white/40 hover:text-white/70 hover:border-white/15 transition-all"
+                whileHover={{ scale: 1.01 }}
+                whileTap={{ scale: 0.97 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.9 }}
               >
                 <Eye className="w-4 h-4" />
-                <span className="text-sm font-medium">Демо без регистрации</span>
-              </button>
+                <span className="text-sm">Демо без регистрации</span>
+              </motion.button>
 
-              <p className="text-[10px] text-text-muted text-center leading-relaxed">
-                В демо прогресс не сохраняется.<br />
-                Stars и достижения недоступны.
+              <p className="text-white/15 text-[10px] text-center leading-relaxed">
+                Прогресс не сохраняется · Stars недоступны
               </p>
             </>
           )}
-        </div>
+        </motion.div>
 
-        {/* Open in Telegram link (browser only) */}
-        {status === 'ready' && !isTelegram && (
-          <a
-            href="https://t.me/duhthespiritbot"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 text-sm text-[#ff2d7b] hover:underline"
-          >
-            <Gamepad2 className="w-4 h-4" />
-            Открыть в Telegram
-          </a>
-        )}
-
-        <p className="text-text-muted text-[10px]">
-          v1.0 • @duhthespiritbot
-        </p>
+        {/* Footer */}
+        <motion.p
+          className="text-white/15 text-[10px]"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.2 }}
+        >
+          @duhthespiritbot
+        </motion.p>
       </div>
     </div>
   );
-}
-
-interface TelegramWidgetUser {
-  id: number;
-  first_name: string;
-  last_name?: string;
-  username?: string;
-  photo_url?: string;
-  auth_date: number;
-  hash: string;
 }
