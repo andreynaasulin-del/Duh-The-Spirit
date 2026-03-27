@@ -63,11 +63,14 @@ export function NavBar() {
       >
         {NAV_ITEMS.map(({ href, icon: Icon, label, lockCondition, lockHint }) => {
           const isActive = pathname === href || pathname?.startsWith(href + '/');
-          const isLocked = lockCondition ? lockCondition({
-            day: gameState.day,
-            paths: gameState.paths,
-            quests: gameState.quests,
-          }) : false;
+          let isLocked = false;
+          try {
+            isLocked = lockCondition ? lockCondition({
+              day: gameState.day ?? 1,
+              paths: gameState.paths ?? { music: 0, chaos: 0, survival: 0 },
+              quests: gameState.quests ?? { completed: [], active: [], available: [], progress: {} },
+            }) : false;
+          } catch { isLocked = false; }
 
           return (
             <button
