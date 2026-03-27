@@ -122,8 +122,8 @@ export function SpiritPopup() {
     // Haptic
     try { window.Telegram?.WebApp?.HapticFeedback?.notificationOccurred?.('warning'); } catch {}
 
-    // Auto-hide after 8 seconds if not dismissed
-    setTimeout(() => setVisible(false), 12_000);
+    // Auto-hide after 6 seconds
+    setTimeout(() => setVisible(false), 6_000);
   }, [season.id]);
 
   useEffect(() => {
@@ -161,78 +161,40 @@ export function SpiritPopup() {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 30, scale: 0.9 }}
           transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-          className="fixed bottom-20 left-3 right-3 z-[9999]"
+          className="fixed bottom-20 left-4 right-4 z-[9999]"
           style={{ pointerEvents: 'auto' }}
         >
           <div
             className="relative overflow-hidden"
             style={{
-              background: 'linear-gradient(135deg, rgba(10,10,10,0.97) 0%, rgba(20,5,25,0.97) 100%)',
-              border: '2px solid rgba(224,64,251,0.4)',
-              borderRadius: '16px',
-              boxShadow: '0 0 40px rgba(224,64,251,0.2), 0 8px 32px rgba(0,0,0,0.6)',
+              background: 'rgba(10,5,15,0.95)',
+              border: '1px solid rgba(224,64,251,0.25)',
+              borderRadius: '12px',
+              boxShadow: '0 0 20px rgba(224,64,251,0.15), 0 4px 16px rgba(0,0,0,0.5)',
             }}
           >
-            {/* Spirit image + text */}
-            <div className="flex items-start gap-3 p-3">
-              {/* Spirit avatar */}
-              <div className="relative shrink-0 w-14 h-14 rounded-full overflow-hidden border-2 border-purple-500/50">
+            {/* Compact: avatar + text + close */}
+            <div className="flex items-center gap-2.5 p-2.5">
+              <div className="relative shrink-0 w-9 h-9 rounded-full overflow-hidden border border-purple-500/40">
                 <Image
                   src="/spirit.png"
                   alt="Дух"
-                  width={56}
-                  height={56}
+                  width={36}
+                  height={36}
                   className="object-cover"
                   style={{ mixBlendMode: 'lighten' }}
                 />
               </div>
 
-              {/* Speech */}
-              <div className="flex-1 min-w-0">
-                <p className="text-[10px] font-black tracking-wider text-purple-400 mb-1">
-                  ДУХ ШЕПЧЕТ...
-                </p>
-                <p className="text-[13px] text-white/90 leading-snug italic">
-                  «{line}»
-                </p>
-              </div>
+              <p className="flex-1 text-[12px] text-white/80 leading-snug italic min-w-0">
+                «{line}»
+              </p>
 
-              {/* Close */}
               <button
                 onClick={() => setVisible(false)}
-                className="shrink-0 w-6 h-6 flex items-center justify-center text-white/30 hover:text-white/60"
+                className="shrink-0 w-5 h-5 flex items-center justify-center text-white/20"
               >
                 ✕
-              </button>
-            </div>
-
-            {/* Action buttons — spirit suggestions */}
-            <div className="flex gap-1.5 px-3 pb-3">
-              {actions.slice(0, 2).map((act, i) => (
-                <button
-                  key={i}
-                  onClick={() => handleAction(act.action)}
-                  className="flex-1 py-2 px-2 text-[10px] font-bold text-center"
-                  style={{
-                    background: 'rgba(224,64,251,0.1)',
-                    border: '1px solid rgba(224,64,251,0.3)',
-                    borderRadius: '8px',
-                    color: '#e040fb',
-                  }}
-                >
-                  {act.text}
-                </button>
-              ))}
-              <button
-                onClick={() => setVisible(false)}
-                className="flex-1 py-2 px-2 text-[10px] font-bold text-center text-white/50"
-                style={{
-                  background: 'rgba(255,255,255,0.03)',
-                  border: '1px solid rgba(255,255,255,0.08)',
-                  borderRadius: '8px',
-                }}
-              >
-                ✋ Игнорировать
               </button>
             </div>
 
