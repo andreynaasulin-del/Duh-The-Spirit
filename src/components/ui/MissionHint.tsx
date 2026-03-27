@@ -24,27 +24,30 @@ export function MissionHint() {
         initial={{ opacity: 0, y: -5 }}
         animate={{ opacity: 1, y: 0 }}
         onClick={() => acceptQuest(next.id)}
-        className="w-full flex items-center gap-3 p-4 rounded-xl border-2 border-[#e040fb]/40"
+        className="w-full flex flex-col gap-3 p-5 rounded-2xl border-2 border-[#e040fb]/50"
         style={{
-          background: 'linear-gradient(135deg, rgba(224,64,251,0.15) 0%, rgba(224,64,251,0.05) 100%)',
-          boxShadow: '0 0 20px rgba(224,64,251,0.1)',
+          background: 'linear-gradient(135deg, rgba(224,64,251,0.18) 0%, rgba(224,64,251,0.04) 100%)',
+          boxShadow: '0 0 30px rgba(224,64,251,0.15), inset 0 1px 0 rgba(255,255,255,0.05)',
         }}
       >
-        <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-          style={{ backgroundColor: 'rgba(224,64,251,0.2)', border: '1px solid rgba(224,64,251,0.3)' }}
-        >
-          <Target className="w-5 h-5" style={{ color: '#e040fb' }} />
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
+            style={{ backgroundColor: 'rgba(224,64,251,0.25)', border: '2px solid rgba(224,64,251,0.4)' }}
+          >
+            {npc ? <span className="text-2xl">{npc.icon}</span> : <Target className="w-6 h-6" style={{ color: '#e040fb' }} />}
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-xs text-[#e040fb] uppercase tracking-wider font-black">Новая миссия</p>
+            <p className="text-base text-white font-black">{next.title}</p>
+          </div>
         </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-[11px] text-[#e040fb] uppercase tracking-wider font-black">Новая миссия</p>
-          <p className="text-sm text-white font-bold truncate">{next.title}</p>
-          <p className="text-[10px] text-white/40 truncate">{next.description}</p>
-        </div>
-        <span className="text-[10px] text-black font-black px-3 py-1.5 rounded-lg shrink-0"
+        <p className="text-[12px] text-white/50 leading-relaxed">{next.description}</p>
+        <div
+          className="w-full py-3 rounded-xl text-center text-sm text-black font-black"
           style={{ backgroundColor: '#e040fb' }}
         >
-          ПРИНЯТЬ
-        </span>
+          ПРИНЯТЬ МИССИЮ
+        </div>
       </motion.button>
     );
   }

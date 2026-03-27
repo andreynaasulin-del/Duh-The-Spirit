@@ -27,25 +27,21 @@ const NAV_ITEMS: NavItem[] = [
   { href: '/game/street', icon: MapPin, label: 'Улица' },
   {
     href: '/game/club', icon: Music, label: 'Клуб',
-    lockCondition: (s) => s.quests.completed.length < 1 && s.paths.music < 3,
-    lockHint: 'Выполни первый квест',
+    lockCondition: (s) => s.quests.completed.length < 2 && s.paths.music < 3,
+    lockHint: 'Выполни 2 квеста или прокачай музыку',
   },
   {
     href: '/game/farm', icon: Cpu, label: 'Лаба',
-    lockCondition: (s) => s.day < 5 && s.paths.chaos < 5,
-    lockHint: 'День 5 или хаос > 5',
+    lockCondition: (s) => s.day < 10 && s.paths.chaos < 10,
+    lockHint: 'День 10 или хаос выше 10',
   },
   { href: '/game/shop', icon: ShoppingBag, label: 'Маркет' },
-  {
-    href: '/game/casino', icon: Dice5, label: 'Казино',
-    lockCondition: (s) => s.day < 3,
-    lockHint: 'День 3',
-  },
+  { href: '/game/casino', icon: Dice5, label: 'Казино' },
   { href: '/game/doctor', icon: Stethoscope, label: 'Док' },
   {
     href: '/game/prison', icon: Lock, label: 'Тюрьма',
-    lockCondition: () => true, // Always locked unless arrested
-    lockHint: 'Попадёшь при аресте',
+    lockCondition: () => true,
+    lockHint: 'Только при аресте',
   },
   { href: '/game/memory', icon: Brain, label: 'Память' },
 ];
