@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import { useGamePersistence } from '@/hooks/useGamePersistence';
 import { useGameStore } from '@/stores/game-store';
 import { Skull } from 'lucide-react';
@@ -18,9 +19,11 @@ interface GameLoaderProps {
  * Checks for game over / ending conditions each render.
  */
 export function GameLoader({ children }: GameLoaderProps) {
+  const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const [authDone, setAuthDone] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
+  const [isDemo, setIsDemo] = useState(false);
   useGamePersistence();
   const isLoaded = useGameStore((s) => s.isLoaded);
   const day = useGameStore((s) => s.state.day);
@@ -38,7 +41,14 @@ export function GameLoader({ children }: GameLoaderProps) {
 
     // Auto-register user on game load
     async function autoAuth() {
-      // Skip if already registered this session
+      // Check demo mode
+      if (localStorage.getItem('duh_demo')) {
+        setIsDemo(true);
+        setAuthDone(true);
+        return;
+      }
+
+      // Skip if already registered
       if (localStorage.getItem('duh_user')) {
         setAuthDone(true);
         return;
@@ -48,8 +58,8 @@ export function GameLoader({ children }: GameLoaderProps) {
       const initData = tg?.initData;
 
       if (!initData) {
-        // Not in Telegram — dev mode, skip auth
-        setAuthDone(true);
+        // Not in Telegram and not demo — redirect to auth
+        router.replace('/auth');
         return;
       }
 

@@ -51,11 +51,15 @@ function getUserInfo() {
   try {
     const raw = localStorage.getItem('duh_user') || localStorage.getItem('pryton_user');
     if (raw) return JSON.parse(raw);
-    // Fallback: try Telegram WebApp
     const tg = window.Telegram?.WebApp?.initDataUnsafe?.user;
     if (tg) return { username: tg.username || tg.first_name, telegram_id: tg.id, photo_url: tg.photo_url };
   } catch {}
   return null;
+}
+
+function isDemo(): boolean {
+  if (typeof window === 'undefined') return false;
+  return !!localStorage.getItem('duh_demo');
 }
 
 export function HUD() {
@@ -68,9 +72,20 @@ export function HUD() {
   const progress = getSeasonProgress(day);
   const isSaving = useGameStore((s) => s.isSaving);
   const user = getUserInfo();
+  const demo = isDemo();
 
   return (
     <header className="sticky top-0 z-40 bg-bg-primary/95 backdrop-blur-sm safe-area-top">
+      {/* Demo banner */}
+      {demo && (
+        <a
+          href="/auth"
+          className="block w-full py-1 text-center text-[10px] font-bold tracking-wider uppercase"
+          style={{ backgroundColor: '#ff2d7b', color: '#000' }}
+        >
+          ДЕМО — прогресс не сохраняется. Войти через Telegram →
+        </a>
+      )}
       {/* Top row — day, season, cash */}
       <div className="flex items-center justify-between px-4 py-2 border-b-2 border-white/10">
         <div className="flex items-center gap-2">

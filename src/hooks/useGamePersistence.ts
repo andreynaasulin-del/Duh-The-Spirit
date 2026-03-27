@@ -30,11 +30,18 @@ export function useGamePersistence() {
   const isSavingRef = useRef(false);
   const connectionFailedRef = useRef(false); // suppress repeated errors
 
+  // Check if demo mode — skip all persistence
+  const isDemoRef = useRef(false);
+
   // Get user ID from localStorage (set during auth)
   const getUserId = useCallback((): string | null => {
+    // Demo mode = no persistence
+    if (typeof window !== 'undefined' && localStorage.getItem('duh_demo')) {
+      isDemoRef.current = true;
+      return null;
+    }
     if (userIdRef.current) return userIdRef.current;
     try {
-      // Check both keys (new and legacy)
       const raw = localStorage.getItem('duh_user') || localStorage.getItem('pryton_user');
       if (!raw) return null;
       const user = JSON.parse(raw);
