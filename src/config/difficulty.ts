@@ -35,6 +35,9 @@ export interface DifficultyConfig {
 
   // Stat decay
   decayMultiplier: number;
+
+  // Prison
+  sentenceMultiplier: number; // scales prison sentence length
 }
 
 export const DIFFICULTIES: Record<DifficultyMode, DifficultyConfig> = {
@@ -54,6 +57,7 @@ export const DIFFICULTIES: Record<DifficultyMode, DifficultyConfig> = {
     spiritFrequency: 0.3,
     spiritAggression: 0.2,
     decayMultiplier: 0.5,
+    sentenceMultiplier: 0.5,
   },
 
   medium: {
@@ -72,6 +76,7 @@ export const DIFFICULTIES: Record<DifficultyMode, DifficultyConfig> = {
     spiritFrequency: 1.0,
     spiritAggression: 0.5,
     decayMultiplier: 1.0,
+    sentenceMultiplier: 1.0,
   },
 
   from_street: {
@@ -90,6 +95,7 @@ export const DIFFICULTIES: Record<DifficultyMode, DifficultyConfig> = {
     spiritFrequency: 2.0,
     spiritAggression: 0.8,
     decayMultiplier: 1.5,
+    sentenceMultiplier: 1.5,
   },
 };
 

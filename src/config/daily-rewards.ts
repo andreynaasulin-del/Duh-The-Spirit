@@ -17,13 +17,13 @@ export interface DailyReward {
 }
 
 export const DAILY_REWARDS: DailyReward[] = [
-  { day: 1, icon: '💰', title: 'День 1', rewards: { cash: 300 } },
-  { day: 2, icon: '⚡', title: 'День 2', rewards: { cash: 300, energy: 20 } },
-  { day: 3, icon: '🧠', title: 'День 3', rewards: { cash: 500, stability: 10 } },
-  { day: 4, icon: '🔥', title: 'День 4', rewards: { cash: 500, respect: 3 } },
-  { day: 5, icon: '⭐', title: 'День 5', rewards: { cash: 800, fame: 3 } },
-  { day: 6, icon: '💎', title: 'День 6', rewards: { cash: 1000, energy: 30, stability: 15 } },
-  { day: 7, icon: '👑', title: 'День 7', rewards: { cash: 2000, respect: 5, fame: 5, energy: 50 } },
+  { day: 1, icon: '💰', title: 'День 1', rewards: { cash: 500 } },
+  { day: 2, icon: '⚡', title: 'День 2', rewards: { cash: 500, energy: 30 } },
+  { day: 3, icon: '🧠', title: 'День 3', rewards: { cash: 800, stability: 15 } },
+  { day: 4, icon: '🔥', title: 'День 4', rewards: { cash: 800, respect: 5 } },
+  { day: 5, icon: '⭐', title: 'День 5', rewards: { cash: 1200, fame: 5 } },
+  { day: 6, icon: '💎', title: 'День 6', rewards: { cash: 1500, energy: 40, stability: 20 } },
+  { day: 7, icon: '👑', title: 'День 7', rewards: { cash: 3000, respect: 5, fame: 5, energy: 50 } },
 ];
 
 export function getRewardForStreak(streak: number): DailyReward {

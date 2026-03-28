@@ -20,14 +20,14 @@ export const ACTIONS: ActionDef[] = [
   { id: 'toxic_relax', icon: 'flask-conical', title: 'Алхимия настроения', meta: 'Эксперимент, риск побочек (2ч)', time: 120, effects: { mood: 30, stability: -10, adequacy: -15 }, paths: { chaos: 3 }, category: 'home' },
 
   // === Улица ===
-  { id: 'street_hustle', icon: 'zap', title: 'Уличные дела', meta: '+кэш, +уважение, риск (2ч)', time: 120, effects: { cash: [200, 600], respect: [2, 5], health: [-10, 0] }, paths: { chaos: 2 }, category: 'street' },
+  { id: 'street_hustle', icon: 'zap', title: 'Уличные дела', meta: '+кэш, +уважение, риск (2ч)', time: 120, effects: { cash: [300, 800], respect: [2, 5], health: [-10, 0] }, paths: { chaos: 2 }, category: 'street' },
   { id: 'shop_lift', icon: 'shopping-bag', title: 'Рискованная добыча', meta: '+сытость, риск последствий (1ч)', time: 60, effects: { hunger: 30, stability: [-20, 0] }, paths: { chaos: 1 }, category: 'street' },
   { id: 'alley_fight', icon: 'crosshair', title: 'Уличная разборка', meta: '+уважение, риск травмы (1ч)', time: 60, effects: { respect: [3, 8], health: [-15, 0] }, paths: { chaos: 2 }, category: 'street' },
-  { id: 'courier', icon: 'bike', title: 'Халтура курьером', meta: '+₽300–500, –энергия (2ч)', time: 120, effects: { cash: [300, 500], energy: -20, hunger: -15 }, category: 'street' },
+  { id: 'courier', icon: 'bike', title: 'Халтура курьером', meta: '+₽400–700, –энергия (2ч)', time: 120, effects: { cash: [400, 700], energy: -20, hunger: -15 }, category: 'street' },
   { id: 'graffiti_bombing', icon: 'palette', title: 'Арт на районе', meta: '+респект, риск последствий (2ч)', time: 120, effects: { respect: [5, 10], mood: 15, stability: -5 }, paths: { chaos: 2 }, category: 'street' },
   { id: 'hack_atm', icon: 'laptop', title: 'Тёмная схема', meta: '+кэш, высокий риск (3ч)', time: 180, effects: { cash: [1000, 3000], stability: -15, adequacy: -5 }, paths: { chaos: 3 }, category: 'street' },
   { id: 'freestyle_battle', icon: 'mic', title: 'Фристайл баттл', meta: '+респект, +хайп (2ч)', time: 120, effects: { respect: [10, 25], mood: 10, energy: -20 }, paths: { music: 3 }, category: 'street' },
-  { id: 'doctor_visit', icon: 'heart-pulse', title: 'Визит к специалисту', meta: '+HP, –500₽ (1ч)', time: 60, effects: { health: 25, cash: -500 }, paths: { survival: 2 }, category: 'street' },
+  { id: 'doctor_visit', icon: 'heart-pulse', title: 'Визит к специалисту', meta: '+HP, –300₽ (1ч)', time: 60, effects: { health: 25, cash: -300 }, paths: { survival: 2 }, category: 'street' },
   { id: 'rummage_trash', icon: 'trash-2', title: 'Поиск находок', meta: 'шанс найти полезное (30м)', time: 30, effects: { respect: -5, hunger: [0, 10], cash: [0, 50] }, paths: { survival: 1 }, category: 'street' },
   { id: 'gym_basement', icon: 'dumbbell', title: 'Качалка в подвале', meta: '+HP, +сила (1.5ч)', time: 90, effects: { health: 10, energy: -30, mood: 10 }, paths: { survival: 2 }, category: 'street' },
   { id: 'distribute_flyers', icon: 'file-text', title: 'Расклейка афиш', meta: '+подписчики (2ч)', time: 120, effects: { subscribers: [5, 15], energy: -25 }, paths: { music: 1 }, category: 'street' },
@@ -65,9 +65,9 @@ export const ACTIONS: ActionDef[] = [
   { id: 'casino_bar', icon: 'wine', title: 'Бар казино', meta: '+настрой, –стабильность (1ч)', time: 60, effects: { mood: 20, stability: -15, health: -5, cash: -300 }, paths: { chaos: 1 }, category: 'casino' },
 
   // === Доктор ===
-  { id: 'therapy_session', icon: 'brain', title: 'Сеанс терапии', meta: '+стабильность, +адекватность, –2000₽ (2ч)', time: 120, effects: { stability: 30, adequacy: 20, anxiety: -25, cash: -2000 }, paths: { survival: 3 }, category: 'doctor' },
-  { id: 'get_prescription', icon: 'pill', title: 'Получить рецепт', meta: '+стабильность, –1000₽ (1ч)', time: 60, effects: { stability: 20, cash: -1000 }, paths: { survival: 2 }, category: 'doctor' },
-  { id: 'full_checkup', icon: 'stethoscope', title: 'Полный осмотр', meta: '+HP, –3000₽ (3ч)', time: 180, effects: { health: 40, cash: -3000 }, paths: { survival: 2 }, category: 'doctor' },
+  { id: 'therapy_session', icon: 'brain', title: 'Сеанс терапии', meta: '+стабильность, +адекватность, –1500₽ (2ч)', time: 120, effects: { stability: 30, adequacy: 20, anxiety: -25, cash: -1500 }, paths: { survival: 3 }, category: 'doctor' },
+  { id: 'get_prescription', icon: 'pill', title: 'Получить рецепт', meta: '+стабильность, –700₽ (1ч)', time: 60, effects: { stability: 20, cash: -700 }, paths: { survival: 2 }, category: 'doctor' },
+  { id: 'full_checkup', icon: 'stethoscope', title: 'Полный осмотр', meta: '+HP, –2000₽ (3ч)', time: 180, effects: { health: 40, cash: -2000 }, paths: { survival: 2 }, category: 'doctor' },
   { id: 'rehab_session', icon: 'heart-pulse', title: 'Курс восстановления', meta: '–ломка, –5000₽ (4ч)', time: 240, effects: { withdrawal: -50, health: 20, stability: 15, cash: -5000 }, paths: { survival: 3 }, category: 'doctor' },
 
   // === Тюрьма ===

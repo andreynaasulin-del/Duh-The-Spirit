@@ -12,8 +12,8 @@ export const ITEMS: ItemDef[] = [
 
   // ========== ФАРМА (Medical) ==========
   { id: 'bandage', name: 'Бинт', desc: 'Базовая перевязка. Остановит кровь.', effectText: '+15 HP', price: 200, icon: 'bandage', category: 'pharma', tier: 'common', consumable: true, effects: { health: 15 } },
-  { id: 'painkillers', name: 'Кетанов', desc: 'Снимает любую боль. На время.', effectText: '+30 HP', price: 500, icon: 'pill', category: 'pharma', tier: 'common', consumable: true, effects: { health: 30 } },
-  { id: 'medkit', name: 'Армейская аптечка', desc: 'Всё что нужно для полевой хирургии.', effectText: '+60 HP', price: 2000, icon: 'cross', category: 'pharma', tier: 'rare', consumable: true, effects: { health: 60 } },
+  { id: 'painkillers', name: 'Кетанов', desc: 'Снимает любую боль. На время.', effectText: '+30 HP', price: 400, icon: 'pill', category: 'pharma', tier: 'common', consumable: true, effects: { health: 30 } },
+  { id: 'medkit', name: 'Армейская аптечка', desc: 'Всё что нужно для полевой хирургии.', effectText: '+60 HP', price: 1500, icon: 'cross', category: 'pharma', tier: 'rare', consumable: true, effects: { health: 60 } },
   { id: 'vitamins', name: 'Витаминки', desc: 'Компливит. Чтобы не развалиться окончательно.', effectText: '+5 HP, +5 Energy', price: 150, icon: 'pill', category: 'pharma', tier: 'common', consumable: true, effects: { health: 5, energy: 5 } },
   { id: 'adrenaline', name: 'Адреналин', desc: 'Экстренный стимулятор. Последний шанс.', effectText: '+100 Energy, -20 Stability', price: 3000, icon: 'zap', category: 'pharma', tier: 'epic', consumable: true, effects: { energy: 100, stability: -20 } },
   { id: 'stabilizer', name: 'Стабилизатор', desc: 'Седативный сбор. Снимает напряжение.', effectText: '+40 стабильности', price: 1200, icon: 'leaf', category: 'pharma', tier: 'rare', consumable: true, effects: { stability: 40 } },

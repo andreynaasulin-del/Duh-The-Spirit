@@ -30,12 +30,14 @@ export const ENDINGS = {
 
 export const CASINO_PROGRESSION = {
   LEVELS: {
-    1: { name: 'Залетный', maxBet: 100, unlockedGames: ['bones', 'slots'], xpRequired: 0 },
-    2: { name: 'Игрок', maxBet: 500, unlockedGames: ['bones', 'slots'], xpRequired: 100 },
-    3: { name: 'VIP', maxBet: 5000, unlockedGames: ['bones', 'slots', 'wheel'], xpRequired: 500 },
+    1: { name: 'Залетный', maxBet: 100, unlockedGames: ['bones', 'slots'], xpRequired: 0, dailyBetLimit: 10 },
+    2: { name: 'Игрок', maxBet: 500, unlockedGames: ['bones', 'slots'], xpRequired: 100, dailyBetLimit: 20 },
+    3: { name: 'VIP', maxBet: 5000, unlockedGames: ['bones', 'slots', 'wheel'], xpRequired: 500, dailyBetLimit: 50 },
   },
   XP_PER_BET: 1,
   XP_PER_BIG_WIN: 5,
+  WIN_CHANCE: 0.45, // 45% base win rate (house edge)
+  BET_COOLDOWN_MS: 30_000, // 30 sec between bets
   RAID_TRIGGER_SUSPICION: 100,
   RAID_CHANCE_AFTER_BIG_WIN: 0.05,
   RAID_BLOCK_DURATION: 5 * 60 * 1000,

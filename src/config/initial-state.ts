@@ -30,7 +30,7 @@ export const INITIAL_STATE: GameState = {
     shards: [],
   },
   kpis: {
-    cash: 5000,
+    cash: 8000,
     respect: 0,
     fame: 0,
     releases: 0,
@@ -78,7 +78,7 @@ export const INITIAL_STATE: GameState = {
     rank: 'muzhik',
     authority: 0,
     currency: { cigarettes: 10, tea: 0 },
-    sentence: { totalDays: 1825, daysServed: 0, daysRemaining: 1825 },
+    sentence: { totalDays: 30, daysServed: 0, daysRemaining: 30 },
   },
   casino: {
     unlocked: false,
