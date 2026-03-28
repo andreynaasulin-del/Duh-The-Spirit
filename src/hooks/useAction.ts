@@ -108,14 +108,26 @@ export function useAction() {
       // Check for arrest
       const difficulty = DIFFICULTIES[store.state.difficulty ?? 'medium'];
       if (shouldArrest(newSuspicion, difficulty)) {
-        // Arrested! Redirect to prison
+        // Arrested! Set status to PRISON and calculate sentence
+        const baseSentence = 30; // days
+        const sentence = Math.ceil(baseSentence * difficulty.sentenceMultiplier);
+        const jailTimeMinutes = sentence * 1440; // convert to game minutes
         store.setState({
           ...store.state,
           suspicionLevel: Math.max(0, newSuspicion - 40),
-          status: 'ARRESTED',
+          status: 'PRISON',
+          prison: {
+            ...store.state.prison,
+            sentence: {
+              totalDays: sentence,
+              daysServed: 0,
+              daysRemaining: sentence,
+            },
+          },
+          jailTime: jailTimeMinutes,
         });
         addToast('🚔 АРЕСТ! Тебя забрали.', 'error');
-        addLog('🚔 Арестован. Район не прощает.', 'danger');
+        addLog(`🚔 Арестован. Срок: ${sentence} дней.`, 'danger');
         try { window.Telegram?.WebApp?.HapticFeedback?.notificationOccurred?.('error'); } catch {}
       }
     }

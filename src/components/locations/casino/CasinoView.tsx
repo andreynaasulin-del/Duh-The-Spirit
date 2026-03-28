@@ -2,8 +2,9 @@
 
 import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Dice1, Coins, TrendingUp, TrendingDown, Sparkles } from 'lucide-react';
+import { Dice1, Coins, TrendingUp, TrendingDown, Sparkles, Clock } from 'lucide-react';
 import { useGameStore, useKPIs, useSeason } from '@/stores/game-store';
+import { CASINO_PROGRESSION } from '@/config/constants';
 
 const SLOT_SYMBOLS = ['🔥', '💎', '🎵', '💀', '⚡', '🌟', '👑'];
 
@@ -30,12 +31,30 @@ export function CasinoView() {
   const [coinResult, setCoinResult] = useState<'heads' | 'tails' | null>(null);
   const [coinFlipping, setCoinFlipping] = useState(false);
   const [coinChoice, setCoinChoice] = useState<'heads' | 'tails'>('heads');
+  const [lastBetTime, setLastBetTime] = useState(0);
+  const [dailyBets, setDailyBets] = useState(0);
+  const [cooldownLeft, setCooldownLeft] = useState(0);
 
   const kpis = useKPIs();
   const season = useSeason();
   const updateKPI = useGameStore((s) => s.updateKPI);
   const addLog = useGameStore((s) => s.addLog);
   const advanceTime = useGameStore((s) => s.advanceTime);
+
+  // Cooldown timer
+  useState(() => {
+    const iv = setInterval(() => {
+      const left = Math.max(0, CASINO_PROGRESSION.BET_COOLDOWN_MS - (Date.now() - lastBetTime));
+      setCooldownLeft(left);
+    }, 500);
+    return () => clearInterval(iv);
+  });
+
+  const casinoLevel = 1; // TODO: read from store when casino XP system is wired
+  const levelConfig = CASINO_PROGRESSION.LEVELS[casinoLevel as keyof typeof CASINO_PROGRESSION.LEVELS];
+  const dailyLimit = levelConfig.dailyBetLimit;
+  const onCooldown = cooldownLeft > 0;
+  const atDailyLimit = dailyBets >= dailyLimit;
 
   const getBetAmount = (): number => {
     if (bet === 'custom') {
@@ -47,7 +66,7 @@ export function CasinoView() {
 
   // === COIN FLIP ===
   const flipCoin = useCallback(() => {
-    if (coinFlipping) return;
+    if (coinFlipping || onCooldown || atDailyLimit) return;
     const amount = getBetAmount();
     if (!amount || kpis.cash < amount) {
       setLastResult({ win: false, amount: 0 });
@@ -57,6 +76,8 @@ export function CasinoView() {
     setCoinFlipping(true);
     setLastResult(null);
     setCoinResult(null);
+    setLastBetTime(Date.now());
+    setDailyBets(d => d + 1);
     updateKPI('cash', -amount);
     advanceTime(5);
 
@@ -67,8 +88,7 @@ export function CasinoView() {
       setCoinResult(Math.random() < 0.5 ? 'heads' : 'tails');
       if (tick >= 12) {
         clearInterval(interval);
-        // 48% win chance (slight house edge)
-        const result: 'heads' | 'tails' = Math.random() < 0.48 ? coinChoice : (coinChoice === 'heads' ? 'tails' : 'heads');
+        const result: 'heads' | 'tails' = Math.random() < CASINO_PROGRESSION.WIN_CHANCE ? coinChoice : (coinChoice === 'heads' ? 'tails' : 'heads');
         setCoinResult(result);
 
         const won = result === coinChoice;
@@ -89,7 +109,7 @@ export function CasinoView() {
 
   // === SLOTS ===
   const spin = useCallback(() => {
-    if (spinning) return;
+    if (spinning || onCooldown || atDailyLimit) return;
     const amount = getBetAmount();
     if (!amount || kpis.cash < amount) {
       setLastResult({ win: false, amount: 0 });
@@ -98,6 +118,8 @@ export function CasinoView() {
 
     setSpinning(true);
     setLastResult(null);
+    setLastBetTime(Date.now());
+    setDailyBets(d => d + 1);
     updateKPI('cash', -amount);
     advanceTime(15);
 
@@ -253,18 +275,18 @@ export function CasinoView() {
         <motion.button
           whileTap={{ scale: 0.95 }}
           onClick={spin}
-          disabled={spinning}
+          disabled={spinning || onCooldown || atDailyLimit}
           className="w-full py-3 text-sm font-bold tracking-widest"
           style={{
-            background: spinning
+            background: (spinning || onCooldown || atDailyLimit)
               ? 'rgba(255,255,255,0.05)'
               : 'linear-gradient(135deg, #ffd70022, #ff8c0022)',
             border: '2px solid #ffd70066',
-            color: spinning ? 'var(--color-text-muted)' : '#ffd700',
+            color: (spinning || onCooldown || atDailyLimit) ? 'var(--color-text-muted)' : '#ffd700',
             borderRadius: '10px',
           }}
         >
-          {spinning ? '...' : 'КРУТИТЬ'}
+          {spinning ? '...' : atDailyLimit ? `ЛИМИТ ${dailyLimit}` : onCooldown ? `${Math.ceil(cooldownLeft / 1000)}с` : 'КРУТИТЬ'}
         </motion.button>
       </div>
       )}
@@ -350,16 +372,16 @@ export function CasinoView() {
           <motion.button
             whileTap={{ scale: 0.95 }}
             onClick={flipCoin}
-            disabled={coinFlipping}
+            disabled={coinFlipping || onCooldown || atDailyLimit}
             className="w-full py-3 text-sm font-bold tracking-widest"
             style={{
-              background: coinFlipping ? 'rgba(255,255,255,0.05)' : 'linear-gradient(135deg, #ffd70022, #ff8c0022)',
+              background: (coinFlipping || onCooldown || atDailyLimit) ? 'rgba(255,255,255,0.05)' : 'linear-gradient(135deg, #ffd70022, #ff8c0022)',
               border: '2px solid #ffd70066',
-              color: coinFlipping ? 'var(--color-text-muted)' : '#ffd700',
+              color: (coinFlipping || onCooldown || atDailyLimit) ? 'var(--color-text-muted)' : '#ffd700',
               borderRadius: '10px',
             }}
           >
-            {coinFlipping ? '...' : 'БРОСИТЬ x2'}
+            {coinFlipping ? '...' : atDailyLimit ? `ЛИМИТ ${dailyLimit}` : onCooldown ? `${Math.ceil(cooldownLeft / 1000)}с` : 'БРОСИТЬ x2'}
           </motion.button>
         </div>
       )}

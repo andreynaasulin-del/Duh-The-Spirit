@@ -8,6 +8,7 @@ export const INITIAL_STATE: GameState = {
   time: 0,
   currentStage: 0,
   status: 'FREE',
+  jailTime: 0,
   stats: {
     health: 100,
     energy: 100,

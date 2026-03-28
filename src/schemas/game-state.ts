@@ -164,7 +164,7 @@ export const GameStateSchema = z.object({
   day: z.number().min(1).max(99999),
   time: z.number().min(0).max(1439),
   currentStage: z.number().min(0),
-  status: z.enum(['FREE', 'PRISON', 'HOSPITAL']),
+  status: z.enum(['FREE', 'PRISON', 'HOSPITAL', 'ARRESTED']),
 
   stats: StatsSchema,
   kpis: KPIsSchema,
