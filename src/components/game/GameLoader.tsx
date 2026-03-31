@@ -173,7 +173,15 @@ export function GameLoader({ children }: GameLoaderProps) {
 
   // Ending screen
   if (ending) {
-    return <EndingScreen ending={ending} day={day} onRestart={handleRestart} />;
+    return (
+      <EndingScreen
+        ending={ending}
+        day={day}
+        paths={paths}
+        kpis={{ cash: kpis.cash, respect: kpis.respect, fame: kpis.fame }}
+        onRestart={handleRestart}
+      />
+    );
   }
 
   return <>{children}</>;

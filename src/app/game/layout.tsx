@@ -9,6 +9,7 @@ import { SeasonParticles } from '@/components/effects/SeasonParticles';
 import { SeasonTransition } from '@/components/ui/SeasonTransition';
 import { DailyRewardPopup } from '@/components/ui/DailyRewardPopup';
 import { SpiritPopup } from '@/components/game/SpiritPopup';
+import { MissionHint } from '@/components/ui/MissionHint';
 
 export default function GameLayout({ children }: { children: ReactNode }) {
   return (
@@ -19,7 +20,8 @@ export default function GameLayout({ children }: { children: ReactNode }) {
           <SeasonTransition />
           <DailyRewardPopup />
           <HUD />
-          <main className="flex-1 overflow-y-auto pb-20">
+          <MissionHint />
+          <main className="flex-1 overflow-y-auto pb-16">
             {children}
           </main>
           <SpiritPopup />

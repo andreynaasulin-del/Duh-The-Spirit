@@ -6,12 +6,31 @@ import { getProduct, type StarsProduct } from '@/config/stars-shop';
 
 type PurchaseStatus = 'idle' | 'loading' | 'success' | 'cancelled' | 'error';
 
+/** Force-save current game state to Supabase (bypasses debounce) */
+async function forceSave() {
+  try {
+    const raw = localStorage.getItem('duh_user') || localStorage.getItem('pryton_user');
+    if (!raw) return;
+    const user = JSON.parse(raw);
+    const userId = user.id;
+    if (!userId) return;
+
+    const state = useGameStore.getState().state;
+    await fetch('/api/game/save', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, state }),
+    });
+  } catch {
+    console.warn('[Stars] Failed to force-save after purchase');
+  }
+}
+
 export function useStars() {
   const [status, setStatus] = useState<PurchaseStatus>('idle');
   const [activeProduct, setActiveProduct] = useState<string | null>(null);
 
   const applyEffects = useGameStore((s) => s.applyEffects);
-  const advanceDays = useGameStore((s) => s.advanceTime);
 
   const purchase = useCallback(async (productId: string) => {
     const product = getProduct(productId);
@@ -53,6 +72,8 @@ export function useStars() {
           applyProductEffects(product);
           setStatus('success');
           tg.HapticFeedback.notificationOccurred('success');
+          // Force-save immediately so purchase survives app close
+          forceSave();
         } else if (paymentStatus === 'cancelled') {
           setStatus('cancelled');
         } else {

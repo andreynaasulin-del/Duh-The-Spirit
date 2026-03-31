@@ -11,7 +11,6 @@ import { useAction } from '@/hooks/useAction';
 import { getActionsByCategory } from '@/config/actions';
 import { ReferralCard } from '@/components/game/ReferralCard';
 import { QuestPanel } from '@/components/ui/QuestPanel';
-import { MissionHint } from '@/components/ui/MissionHint';
 import { ComicBubble } from '@/components/ui/ComicBubble';
 import { useSpirit } from '@/hooks/useSpirit';
 import { SpiritSabotagePopup } from '@/components/ui/SpiritSabotage';
@@ -158,9 +157,6 @@ export function HomeView() {
       <div className="chapter-divider">
         <span>{season.subtitle}</span>
       </div>
-
-      {/* === CURRENT MISSION (always visible) === */}
-      <MissionHint />
 
       {/* === QUESTS === */}
       <QuestPanel />

@@ -2,7 +2,8 @@ import { create } from 'zustand';
 import type { GameState, StatKey, KPIKey, PathKey, LogEntry, LogType } from '@/types/game';
 import { createInitialState } from '@/config/initial-state';
 import { GAME_CONFIG } from '@/config/constants';
-import { getCurrentSeason, getInsomniaDrain, rollPanicAttack } from '@/config/seasons';
+import { getCurrentSeason, getInsomniaDrain } from '@/config/seasons';
+import { getSuspicionDecay } from '@/config/difficulty';
 import type { SeasonConfig } from '@/config/seasons';
 
 interface GameStore {
@@ -88,12 +89,17 @@ export const useGameStore = create<GameStore>((set, get) => ({
   },
 
   updateKPI: (name, delta) => {
-    set((s) => ({
-      state: {
-        ...s.state,
-        kpis: { ...s.state.kpis, [name]: s.state.kpis[name] + delta },
-      },
-    }));
+    set((s) => {
+      let newValue = s.state.kpis[name] + delta;
+      // Cash cannot go below 0
+      if (name === 'cash') newValue = Math.max(0, newValue);
+      return {
+        state: {
+          ...s.state,
+          kpis: { ...s.state.kpis, [name]: newValue },
+        },
+      };
+    });
   },
 
   updatePath: (name, delta) => {
@@ -134,12 +140,34 @@ export const useGameStore = create<GameStore>((set, get) => ({
         const neuroDecay = s.state.neuro.implants.includes('ghost_filter') ? -1 : -2;
         const newNeuroStability = clamp(s.state.neuro.stability + neuroDecay, 0, s.state.neuro.maxStability);
 
+        // Suspicion natural decay (-2/day)
+        const suspicionDecay = getSuspicionDecay(newDay);
+        const newSuspicion = Math.max(0, (s.state.suspicionLevel ?? 0) - suspicionDecay);
+
+        // Prison sentence: count down days
+        let newPrison = s.state.prison;
+        let newStatus = s.state.status;
+        if (s.state.status === 'PRISON' && newPrison.sentence) {
+          const served = (newPrison.sentence.daysServed || 0) + 1;
+          const remaining = Math.max(0, newPrison.sentence.totalDays - served);
+          newPrison = {
+            ...newPrison,
+            sentence: { ...newPrison.sentence, daysServed: served, daysRemaining: remaining },
+          };
+          if (remaining <= 0) {
+            newStatus = 'FREE';
+          }
+        }
+
         return {
           state: {
             ...s.state,
             day: newDay,
             time: newTime,
             stats: newStats,
+            status: newStatus,
+            prison: newPrison,
+            suspicionLevel: newSuspicion,
             neuro: { ...s.state.neuro, stability: newNeuroStability },
           },
         };

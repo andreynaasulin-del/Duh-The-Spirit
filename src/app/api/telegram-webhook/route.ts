@@ -1,4 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createServiceClient } from '@/lib/supabase/service';
+import { getProduct } from '@/config/stars-shop';
+import { GAME_VERSION } from '@/config/constants';
 
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const WEBHOOK_SECRET = process.env.TELEGRAM_WEBHOOK_SECRET;
@@ -267,7 +270,89 @@ export async function POST(req: NextRequest) {
 
     // === SUCCESSFUL PAYMENT ===
     if (update.message?.successful_payment) {
-      console.log(`[STARS] user=${update.message.from?.id} amount=${update.message.successful_payment.total_amount}`);
+      const payment = update.message.successful_payment;
+      const telegramId = String(update.message.from?.id);
+      const chatId = update.message.chat.id;
+
+      let productId = 'unknown';
+      try {
+        const payload = JSON.parse(payment.invoice_payload);
+        productId = payload.productId || 'unknown';
+      } catch { /* keep unknown */ }
+
+      const product = getProduct(productId);
+
+      console.log(`[STARS] user=${telegramId} product=${productId} amount=${payment.total_amount}`);
+
+      // Server-side: apply effects to saved game state
+      const supabase = createServiceClient();
+
+      // Find user by telegram_id
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('telegram_id', telegramId)
+        .single();
+
+      if (profile && product) {
+        // Load current game state
+        const { data: gameData } = await supabase
+          .from('game_states')
+          .select('state')
+          .eq('user_id', profile.id)
+          .single();
+
+        if (gameData?.state) {
+          const state = gameData.state as Record<string, unknown>;
+          const stats = (state.stats || {}) as Record<string, number>;
+          const kpis = (state.kpis || {}) as Record<string, number>;
+
+          // Apply product effects server-side
+          for (const [key, value] of Object.entries(product.effects)) {
+            if (key in stats) {
+              // Stats are clamped 0-100; SET to value (not add)
+              stats[key] = Math.min(100, Math.max(0, value));
+            } else if (key in kpis) {
+              // KPIs are additive
+              kpis[key] = (kpis[key] || 0) + value;
+            }
+          }
+
+          state.stats = stats;
+          state.kpis = kpis;
+
+          // Save updated state
+          await supabase
+            .from('game_states')
+            .upsert({
+              user_id: profile.id,
+              state,
+              version: GAME_VERSION,
+              last_saved_at: new Date().toISOString(),
+            }, { onConflict: 'user_id' });
+        }
+
+        // Log purchase to action_logs
+        await supabase.from('action_logs').insert({
+          user_id: profile.id,
+          action_type: 'stars_purchase',
+          action_id: productId,
+          payload: {
+            stars: payment.total_amount,
+            effects: product.effects,
+            charge_id: payment.telegram_payment_charge_id,
+          },
+        });
+      }
+
+      // Send confirmation message
+      const productName = product?.title || `${payment.total_amount} Stars`;
+      await sendMessage(chatId,
+        `✅ <b>Оплата прошла!</b>\n\n` +
+        `⭐ ${productName}\n` +
+        `Бусты применены. Удачи на районе! 👻`,
+        { inline_keyboard: [[{ text: '🎮 Вернуться в игру', web_app: { url: APP_URL } }]] }
+      );
     }
 
     return NextResponse.json({ ok: true });

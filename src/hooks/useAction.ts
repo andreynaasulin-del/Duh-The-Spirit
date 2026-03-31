@@ -8,7 +8,8 @@ import type { StatKey, KPIKey, PathKey } from '@/types/game';
 import { useQuests } from './useQuests';
 import { rollRandomEvent } from '@/config/random-events';
 import { getCurrentSeason } from '@/config/seasons';
-import { SUSPICIOUS_ACTIONS, DIFFICULTIES, shouldArrest, getSuspicionLevel } from '@/config/difficulty';
+import { SUSPICIOUS_ACTIONS, DIFFICULTIES, shouldArrest, getSuspicionLevel, getSuspicionDecay } from '@/config/difficulty';
+import { rollPanicAttack } from '@/config/seasons';
 
 const STAT_KEYS: StatKey[] = ['health', 'energy', 'hunger', 'mood', 'withdrawal', 'stability', 'adequacy', 'anxiety', 'trip', 'synchronization'];
 const KPI_KEYS: KPIKey[] = ['cash', 'respect', 'fame', 'releases', 'subscribers'];
@@ -31,6 +32,13 @@ export function useAction() {
       return false;
     }
 
+    // Prison: block all non-prison actions
+    const currentStatus = useGameStore.getState().state.status;
+    if (currentStatus === 'PRISON' && action.category !== 'prison') {
+      addToast('Ты в тюрьме. Действие недоступно.', 'error');
+      return false;
+    }
+
     // Check energy requirement
     const energyCost = action.effects.energy;
     if (typeof energyCost === 'number' && energyCost < 0 && stats.energy < Math.abs(energyCost)) {
@@ -45,10 +53,30 @@ export function useAction() {
       return false;
     }
 
+    // Panic attack check (Winter: 15% chance per action)
+    const currentDay = useGameStore.getState().state.day;
+    if (rollPanicAttack(currentDay)) {
+      updateStat('anxiety', 20);
+      updateStat('energy', -15);
+      addToast('😰 Паническая атака!', 'error');
+      addLog('😰 Паника. Руки трясутся, воздуха не хватает.', 'danger');
+      try { window.Telegram?.WebApp?.HapticFeedback?.notificationOccurred?.('error'); } catch {}
+      return false; // Action fails due to panic
+    }
+
+    // God mode boost (Spring: 1.5x positive effects)
+    const season = getCurrentSeason(currentDay);
+    const godBoost = season.modifiers.godModeBoost;
+
     // Apply effects
     for (const [key, value] of Object.entries(action.effects)) {
       if (value === undefined) continue;
-      const resolved = resolveEffect(value);
+      let resolved = resolveEffect(value);
+
+      // Spring god mode: boost positive stat/kpi effects
+      if (godBoost > 0 && resolved > 0) {
+        resolved = Math.round(resolved * godBoost);
+      }
 
       if (STAT_KEYS.includes(key as StatKey)) {
         updateStat(key as StatKey, resolved);
@@ -133,9 +161,9 @@ export function useAction() {
     }
 
     // Random event roll
-    const day = useGameStore.getState().state.day;
-    const season = getCurrentSeason(day);
-    const event = rollRandomEvent(season.id);
+    const currentDayNow = useGameStore.getState().state.day;
+    const currentSeason = getCurrentSeason(currentDayNow);
+    const event = rollRandomEvent(currentSeason.id);
     if (event) {
       // Apply event effects
       for (const [key, val] of Object.entries(event.effect)) {

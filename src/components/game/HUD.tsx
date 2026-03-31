@@ -116,7 +116,7 @@ export function HUD() {
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="text-sm font-bold font-mono neon-text-gold">₽{formatCash(kpis.cash)}</span>
+          <span className="text-xs font-bold font-mono neon-text-gold">₽{formatCash(kpis.cash)}</span>
           {user && (
             <div className="flex items-center gap-1.5">
               {user.photo_url ? (
@@ -147,7 +147,7 @@ export function HUD() {
       </div>
 
       {/* Stat bars */}
-      <div className="grid grid-cols-4 gap-1.5 px-3 py-1.5">
+      <div className="grid grid-cols-4 gap-1 px-2 py-1">
         <StatBar icon={<Heart className="w-3 h-3 text-health" />} value={stats.health} color="var(--color-health)" label="HP" />
         <StatBar icon={<Zap className="w-3 h-3 text-energy" />} value={stats.energy} color="var(--color-energy)" label="EN" />
         <StatBar icon={<UtensilsCrossed className="w-3 h-3 text-hunger" />} value={stats.hunger} color="var(--color-hunger)" label="HN" />
