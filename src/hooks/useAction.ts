@@ -14,6 +14,9 @@ import { rollPanicAttack } from '@/config/seasons';
 const STAT_KEYS: StatKey[] = ['health', 'energy', 'hunger', 'mood', 'withdrawal', 'stability', 'adequacy', 'anxiety', 'trip', 'synchronization'];
 const KPI_KEYS: KPIKey[] = ['cash', 'respect', 'fame', 'releases', 'subscribers'];
 
+// Panic attack cooldown — max 1 per 3 actions
+let panicCooldown = 0;
+
 export function useAction() {
   const updateStat = useGameStore((s) => s.updateStat);
   const updateKPI = useGameStore((s) => s.updateKPI);
@@ -53,9 +56,12 @@ export function useAction() {
       return false;
     }
 
-    // Panic attack check (Winter: 15% chance per action)
+    // Panic attack check (Winter: 15% chance, cooldown 3 actions)
     const currentDay = useGameStore.getState().state.day;
-    if (rollPanicAttack(currentDay)) {
+    if (panicCooldown > 0) {
+      panicCooldown--;
+    } else if (rollPanicAttack(currentDay)) {
+      panicCooldown = 3;
       updateStat('anxiety', 20);
       updateStat('energy', -15);
       addToast('😰 Паническая атака!', 'error');

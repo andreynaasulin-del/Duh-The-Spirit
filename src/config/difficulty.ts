@@ -46,9 +46,9 @@ export const DIFFICULTIES: Record<DifficultyMode, DifficultyConfig> = {
     name: 'LIGHT',
     emoji: '☀️',
     subtitle: 'Для сюжета',
-    description: 'Невозможно умереть. Статы не падают ниже 5. Дух появляется редко. Для тех кто хочет пройти сюжет.',
+    description: 'Невозможно умереть. Статы не падают ниже 10. Дух появляется редко. Для тех кто хочет пройти сюжет.',
     canDie: false,
-    statFloor: 5,
+    statFloor: 10,
     deathRespawn: false,
     suspicionGainMultiplier: 0.5,
     arrestThreshold: 100, // practically unreachable

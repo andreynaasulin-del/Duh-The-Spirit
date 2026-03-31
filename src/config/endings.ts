@@ -39,7 +39,7 @@ export const ENDINGS: Ending[] = [
     icon: '💀',
     color: '#ff3b3b',
     priority: 100,
-    condition: (s) => s.stats.stability <= 5 || s.stats.health <= 5,
+    condition: (s) => s.day > 10 && (s.stats.stability <= 5 || s.stats.health <= 5),
   },
 
   // === SECRET ENDING ===
@@ -51,7 +51,7 @@ export const ENDINGS: Ending[] = [
     icon: '👑',
     color: '#ffd700',
     priority: 90,
-    condition: (s) => s.paths.music >= 50 && s.paths.chaos >= 30 && s.kpis.fame >= 100 && s.kpis.respect >= 50,
+    condition: (s) => s.day >= 300 && s.paths.music >= 60 && s.paths.chaos >= 40 && s.kpis.fame >= 150 && s.kpis.respect >= 80,
   },
 
   // === MAIN ENDINGS (checked at day 360) ===
