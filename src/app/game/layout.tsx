@@ -10,6 +10,7 @@ import { SeasonTransition } from '@/components/ui/SeasonTransition';
 import { DailyRewardPopup } from '@/components/ui/DailyRewardPopup';
 import { SpiritPopup } from '@/components/game/SpiritPopup';
 import { MissionHint } from '@/components/ui/MissionHint';
+import { SituationalEventLayer } from '@/components/game/SituationalEventLayer';
 
 export default function GameLayout({ children }: { children: ReactNode }) {
   return (
@@ -25,6 +26,7 @@ export default function GameLayout({ children }: { children: ReactNode }) {
             {children}
           </main>
           <SpiritPopup />
+          <SituationalEventLayer />
           <NavBar />
         </div>
       </SeasonThemeProvider>
