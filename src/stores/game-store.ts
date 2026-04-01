@@ -187,21 +187,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
   tick: () => {
     // Called every second — lightweight client-side tick
-    const { state } = get();
-
-    // Jail tick
-    if (state.status === 'PRISON' && state.jailTime && state.jailTime > 0) {
-      set((s) => ({
-        state: {
-          ...s.state,
-          jailTime: Math.max(0, (s.state.jailTime || 0) - 1),
-          status: (s.state.jailTime || 0) - 1 <= 0 ? 'FREE' : s.state.status,
-        },
-      }));
-    }
-
-    // Hunger/energy passive drain (every 60 ticks = 1 game minute)
-    // This is handled by advanceTime on action completion
+    // Prison countdown is handled by advanceTime (day-based, not real-time)
+    // Hunger/energy drain is handled by advanceTime on action completion
   },
 
   addItem: (itemId) => {

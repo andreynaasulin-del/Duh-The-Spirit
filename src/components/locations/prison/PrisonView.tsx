@@ -1,13 +1,111 @@
 'use client';
 
-import { useState, useCallback } from 'react';
-import { motion } from 'framer-motion';
+import { useState, useCallback, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Lock, Dumbbell, BookOpen, Users, Swords, Clock, ShieldAlert,
-  ChevronRight,
+  ChevronRight, Cigarette, MessageSquare, Eye, Skull, Heart,
 } from 'lucide-react';
 import { useGameStore, useStats, useKPIs, useSeason, useStatus } from '@/stores/game-store';
 import { NPCEncounter } from '@/components/ui/NPCEncounter';
+
+// ========== PRISON EVENTS (ситуационные выборы) ==========
+
+interface PrisonEvent {
+  id: string;
+  text: string;
+  choices: {
+    label: string;
+    effects: Record<string, number>;
+    result: string;
+  }[];
+}
+
+const PRISON_EVENTS: PrisonEvent[] = [
+  {
+    id: 'rat_stash',
+    text: 'Сокамерник припрятал передачку под подушкой. Один из зеков решил это скрысить.',
+    choices: [
+      { label: 'Ударить крысу', effects: { respect: 8, health: -10, mood: 5 }, result: 'Ты врезал ему. Камера запомнила. Респект +8, но синяк обеспечен.' },
+      { label: 'Разделить передачку', effects: { mood: 10, respect: -3, stability: 5 }, result: 'Поделили на троих. Тихо, мирно. Но слабость заметили.' },
+    ],
+  },
+  {
+    id: 'guard_deal',
+    text: 'Вертухай предлагает пронести телефон за 5 пачек сигарет. Рискованно — могут подставить.',
+    choices: [
+      { label: 'Согласиться', effects: { mood: 20, stability: -10, respect: 3 }, result: 'Телефон в руках. Написал на волю. Но нервы на пределе — если найдут, срок добавят.' },
+      { label: 'Отказать', effects: { stability: 10, mood: -5 }, result: 'Правильный выбор. Целее будешь. Но связи с волей нет.' },
+    ],
+  },
+  {
+    id: 'night_talk',
+    text: 'Ночь. Бонс не спит. Говорит: "Я тут уже третий срок. Хочешь знать как выжить?"',
+    choices: [
+      { label: 'Слушать', effects: { stability: 15, mood: 10, anxiety: -10 }, result: 'Бонс рассказал про своих детей. Про ошибки. Ты чувствуешь себя спокойнее.' },
+      { label: 'Отвернуться к стене', effects: { mood: -10, energy: 15 }, result: 'Не твои проблемы. Уснул быстро, но на душе пусто.' },
+    ],
+  },
+  {
+    id: 'yard_challenge',
+    text: 'На прогулке тебя толкнули плечом. Намеренно. Вся площадка смотрит.',
+    choices: [
+      { label: 'Ответить кулаком', effects: { respect: 12, health: -15, mood: 10 }, result: 'Жёсткий обмен. Ты на ногах. Он нет. Двор запомнил.' },
+      { label: 'Пройти мимо', effects: { respect: -5, stability: 5, mood: -15 }, result: 'Проглотил. Никто ничего не сказал. Но все всё поняли.' },
+      { label: 'Посмотреть в глаза и ждать', effects: { respect: 5, stability: -5, mood: -5 }, result: 'Он отвёл взгляд первый. Психологическая победа. Но напряжение осталось.' },
+    ],
+  },
+  {
+    id: 'package_from_outside',
+    text: 'Тебе передали посылку. Внутри — таблетки и записка: "Это от Духа. Прими и всё станет яснее."',
+    choices: [
+      { label: 'Принять таблетки', effects: { mood: 30, stability: -20, trip: 15 }, result: 'Мир поплыл. Дух смеётся где-то внутри. Хорошо, но за это будет цена.' },
+      { label: 'Выбросить в унитаз', effects: { stability: 15, mood: -10 }, result: 'Смыл. Дух замолчал. Голова ясная. Правильный выбор.' },
+    ],
+  },
+  {
+    id: 'snitch_offer',
+    text: 'Оперативник вызвал на разговор. "Расскажи кто тебя крышевал — скинем срок."',
+    choices: [
+      { label: 'Молчать', effects: { respect: 10, stability: -10, mood: -10 }, result: 'Ни слова. Опер ушёл злой. Но на зоне ты — свой.' },
+      { label: 'Сдать информацию', effects: { respect: -20, mood: 5 }, result: 'Рассказал. Срок не скинули. Зато в камере прознали. Теперь ты крыса.' },
+    ],
+  },
+  {
+    id: 'cell_search',
+    text: 'Шмон! Охрана переворачивает камеру. У соседа под матрасом — заточка.',
+    choices: [
+      { label: 'Молчать — не твоё дело', effects: { stability: 5, respect: 3 }, result: 'Заточку нашли. Соседа увели. Ты не при делах.' },
+      { label: 'Отвлечь охрану', effects: { respect: 8, health: -5, stability: -5 }, result: 'Затеял скандал. Соседа не тронули. Ты получил по рёбрам, но уважение выросло.' },
+    ],
+  },
+  {
+    id: 'food_fight',
+    text: 'В столовой кто-то плюнул в твою миску. Все смотрят что ты сделаешь.',
+    choices: [
+      { label: 'Перевернуть миску ему на голову', effects: { respect: 15, health: -10, mood: 15 }, result: 'Каша на голове. Ор. Тебя уважают. Синяк пройдёт.' },
+      { label: 'Молча уйти голодным', effects: { respect: -8, mood: -20, stability: 5 }, result: 'Ушёл. Голодный. Тихо. Но все видели.' },
+    ],
+  },
+  {
+    id: 'dream_spirit',
+    text: 'Ночью снится Дух. Он стоит за решёткой и шепчет: "Ты здесь потому что слушал меня."',
+    choices: [
+      { label: '"Ты прав. Но я выберусь."', effects: { stability: 10, mood: 10, anxiety: -5 }, result: 'Проснулся с ясной головой. Что-то изменилось внутри.' },
+      { label: '"Пошёл нахер."', effects: { mood: 15, stability: -5 }, result: 'Дух рассмеялся и исчез. Злость даёт силы, но не покой.' },
+    ],
+  },
+  {
+    id: 'letter',
+    text: 'Письмо. Без обратного адреса. "Держись. На воле ждут." Подпись размазана.',
+    choices: [
+      { label: 'Сохранить письмо', effects: { mood: 20, stability: 10 }, result: 'Перечитываешь каждую ночь. Кто-то помнит о тебе.' },
+      { label: 'Порвать — нечего надеяться', effects: { mood: -10, stability: 5, anxiety: -5 }, result: 'Клочки в ведро. Никаких иллюзий. Только ты и стены.' },
+    ],
+  },
+];
+
+// ========== PRISON ACTIONS ==========
 
 interface PrisonAction {
   id: string;
@@ -20,117 +118,95 @@ interface PrisonAction {
 }
 
 const PRISON_ACTIONS: PrisonAction[] = [
-  {
-    id: 'workout_yard',
-    icon: Dumbbell,
-    title: 'Тренировка во дворе',
-    meta: '+HP, +настрой (2ч)',
-    time: 120,
-    effects: { health: 10, mood: 10, energy: -15 },
-  },
-  {
-    id: 'read_books',
-    icon: BookOpen,
-    title: 'Читать книги',
-    meta: '+стабильность, +адекватность (3ч)',
-    time: 180,
-    effects: { stability: 15, adequacy: 10, mood: 5 },
-  },
-  {
-    id: 'make_connections',
-    icon: Users,
-    title: 'Заводить связи',
-    meta: '+респект, риск конфликта (2ч)',
-    time: 120,
-    effects: { respect: [3, 8] as any, mood: -5 },
-    risk: true,
-  },
-  {
-    id: 'fight_yard',
-    icon: Swords,
-    title: 'Разборка на прогулке',
-    meta: '+респект, риск травмы (1ч)',
-    time: 60,
-    effects: { respect: [5, 15] as any, health: [-20, -5] as any },
-    risk: true,
-  },
-  {
-    id: 'sleep_cell',
-    icon: Clock,
-    title: 'Отсидеться в камере',
-    meta: '+энергия, –настрой (8ч)',
-    time: 480,
-    effects: { energy: 40, mood: -15, stability: -5 },
-  },
+  { id: 'workout_yard', icon: Dumbbell, title: 'Тренировка во дворе', meta: '+HP, +настрой (2ч)', time: 120, effects: { health: 10, mood: 10, energy: -15 } },
+  { id: 'read_books', icon: BookOpen, title: 'Читать книги', meta: '+стабильность (3ч)', time: 180, effects: { stability: 15, adequacy: 10, mood: 5 } },
+  { id: 'make_connections', icon: Users, title: 'Заводить связи', meta: '+респект, риск (2ч)', time: 120, effects: { respect: 5, mood: -5 }, risk: true },
+  { id: 'fight_yard', icon: Swords, title: 'Разборка на прогулке', meta: '+респект, травмы (1ч)', time: 60, effects: { respect: 10, health: -15 }, risk: true },
+  { id: 'sleep_cell', icon: Clock, title: 'Отсидеться в камере', meta: '+энергия (8ч)', time: 480, effects: { energy: 40, mood: -15, stability: -5 } },
+  { id: 'write_cell', icon: MessageSquare, title: 'Писать тексты', meta: '+музыка, +настрой (2ч)', time: 120, effects: { mood: 15, stability: 10 } },
+  { id: 'observe', icon: Eye, title: 'Наблюдать за зоной', meta: '+адекватность (1ч)', time: 60, effects: { adequacy: 10, stability: 5, mood: -5 } },
+  { id: 'pray', icon: Heart, title: 'Молиться / медитация', meta: '+стабильность, –тревога (1ч)', time: 60, effects: { stability: 15, anxiety: -10, mood: 5 } },
 ];
+
+// ========== COMPONENT ==========
 
 export function PrisonView() {
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [activeEvent, setActiveEvent] = useState<PrisonEvent | null>(null);
+  const [eventResult, setEventResult] = useState<string | null>(null);
+  const [actionCount, setActionCount] = useState(0);
   const stats = useStats();
   const kpis = useKPIs();
   const season = useSeason();
   const status = useStatus();
-  const jailTime = useGameStore((s) => s.state.jailTime || 0);
+  const prison = useGameStore((s) => s.state.prison);
   const applyEffects = useGameStore((s) => s.applyEffects);
   const advanceTime = useGameStore((s) => s.advanceTime);
   const addLog = useGameStore((s) => s.addLog);
-  const setStatus = useGameStore((s) => s.setStatus);
 
   const isFree = status !== 'PRISON';
+  const daysLeft = prison?.sentence?.daysRemaining ?? 0;
+  const daysServed = prison?.sentence?.daysServed ?? 0;
+  const totalDays = prison?.sentence?.totalDays ?? 30;
+
+  // Trigger random event every 3-4 actions
+  useEffect(() => {
+    if (actionCount > 0 && actionCount % 3 === 0 && !activeEvent && !isFree) {
+      const available = PRISON_EVENTS.filter(e => !eventResult); // always show
+      if (available.length > 0) {
+        const event = available[Math.floor(Math.random() * available.length)];
+        setActiveEvent(event);
+      }
+    }
+  }, [actionCount]);
 
   const handleAction = useCallback((action: PrisonAction) => {
-    if (isFree) return;
+    if (isFree || busyId) return;
     setBusyId(action.id);
     advanceTime(action.time);
     applyEffects(action.effects);
     addLog(`Тюрьма: ${action.title}`, action.risk ? 'danger' : 'info');
-    setTimeout(() => setBusyId(null), 500);
-  }, [isFree, advanceTime, applyEffects, addLog]);
+    setActionCount(c => c + 1);
+    setTimeout(() => setBusyId(null), 400);
+  }, [isFree, busyId, advanceTime, applyEffects, addLog]);
 
-  // Days remaining
-  const daysLeft = Math.ceil(jailTime / 1440);
+  const handleEventChoice = useCallback((choice: PrisonEvent['choices'][0]) => {
+    applyEffects(choice.effects);
+    addLog(`Тюрьма: ${choice.result.substring(0, 50)}...`, 'danger');
+    setEventResult(choice.result);
+    setTimeout(() => {
+      setActiveEvent(null);
+      setEventResult(null);
+    }, 4000);
+  }, [applyEffects, addLog]);
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="p-4 space-y-4"
-    >
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="p-4 space-y-4">
       {/* Header */}
       <div className="flex items-start gap-3">
-        <div
-          className="w-11 h-11 flex items-center justify-center shrink-0 border-2"
-          style={{
-            borderColor: '#ff4444',
-            boxShadow: '0 0 16px rgba(255,68,68,0.3)',
-            borderRadius: '10px',
-          }}
-        >
+        <div className="w-11 h-11 flex items-center justify-center shrink-0 border-2"
+          style={{ borderColor: '#ff4444', boxShadow: '0 0 16px rgba(255,68,68,0.3)', borderRadius: '10px' }}>
           <Lock className="w-6 h-6" style={{ color: '#ff4444' }} />
         </div>
         <div className="flex-1">
-          <h1 className="manga-title text-xl tracking-wider" style={{ color: '#ff4444' }}>
-            ТЮРЬМА
-          </h1>
+          <h1 className="manga-title text-xl tracking-wider" style={{ color: '#ff4444' }}>ТЮРЬМА</h1>
           <p className="text-[11px] text-text-muted tracking-wide">
-            {isFree ? 'Ты на свободе. Надеемся, ненадолго не вернёшься.' : 'Выживай. Каждый день — испытание.'}
+            {isFree ? 'Ты на свободе.' : 'Выживай. Каждый день — испытание.'}
           </p>
         </div>
       </div>
 
       {isFree ? (
-        /* Free state */
         <div className="manga-panel p-6 text-center space-y-3">
           <ShieldAlert className="w-10 h-10 mx-auto" style={{ color: 'var(--color-neon-green)' }} />
           <h2 className="text-sm font-bold text-text-primary">ТЫ НА СВОБОДЕ</h2>
           <p className="text-[11px] text-text-muted">
             Попадёшь сюда если переборщишь с тёмными делами.
-            Уличные разборки, тёмные схемы — всё имеет последствия.
           </p>
         </div>
       ) : (
         <>
-          {/* Sentence status */}
+          {/* Sentence */}
           <div className="manga-panel p-3">
             <div className="flex items-center justify-between mb-2">
               <span className="manga-label">СРОК</span>
@@ -140,41 +216,92 @@ export function PrisonView() {
             </div>
             <div className="w-full h-2 bg-white/5" style={{ borderRadius: '8px' }}>
               <motion.div
-                className="h-full bg-danger"
+                className="h-full"
                 style={{
-                  width: `${Math.max(5, 100 - (daysLeft / 30) * 100)}%`,
+                  width: `${Math.max(3, (daysServed / totalDays) * 100)}%`,
+                  backgroundColor: '#ff4444',
                   borderRadius: '8px',
                 }}
-                animate={{ width: `${Math.max(5, 100 - (daysLeft / 30) * 100)}%` }}
               />
             </div>
+            <p className="text-[9px] text-text-muted mt-1 text-center">
+              Отсижено {daysServed} из {totalDays} дней
+            </p>
           </div>
 
-          {/* Stats in prison */}
+          {/* Stats */}
           <div className="grid grid-cols-3 gap-2">
-            <div className="manga-panel p-3 text-center crosshatch">
-              <p className="manga-label">HP</p>
-              <p className="text-xl font-bold font-mono mt-1" style={{
-                color: stats.health < 30 ? 'var(--color-danger)' : 'var(--color-neon-green)'
-              }}>
-                {Math.round(stats.health)}
-              </p>
-            </div>
-            <div className="manga-panel p-3 text-center crosshatch">
-              <p className="manga-label">НАСТРОЙ</p>
-              <p className="text-xl font-bold font-mono mt-1" style={{
-                color: stats.mood < 30 ? 'var(--color-danger)' : 'var(--color-neon-cyan)'
-              }}>
-                {Math.round(stats.mood)}
-              </p>
-            </div>
-            <div className="manga-panel p-3 text-center crosshatch">
-              <p className="manga-label">РЕСПЕКТ</p>
-              <p className="text-xl font-bold font-mono mt-1" style={{ color: season.theme.accentColor }}>
-                {kpis.respect}
-              </p>
-            </div>
+            {[
+              { label: 'HP', value: Math.round(stats.health), color: stats.health < 30 ? 'var(--color-danger)' : 'var(--color-neon-green)' },
+              { label: 'НАСТРОЙ', value: Math.round(stats.mood), color: stats.mood < 30 ? 'var(--color-danger)' : 'var(--color-neon-cyan)' },
+              { label: 'РЕСПЕКТ', value: kpis.respect, color: season.theme.accentColor },
+            ].map(s => (
+              <div key={s.label} className="manga-panel p-3 text-center crosshatch">
+                <p className="manga-label">{s.label}</p>
+                <p className="text-xl font-bold font-mono mt-1" style={{ color: s.color }}>{s.value}</p>
+              </div>
+            ))}
           </div>
+
+          {/* === СИТУАЦИОННОЕ СОБЫТИЕ === */}
+          <AnimatePresence>
+            {activeEvent && !eventResult && (
+              <motion.div
+                initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="p-4 space-y-3 border-2"
+                style={{
+                  borderColor: '#ff4444',
+                  borderRadius: '12px',
+                  backgroundColor: 'rgba(255,68,68,0.06)',
+                  boxShadow: '0 0 20px rgba(255,68,68,0.1)',
+                }}
+              >
+                <div className="flex items-center gap-2">
+                  <Skull className="w-4 h-4 text-danger shrink-0" />
+                  <span className="text-[9px] font-bold text-danger uppercase tracking-wider">Ситуация</span>
+                </div>
+                <p className="text-sm text-text-secondary leading-relaxed">
+                  {activeEvent.text}
+                </p>
+                <div className="space-y-2">
+                  {activeEvent.choices.map((choice, i) => (
+                    <motion.button
+                      key={i}
+                      whileTap={{ scale: 0.97 }}
+                      onClick={() => handleEventChoice(choice)}
+                      className="w-full p-3 text-left text-sm font-bold border transition-colors"
+                      style={{
+                        borderColor: 'rgba(255,68,68,0.3)',
+                        borderRadius: '10px',
+                        backgroundColor: 'rgba(255,68,68,0.04)',
+                        color: '#fff',
+                      }}
+                    >
+                      {choice.label}
+                    </motion.button>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+
+            {eventResult && (
+              <motion.div
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                className="p-3 text-sm text-text-secondary leading-relaxed border"
+                style={{
+                  borderColor: 'rgba(255,255,255,0.1)',
+                  borderRadius: '10px',
+                  backgroundColor: 'rgba(255,255,255,0.03)',
+                }}
+              >
+                {eventResult}
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* NPC */}
           <NPCEncounter location="prison" />
@@ -188,25 +315,20 @@ export function PrisonView() {
                 key={action.id}
                 initial={{ opacity: 0, x: -8 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.04 }}
+                transition={{ delay: i * 0.03 }}
                 whileTap={{ scale: 0.97 }}
                 onClick={() => handleAction(action)}
                 disabled={busyId === action.id}
                 className={`card-street p-3 flex items-center gap-3 w-full text-left ${busyId === action.id ? 'opacity-30' : ''}`}
               >
-                <div
-                  className="w-8 h-8 flex items-center justify-center shrink-0 border border-white/10"
-                  style={{ borderRadius: '10px' }}
-                >
+                <div className="w-8 h-8 flex items-center justify-center shrink-0 border border-white/10" style={{ borderRadius: '10px' }}>
                   <action.icon className="w-4 h-4" style={{ color: action.risk ? 'var(--color-danger)' : '#ff4444' }} />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <p className="text-sm font-bold text-text-primary truncate">{action.title}</p>
                     {action.risk && (
-                      <span className="text-[8px] font-bold px-1 py-0.5 text-danger border border-danger" style={{ borderRadius: '8px' }}>
-                        РИСК
-                      </span>
+                      <span className="text-[8px] font-bold px-1 py-0.5 text-danger border border-danger" style={{ borderRadius: '8px' }}>РИСК</span>
                     )}
                   </div>
                   <p className="text-[10px] text-text-muted font-mono">{action.meta}</p>
