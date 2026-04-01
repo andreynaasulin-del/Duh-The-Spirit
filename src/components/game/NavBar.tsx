@@ -134,9 +134,17 @@ export function NavBar() {
           {NAV_ITEMS.map(({ href, icon: Icon, label, lockCondition, lockHint }) => {
             const isActive = pathname === href || pathname?.startsWith(href + '/');
             let isLocked = false;
-            try {
-              isLocked = lockCondition ? lockCondition(lockState) : false;
-            } catch { isLocked = false; }
+            // Global lock: in prison, only prison is accessible
+            const inPrison = lockState.status === 'PRISON';
+            if (inPrison && href !== '/game/prison') {
+              isLocked = true;
+            } else if (!inPrison && href === '/game/prison') {
+              isLocked = true;
+            } else {
+              try {
+                isLocked = lockCondition ? lockCondition(lockState) : false;
+              } catch { isLocked = false; }
+            }
 
             return (
               <button
@@ -144,7 +152,11 @@ export function NavBar() {
                 onClick={() => {
                   if (isLocked) {
                     window.Telegram?.WebApp?.HapticFeedback?.notificationOccurred?.('error');
-                    if (lockHint) showToast(`🔒 ${lockHint}`);
+                    if (inPrison && href !== '/game/prison') {
+                      showToast('🔒 Ты в тюрьме. Отсиди срок.');
+                    } else if (lockHint) {
+                      showToast(`🔒 ${lockHint}`);
+                    }
                     return;
                   }
                   window.Telegram?.WebApp?.HapticFeedback?.selectionChanged?.();
