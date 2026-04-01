@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useGamePersistence } from '@/hooks/useGamePersistence';
 import { useGameStore } from '@/stores/game-store';
 import { Skull } from 'lucide-react';
-import { checkEnding } from '@/config/endings';
+import { checkEnding, checkGameOver } from '@/config/endings';
 import { EndingScreen } from '@/components/ui/EndingScreen';
 import { Tutorial } from '@/components/ui/Tutorial';
 import { DifficultySelect } from '@/components/ui/DifficultySelect';
@@ -111,16 +111,11 @@ export function GameLoader({ children }: GameLoaderProps) {
     if (!isLoaded || day < 2) return null;
     if (freeMode) {
       // In free mode, only check game over (death), not day 360 endings
-      const snapshot = {
+      return checkGameOver({
         day, paths,
         kpis: { cash: kpis.cash, respect: kpis.respect, fame: kpis.fame },
         stats: { stability: stats.stability, health: stats.health, mood: stats.mood, energy: stats.energy },
-      };
-      // Only trigger "lost" ending
-      if (day > 10 && (stats.stability <= 5 || stats.health <= 5)) {
-        return checkEnding(snapshot);
-      }
-      return null;
+      });
     }
     return checkEnding({
       day, paths,
