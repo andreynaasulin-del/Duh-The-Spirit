@@ -154,6 +154,28 @@ export function HUD() {
         <StatBar icon={<Smile className="w-3 h-3 text-mood" />} value={stats.mood} color="var(--color-mood)" label="MD" />
       </div>
 
+      {/* Path indicators */}
+      {(() => {
+        const paths = useGameStore.getState().state.paths;
+        const max = Math.max(paths.music, paths.chaos, paths.survival, 1);
+        return (
+          <div className="flex items-center justify-center gap-3 px-3 py-0.5 border-t border-white/5">
+            <span className={`text-[8px] font-bold font-mono ${paths.music === max ? '' : 'opacity-40'}`}
+              style={{ color: paths.music === max ? 'var(--color-neon-cyan)' : undefined }}>
+              🎵 {paths.music}
+            </span>
+            <span className={`text-[8px] font-bold font-mono ${paths.chaos === max ? '' : 'opacity-40'}`}
+              style={{ color: paths.chaos === max ? 'var(--color-danger)' : undefined }}>
+              🔥 {paths.chaos}
+            </span>
+            <span className={`text-[8px] font-bold font-mono ${paths.survival === max ? '' : 'opacity-40'}`}
+              style={{ color: paths.survival === max ? 'var(--color-neon-green)' : undefined }}>
+              🛡️ {paths.survival}
+            </span>
+          </div>
+        );
+      })()}
+
       {/* Suspicion bar — only shown when > 0 */}
       {(() => {
         const suspicion = useGameStore.getState().state.suspicionLevel ?? 0;

@@ -10,7 +10,7 @@ import { SituationalEventPopup } from '@/components/ui/SituationalEventPopup';
  * Mounted once in game layout — works across all locations.
  */
 export function SituationalEventLayer() {
-  const { activeEvent, eventResult, checkForEvent, makeChoice, dismissEvent } = useSituationalEvents();
+  const { activeEvent, eventResult, lastChoice, checkForEvent, makeChoice, dismissEvent } = useSituationalEvents();
   const day = useGameStore((s) => s.state.day);
   const time = useGameStore((s) => s.state.time);
   const prevTimeRef = useRef({ day, time });
@@ -29,6 +29,7 @@ export function SituationalEventLayer() {
     <SituationalEventPopup
       event={activeEvent}
       result={eventResult}
+      lastChoice={lastChoice}
       onChoice={makeChoice}
       onDismiss={dismissEvent}
     />

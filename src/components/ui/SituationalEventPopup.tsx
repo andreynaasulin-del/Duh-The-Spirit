@@ -4,14 +4,52 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Skull, X } from 'lucide-react';
 import type { SituationalEvent, EventChoice } from '@/config/situational-events';
 
+const EFFECT_LABELS: Record<string, string> = {
+  health: 'HP', energy: 'Энергия', mood: 'Настрой', stability: 'Стабильность',
+  anxiety: 'Тревога', respect: 'Респект', fame: 'Слава', cash: 'Кэш',
+  subscribers: 'Подписчики', adequacy: 'Адекватность', trip: 'Трип',
+  withdrawal: 'Ломка', hunger: 'Сытость', releases: 'Релизы',
+};
+
+const PATH_LABELS: Record<string, string> = {
+  music: '🎵 Музыка', chaos: '🔥 Хаос', survival: '🛡️ Выживание',
+};
+
+function EffectBadge({ name, value }: { name: string; value: number }) {
+  const label = EFFECT_LABELS[name] || name;
+  const isPositive = value > 0;
+  const color = isPositive ? '#4ade80' : '#ff4444';
+  return (
+    <span
+      className="inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 mr-1 mb-1"
+      style={{ color, backgroundColor: `${color}10`, borderRadius: '6px', border: `1px solid ${color}30` }}
+    >
+      {label} {isPositive ? '+' : ''}{value}
+    </span>
+  );
+}
+
+function PathBadge({ name, value }: { name: string; value: number }) {
+  const label = PATH_LABELS[name] || name;
+  return (
+    <span
+      className="inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 mr-1 mb-1"
+      style={{ color: '#e040fb', backgroundColor: 'rgba(224,64,251,0.1)', borderRadius: '6px', border: '1px solid rgba(224,64,251,0.3)' }}
+    >
+      {label} +{value}
+    </span>
+  );
+}
+
 interface Props {
   event: SituationalEvent | null;
   result: string | null;
+  lastChoice: EventChoice | null;
   onChoice: (choice: EventChoice) => void;
   onDismiss: () => void;
 }
 
-export function SituationalEventPopup({ event, result, onChoice, onDismiss }: Props) {
+export function SituationalEventPopup({ event, result, lastChoice, onChoice, onDismiss }: Props) {
   if (!event && !result) return null;
 
   return (
@@ -40,14 +78,25 @@ export function SituationalEventPopup({ event, result, onChoice, onDismiss }: Pr
           }}
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Result view */}
+          {/* Result view with effects */}
           {result ? (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="space-y-3"
-            >
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-3">
               <p className="text-sm text-text-secondary leading-relaxed">{result}</p>
+
+              {/* Effect badges */}
+              {lastChoice && (
+                <div className="flex flex-wrap pt-1">
+                  {Object.entries(lastChoice.effects).map(([key, val]) => {
+                    const v = typeof val === 'number' ? val : 0;
+                    if (v === 0) return null;
+                    return <EffectBadge key={key} name={key} value={v} />;
+                  })}
+                  {lastChoice.pathEffect && Object.entries(lastChoice.pathEffect).map(([key, val]) => (
+                    <PathBadge key={key} name={key} value={val} />
+                  ))}
+                </div>
+              )}
+
               <p className="text-[10px] text-text-muted text-center">нажми чтобы продолжить</p>
             </motion.div>
           ) : event ? (
@@ -66,9 +115,7 @@ export function SituationalEventPopup({ event, result, onChoice, onDismiss }: Pr
               </div>
 
               {/* Event text */}
-              <p className="text-sm text-white leading-relaxed">
-                {event.text}
-              </p>
+              <p className="text-sm text-white leading-relaxed">{event.text}</p>
 
               {/* Choices */}
               <div className="space-y-2">

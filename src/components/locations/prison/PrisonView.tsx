@@ -126,6 +126,11 @@ const PRISON_ACTIONS: PrisonAction[] = [
   { id: 'write_cell', icon: MessageSquare, title: 'Писать тексты', meta: '+музыка, +настрой (2ч)', time: 120, effects: { mood: 15, stability: 10 } },
   { id: 'observe', icon: Eye, title: 'Наблюдать за зоной', meta: '+адекватность (1ч)', time: 60, effects: { adequacy: 10, stability: 5, mood: -5 } },
   { id: 'pray', icon: Heart, title: 'Молиться / медитация', meta: '+стабильность, –тревога (1ч)', time: 60, effects: { stability: 15, anxiety: -10, mood: 5 } },
+  { id: 'trade_zone', icon: Cigarette, title: 'Торговля на зоне', meta: '+кэш, –настрой (2ч)', time: 120, effects: { cash: 200, mood: -10 }, risk: true },
+  { id: 'letter_out', icon: MessageSquare, title: 'Письмо на волю', meta: '+стабильность, +настрой (3ч)', time: 180, effects: { stability: 15, mood: 20, energy: -10 } },
+  { id: 'scout', icon: Eye, title: 'Разведка обстановки', meta: '+адекватность, информация (1ч)', time: 60, effects: { adequacy: 10, respect: 2, mood: -5 } },
+  { id: 'share_food', icon: Heart, title: 'Поделиться едой', meta: '+респект, –HP (1ч)', time: 60, effects: { respect: 5, health: -5, mood: 10 } },
+  { id: 'bribe_guard', icon: Cigarette, title: 'Подкуп вертухая', meta: '–кэш, может ускорить срок (2ч)', time: 120, effects: { cash: -500, mood: 5, stability: -10 }, risk: true },
 ];
 
 // ========== COMPONENT ==========
@@ -241,6 +246,30 @@ export function PrisonView() {
                 <p className="text-xl font-bold font-mono mt-1" style={{ color: s.color }}>{s.value}</p>
               </div>
             ))}
+          </div>
+
+          {/* Prison Rank & Currency */}
+          <div className="grid grid-cols-3 gap-2">
+            <div className="manga-panel p-2 text-center">
+              <p className="text-[8px] text-text-muted uppercase tracking-wider">Ранг</p>
+              <p className="text-sm font-bold mt-0.5" style={{ color: '#ff4444' }}>
+                {prison?.rank === 'avtoritet' ? 'Авторитет' :
+                 prison?.rank === 'blatnoy' ? 'Блатной' :
+                 prison?.rank === 'muzhik' ? 'Мужик' : 'Чёрт'}
+              </p>
+            </div>
+            <div className="manga-panel p-2 text-center">
+              <p className="text-[8px] text-text-muted uppercase tracking-wider">Сигареты</p>
+              <p className="text-sm font-bold mt-0.5" style={{ color: 'var(--color-warning)' }}>
+                🚬 {prison?.currency?.cigarettes ?? 0}
+              </p>
+            </div>
+            <div className="manga-panel p-2 text-center">
+              <p className="text-[8px] text-text-muted uppercase tracking-wider">Чай</p>
+              <p className="text-sm font-bold mt-0.5" style={{ color: 'var(--color-neon-green)' }}>
+                🍵 {prison?.currency?.tea ?? 0}
+              </p>
+            </div>
           </div>
 
           {/* === СИТУАЦИОННОЕ СОБЫТИЕ === */}

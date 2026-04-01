@@ -1,8 +1,10 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Brain, Calendar, TrendingUp, Music, Skull, Shield, Star, Trophy, Target, CheckCircle } from 'lucide-react';
+import { Brain, Calendar, TrendingUp, Music, Skull, Shield, Star, Trophy, Target, CheckCircle, Eye, AlertTriangle } from 'lucide-react';
 import { useGameStore, useStats, useKPIs, useSeason } from '@/stores/game-store';
+import { getSuspicionLevel } from '@/config/difficulty';
+import { getCurrentSeason } from '@/config/seasons';
 import { Leaderboard } from '@/components/ui/Leaderboard';
 import { BattlePass } from '@/components/ui/BattlePass';
 import { QUESTS } from '@/config/quests';
@@ -114,6 +116,117 @@ export function MemoryView() {
           <span>🛡 {paths.survival}</span>
         </div>
       </div>
+
+      {/* Ending Progress */}
+      <div className="manga-panel p-3 space-y-3">
+        <div className="flex items-center gap-2 mb-1">
+          <Trophy className="w-3.5 h-3.5" style={{ color: '#ffd700' }} />
+          <span className="manga-label">ПРОГРЕСС К КОНЦОВКАМ</span>
+        </div>
+        {[
+          { label: 'РЭПЕР', icon: '🎤', color: '#00e5ff', bars: [
+            { name: 'Музыка', current: paths.music, target: 40 },
+            { name: 'Слава', current: kpis.fame, target: 50 },
+          ]},
+          { label: 'АВТОРИТЕТ', icon: '💀', color: '#ff2d55', bars: [
+            { name: 'Хаос', current: paths.chaos, target: 40 },
+            { name: 'Респект', current: kpis.respect, target: 50 },
+          ]},
+          { label: 'РАБОТЯГА', icon: '🔧', color: '#888', bars: [
+            { name: 'Выживание', current: paths.survival, target: 30 },
+            { name: 'Стабильность', current: Math.round(stats.stability), target: 50 },
+          ]},
+          { label: '???', icon: '👑', color: '#ffd700', bars: [
+            { name: '???', current: Math.min(paths.music, 50) + Math.min(paths.chaos, 30), target: 80 },
+          ]},
+        ].map(ending => {
+          const avgProgress = ending.bars.reduce((sum, b) => sum + Math.min(100, (b.current / b.target) * 100), 0) / ending.bars.length;
+          return (
+            <div key={ending.label} className="space-y-1">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-sm">{ending.icon}</span>
+                  <span className="text-[10px] font-bold" style={{ color: ending.color }}>{ending.label}</span>
+                </div>
+                <span className="text-[9px] font-mono" style={{ color: ending.color }}>{Math.round(avgProgress)}%</span>
+              </div>
+              {ending.bars.map(bar => (
+                <div key={bar.name} className="flex items-center gap-2">
+                  <span className="text-[8px] text-text-muted w-16 text-right">{bar.name}</span>
+                  <div className="flex-1 h-1 bg-white/5" style={{ borderRadius: '4px' }}>
+                    <div className="h-full transition-all duration-300" style={{
+                      width: `${Math.min(100, (bar.current / bar.target) * 100)}%`,
+                      backgroundColor: ending.color,
+                      borderRadius: '4px',
+                    }} />
+                  </div>
+                  <span className="text-[8px] font-mono text-text-muted w-10">{bar.current}/{bar.target}</span>
+                </div>
+              ))}
+            </div>
+          );
+        })}
+        <p className="text-[9px] text-text-muted text-center">Концовка определяется на 360 день</p>
+      </div>
+
+      {/* Criminal Status */}
+      {(() => {
+        const suspicion = useGameStore.getState().state.suspicionLevel ?? 0;
+        const level = getSuspicionLevel(suspicion);
+        const completedEndings = useGameStore.getState().state.completedEndings || [];
+        return (
+          <div className="manga-panel p-3 space-y-2">
+            <div className="flex items-center gap-2 mb-1">
+              <Eye className="w-3.5 h-3.5" style={{ color: level.color }} />
+              <span className="manga-label">КРИМИНАЛЬНЫЙ СТАТУС</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-bold" style={{ color: level.color }}>{level.label}</span>
+              <span className="text-[10px] font-mono text-text-muted">{suspicion}/100</span>
+            </div>
+            <div className="w-full h-2 bg-white/5" style={{ borderRadius: '8px' }}>
+              <div className="h-full transition-all duration-300" style={{
+                width: `${suspicion}%`,
+                backgroundColor: level.color,
+                borderRadius: '8px',
+              }} />
+            </div>
+            {/* Season effects */}
+            <div className="mt-2 pt-2 border-t border-white/5">
+              <div className="flex items-center gap-2 mb-1">
+                <AlertTriangle className="w-3 h-3 text-text-muted" />
+                <span className="text-[9px] font-bold text-text-muted uppercase tracking-wider">Сезонные эффекты</span>
+              </div>
+              {(() => {
+                const s = getCurrentSeason(day);
+                return (
+                  <div className="grid grid-cols-2 gap-1 text-[9px] text-text-muted">
+                    <span>Настрой: x{s.modifiers.moodDecay}</span>
+                    <span>Энергия: x{s.modifiers.energyDecay}</span>
+                    <span>Тревога: x{s.modifiers.anxietyGain}</span>
+                    <span>Стабильность: x{s.modifiers.stabilityDecay}</span>
+                    {s.modifiers.panicAttackChance > 0 && <span className="text-danger col-span-2">Панические атаки: {(s.modifiers.panicAttackChance * 100)}%</span>}
+                    {s.modifiers.godModeBoost > 0 && <span className="text-neon-green col-span-2">God Mode: x{s.modifiers.godModeBoost}</span>}
+                  </div>
+                );
+              })()}
+            </div>
+            {/* Completed endings */}
+            {completedEndings.length > 0 && (
+              <div className="mt-2 pt-2 border-t border-white/5">
+                <span className="text-[9px] font-bold text-text-muted uppercase tracking-wider">Собранные концовки</span>
+                <div className="flex gap-2 mt-1">
+                  {completedEndings.map((e: string) => (
+                    <span key={e} className="text-[10px] px-2 py-0.5 border border-white/10 text-text-secondary" style={{ borderRadius: '6px' }}>
+                      {e}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      })()}
 
       {/* KPIs */}
       <div className="grid grid-cols-2 gap-2">

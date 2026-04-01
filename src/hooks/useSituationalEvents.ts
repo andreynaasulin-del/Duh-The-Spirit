@@ -24,6 +24,7 @@ export function useSituationalEvents() {
   const season = useSeason();
   const [activeEvent, setActiveEvent] = useState<SituationalEvent | null>(null);
   const [eventResult, setEventResult] = useState<string | null>(null);
+  const [lastChoice, setLastChoice] = useState<EventChoice | null>(null);
   const actionCountRef = useRef(0);
   const applyEffects = useGameStore((s) => s.applyEffects);
   const addLog = useGameStore((s) => s.addLog);
@@ -79,12 +80,14 @@ export function useSituationalEvents() {
     // Log
     addLog(choice.result.substring(0, 60) + '...', 'info');
 
-    // Show result, then dismiss
+    // Show result with effects, then dismiss
+    setLastChoice(choice);
     setEventResult(choice.result);
     setTimeout(() => {
       setActiveEvent(null);
       setEventResult(null);
-    }, 3500);
+      setLastChoice(null);
+    }, 5000);
   }, [applyEffects, addLog]);
 
   /** Dismiss event without choosing (timeout) */
@@ -96,6 +99,7 @@ export function useSituationalEvents() {
   return {
     activeEvent,
     eventResult,
+    lastChoice,
     checkForEvent,
     makeChoice,
     dismissEvent,
