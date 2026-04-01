@@ -133,6 +133,8 @@ export const INITIAL_STATE: GameState = {
     streak: 0,
     totalLogins: 0,
   },
+  completedEndings: [],
+  freeMode: false,
 };
 
 export function createInitialState(): GameState {

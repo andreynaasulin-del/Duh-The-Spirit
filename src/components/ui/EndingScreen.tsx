@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { RotateCcw, Share2 } from 'lucide-react';
+import { RotateCcw, Share2, Play, Sparkles } from 'lucide-react';
 import type { Ending } from '@/config/endings';
 
 interface EndingScreenProps {
@@ -10,6 +10,8 @@ interface EndingScreenProps {
   paths: { music: number; chaos: number; survival: number };
   kpis: { cash: number; respect: number; fame: number };
   onRestart: () => void;
+  onContinue?: () => void;
+  onNewGamePlus?: () => void;
 }
 
 const PATH_LABELS: Record<string, { label: string; icon: string }> = {
@@ -38,7 +40,8 @@ function handleShare(ending: Ending, day: number) {
   }
 }
 
-export function EndingScreen({ ending, day, paths, kpis, onRestart }: EndingScreenProps) {
+export function EndingScreen({ ending, day, paths, kpis, onRestart, onContinue, onNewGamePlus }: EndingScreenProps) {
+  const isGameOver = ending.id === 'lost';
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -147,39 +150,75 @@ export function EndingScreen({ ending, day, paths, kpis, onRestart }: EndingScre
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1.3 }}
-        className="flex gap-3"
+        className="flex flex-col gap-2 w-full max-w-xs"
       >
-        {/* Share */}
-        <motion.button
-          whileTap={{ scale: 0.95 }}
-          onClick={() => handleShare(ending, day)}
-          className="flex items-center gap-2 px-5 py-3 font-bold text-sm tracking-wider"
-          style={{
-            color: '#fff',
-            border: '2px solid rgba(255,255,255,0.2)',
-            borderRadius: '12px',
-            backgroundColor: 'rgba(255,255,255,0.05)',
-          }}
-        >
-          <Share2 className="w-4 h-4" />
-          ПОДЕЛИТЬСЯ
-        </motion.button>
+        {/* Continue (free mode) — only for non-death endings */}
+        {!isGameOver && onContinue && (
+          <motion.button
+            whileTap={{ scale: 0.97 }}
+            onClick={onContinue}
+            className="flex items-center justify-center gap-2 px-5 py-3.5 font-bold text-sm tracking-wider w-full"
+            style={{
+              color: '#000',
+              borderRadius: '12px',
+              backgroundColor: ending.color,
+            }}
+          >
+            <Play className="w-4 h-4" />
+            ПРОДОЛЖИТЬ СВОБОДНО
+          </motion.button>
+        )}
 
-        {/* Restart */}
-        <motion.button
-          whileTap={{ scale: 0.95 }}
-          onClick={onRestart}
-          className="flex items-center gap-2 px-5 py-3 font-bold text-sm tracking-wider"
-          style={{
-            color: ending.color,
-            border: `2px solid ${ending.color}`,
-            borderRadius: '12px',
-            backgroundColor: `${ending.color}10`,
-          }}
-        >
-          <RotateCcw className="w-4 h-4" />
-          ЗАНОВО
-        </motion.button>
+        {/* New Game+ */}
+        {onNewGamePlus && (
+          <motion.button
+            whileTap={{ scale: 0.97 }}
+            onClick={onNewGamePlus}
+            className="flex items-center justify-center gap-2 px-5 py-3 font-bold text-sm tracking-wider w-full"
+            style={{
+              color: '#e040fb',
+              border: '2px solid #e040fb',
+              borderRadius: '12px',
+              backgroundColor: 'rgba(224,64,251,0.08)',
+            }}
+          >
+            <Sparkles className="w-4 h-4" />
+            NEW GAME+
+          </motion.button>
+        )}
+
+        {/* Share + Restart row */}
+        <div className="flex gap-2">
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={() => handleShare(ending, day)}
+            className="flex items-center justify-center gap-2 px-4 py-2.5 font-bold text-xs tracking-wider flex-1"
+            style={{
+              color: '#fff',
+              border: '1px solid rgba(255,255,255,0.15)',
+              borderRadius: '10px',
+              backgroundColor: 'rgba(255,255,255,0.05)',
+            }}
+          >
+            <Share2 className="w-3.5 h-3.5" />
+            ПОДЕЛИТЬСЯ
+          </motion.button>
+
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={onRestart}
+            className="flex items-center justify-center gap-2 px-4 py-2.5 font-bold text-xs tracking-wider flex-1"
+            style={{
+              color: 'rgba(255,255,255,0.5)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              borderRadius: '10px',
+              backgroundColor: 'rgba(255,255,255,0.03)',
+            }}
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+            С НУЛЯ
+          </motion.button>
+        </div>
       </motion.div>
     </motion.div>
   );

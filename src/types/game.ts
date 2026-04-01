@@ -267,6 +267,16 @@ export interface GameState {
 
   // Suspicion (for arrest/prison)
   suspicionLevel?: number;
+
+  // Endgame / New Game+
+  completedEndings?: string[];   // endings achieved across all playthroughs
+  freeMode?: boolean;            // true = post-ending sandbox, no ending triggers
+  ngPlusBonus?: {                // bonuses carried from previous ending
+    startingFame?: number;
+    startingRespect?: number;
+    startingCash?: number;
+    unlockedLocations?: string[];
+  };
 }
 
 // --- Profile ---

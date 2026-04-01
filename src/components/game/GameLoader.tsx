@@ -10,7 +10,7 @@ import { EndingScreen } from '@/components/ui/EndingScreen';
 import { Tutorial } from '@/components/ui/Tutorial';
 import { DifficultySelect } from '@/components/ui/DifficultySelect';
 import { Prologue } from '@/components/ui/Prologue';
-import { INITIAL_STATE } from '@/config/initial-state';
+import { INITIAL_STATE, createInitialState } from '@/config/initial-state';
 
 interface GameLoaderProps {
   children: React.ReactNode;
@@ -34,6 +34,7 @@ export function GameLoader({ children }: GameLoaderProps) {
   const paths = useGameStore((s) => s.state.paths);
   const kpis = useGameStore((s) => s.state.kpis);
   const stats = useGameStore((s) => s.state.stats);
+  const freeMode = useGameStore((s) => s.state.freeMode);
 
   useEffect(() => {
     setMounted(true);
@@ -105,19 +106,86 @@ export function GameLoader({ children }: GameLoaderProps) {
     autoAuth();
   }, []);
 
-  // Check for ending
+  // Check for ending (skip in free mode — only check game over)
   const ending = useMemo(() => {
-    if (!isLoaded || day < 2) return null; // Don't check on day 1
+    if (!isLoaded || day < 2) return null;
+    if (freeMode) {
+      // In free mode, only check game over (death), not day 360 endings
+      const snapshot = {
+        day, paths,
+        kpis: { cash: kpis.cash, respect: kpis.respect, fame: kpis.fame },
+        stats: { stability: stats.stability, health: stats.health, mood: stats.mood, energy: stats.energy },
+      };
+      // Only trigger "lost" ending
+      if (day > 10 && (stats.stability <= 5 || stats.health <= 5)) {
+        return checkEnding(snapshot);
+      }
+      return null;
+    }
     return checkEnding({
-      day,
-      paths,
+      day, paths,
       kpis: { cash: kpis.cash, respect: kpis.respect, fame: kpis.fame },
       stats: { stability: stats.stability, health: stats.health, mood: stats.mood, energy: stats.energy },
     });
-  }, [isLoaded, day, paths, kpis, stats]);
+  }, [isLoaded, day, paths, kpis, stats, freeMode]);
 
+  // Restart from scratch
   const handleRestart = () => {
-    useGameStore.setState({ state: { ...INITIAL_STATE }, isLoaded: true });
+    const prev = useGameStore.getState().state;
+    const fresh = createInitialState();
+    // Preserve completed endings across restarts
+    fresh.completedEndings = prev.completedEndings || [];
+    useGameStore.setState({ state: fresh, isLoaded: true });
+  };
+
+  // Continue in free mode (post-ending sandbox)
+  const handleContinue = () => {
+    const store = useGameStore.getState();
+    const endingId = ending?.id;
+    const completed = [...(store.state.completedEndings || [])];
+    if (endingId && !completed.includes(endingId)) completed.push(endingId);
+    store.setState({
+      ...store.state,
+      freeMode: true,
+      completedEndings: completed,
+    });
+  };
+
+  // New Game+ — restart with bonuses from ending
+  const handleNewGamePlus = () => {
+    const prev = useGameStore.getState().state;
+    const endingId = ending?.id;
+    const completed = [...(prev.completedEndings || [])];
+    if (endingId && !completed.includes(endingId)) completed.push(endingId);
+
+    const fresh = createInitialState();
+    fresh.completedEndings = completed;
+
+    // Bonuses based on achieved ending
+    const bonuses: Record<string, { fame?: number; respect?: number; cash?: number }> = {
+      rapper:   { fame: 20, cash: 5000 },
+      boss:     { respect: 20, cash: 5000 },
+      npc:      { cash: 10000 },
+      legend:   { fame: 30, respect: 30, cash: 8000 },
+      survivor: { cash: 3000 },
+      lost:     {},
+    };
+
+    const bonus = bonuses[endingId || ''] || {};
+    fresh.kpis.fame += bonus.fame || 0;
+    fresh.kpis.respect += bonus.respect || 0;
+    fresh.kpis.cash += bonus.cash || 0;
+    fresh.ngPlusBonus = {
+      startingFame: bonus.fame || 0,
+      startingRespect: bonus.respect || 0,
+      startingCash: bonus.cash || 0,
+    };
+
+    useGameStore.setState({ state: fresh, isLoaded: true });
+    // Skip prologue/tutorial on NG+
+    localStorage.setItem('duh_prologue_done', '1');
+    localStorage.setItem('duh_difficulty_chosen', '1');
+    localStorage.setItem('duh_tutorial_done', '1');
   };
 
   // Loading screen
@@ -180,6 +248,8 @@ export function GameLoader({ children }: GameLoaderProps) {
         paths={paths}
         kpis={{ cash: kpis.cash, respect: kpis.respect, fame: kpis.fame }}
         onRestart={handleRestart}
+        onContinue={ending.id !== 'lost' ? handleContinue : undefined}
+        onNewGamePlus={handleNewGamePlus}
       />
     );
   }

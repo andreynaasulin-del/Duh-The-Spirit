@@ -42,19 +42,7 @@ export const ENDINGS: Ending[] = [
     condition: (s) => s.day > 10 && (s.stats.stability <= 5 || s.stats.health <= 5),
   },
 
-  // === SECRET ENDING ===
-  {
-    id: 'legend',
-    title: 'ЛЕГЕНДА РАЙОНА',
-    subtitle: 'Между двух миров',
-    description: 'Ты нашёл баланс между музыкой и улицей. Тебя уважают все — и студия, и район. Ты — легенда.',
-    icon: '👑',
-    color: '#ffd700',
-    priority: 90,
-    condition: (s) => s.day >= 300 && s.paths.music >= 60 && s.paths.chaos >= 40 && s.kpis.fame >= 150 && s.kpis.respect >= 80,
-  },
-
-  // === MAIN ENDINGS (checked at day 360) ===
+  // === MAIN ENDINGS (day 360) — checked by dominant path ===
   {
     id: 'rapper',
     title: 'РЭПЕР',
@@ -62,8 +50,8 @@ export const ENDINGS: Ending[] = [
     description: 'Шэдоу был прав — ты не просто голос. Ты — явление. Альбом разорвал. Гастроли. Подписчики. Свобода.',
     icon: '🎤',
     color: '#00e5ff',
-    priority: 50,
-    condition: (s) => s.day >= 360 && s.paths.music >= 40 && s.kpis.fame >= 50,
+    priority: 60,
+    condition: (s) => s.day >= 360 && s.paths.music >= 40 && s.kpis.fame >= 50 && s.paths.music > s.paths.chaos,
   },
 
   {
@@ -73,8 +61,8 @@ export const ENDINGS: Ending[] = [
     description: 'Зэф ушёл на покой. Теперь ты решаешь кто ходит по этим улицам. Власть пришла ценой покоя.',
     icon: '💀',
     color: '#ff2d55',
-    priority: 50,
-    condition: (s) => s.day >= 360 && s.paths.chaos >= 40 && s.kpis.respect >= 50,
+    priority: 60,
+    condition: (s) => s.day >= 360 && s.paths.chaos >= 40 && s.kpis.respect >= 50 && s.paths.chaos > s.paths.music,
   },
 
   {
@@ -84,8 +72,20 @@ export const ENDINGS: Ending[] = [
     description: 'Ты выжил. Не прославился, не сел. Устроился на работу. Район остался за спиной. Это... тоже победа?',
     icon: '🔧',
     color: '#888888',
-    priority: 40,
+    priority: 50,
     condition: (s) => s.day >= 360 && s.paths.survival >= 30 && s.stats.stability >= 50,
+  },
+
+  // === SECRET ENDING — requires BOTH paths maxed (true balance) ===
+  {
+    id: 'legend',
+    title: 'ЛЕГЕНДА РАЙОНА',
+    subtitle: 'Между двух миров',
+    description: 'Ты нашёл баланс между музыкой и улицей. Тебя уважают все — и студия, и район. Ты — легенда.',
+    icon: '👑',
+    color: '#ffd700',
+    priority: 45,
+    condition: (s) => s.day >= 360 && s.paths.music >= 50 && s.paths.chaos >= 30 && s.kpis.fame >= 100 && s.kpis.respect >= 50,
   },
 
   // === FALLBACK ===
