@@ -11,8 +11,12 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { adminId, targetTelegramId, amount, message } = body;
 
-    // Verify admin
-    if (!adminId || !ADMIN_IDS.includes(String(adminId))) {
+    // Verify admin — check secret header from webhook OR admin ID
+    const webhookSecret = req.headers.get('x-admin-secret');
+    const isWebhookCall = webhookSecret === process.env.TELEGRAM_WEBHOOK_SECRET;
+    const isAdminId = adminId && ADMIN_IDS.includes(String(adminId));
+
+    if (!isWebhookCall && !isAdminId) {
       return NextResponse.json({ error: 'Not authorized' }, { status: 403 });
     }
 

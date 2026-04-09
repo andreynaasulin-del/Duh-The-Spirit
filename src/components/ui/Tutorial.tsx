@@ -75,7 +75,7 @@ export function Tutorial({ onComplete }: TutorialProps) {
           className="w-32 h-32 rounded-full overflow-hidden border-2 border-purple-400/60 mb-4"
         >
           <Image
-            src="/spirit.png"
+            src="/spirit-opt.jpg"
             alt="Дух"
             width={128}
             height={128}

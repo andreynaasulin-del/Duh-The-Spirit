@@ -230,7 +230,7 @@ function simulate(difficulty, strategy) {
       s.suspicion = Math.min(100, s.suspicion + action.susp * diff.suspMul);
       if (s.suspicion >= diff.arrestThreshold && Math.random() < 0.3) {
         s.status = 'PRISON';
-        s.prisonDaysLeft = Math.ceil(30 * diff.sentMul);
+        s.prisonDaysLeft = Math.ceil(10 * diff.sentMul);
         s.suspicion = Math.max(0, s.suspicion - 40);
         log.prisonCount++;
       }

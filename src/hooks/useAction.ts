@@ -143,7 +143,7 @@ export function useAction() {
       const difficulty = DIFFICULTIES[store.state.difficulty ?? 'medium'];
       if (shouldArrest(newSuspicion, difficulty)) {
         // Arrested! Set status to PRISON and calculate sentence
-        const baseSentence = 30; // days
+        const baseSentence = 10; // days
         const sentence = Math.ceil(baseSentence * difficulty.sentenceMultiplier);
         const jailTimeMinutes = sentence * 1440; // convert to game minutes
         store.setState({

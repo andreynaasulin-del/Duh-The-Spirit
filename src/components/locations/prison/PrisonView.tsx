@@ -152,16 +152,13 @@ export function PrisonView() {
   const isFree = status !== 'PRISON';
   const daysLeft = prison?.sentence?.daysRemaining ?? 0;
   const daysServed = prison?.sentence?.daysServed ?? 0;
-  const totalDays = prison?.sentence?.totalDays ?? 30;
+  const totalDays = prison?.sentence?.totalDays ?? 10;
 
-  // Trigger random event every 3-4 actions
+  // Trigger random event every 2 actions
   useEffect(() => {
-    if (actionCount > 0 && actionCount % 3 === 0 && !activeEvent && !isFree) {
-      const available = PRISON_EVENTS.filter(e => !eventResult); // always show
-      if (available.length > 0) {
-        const event = available[Math.floor(Math.random() * available.length)];
-        setActiveEvent(event);
-      }
+    if (actionCount > 0 && actionCount % 2 === 0 && !activeEvent && !isFree) {
+      const event = PRISON_EVENTS[Math.floor(Math.random() * PRISON_EVENTS.length)];
+      setActiveEvent(event);
     }
   }, [actionCount]);
 

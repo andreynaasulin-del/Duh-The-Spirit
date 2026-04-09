@@ -177,7 +177,7 @@ export function SpiritPopup() {
             <div className="flex items-center gap-2.5 p-2.5">
               <div className="relative shrink-0 w-9 h-9 rounded-full overflow-hidden border border-purple-500/40">
                 <Image
-                  src="/spirit.png"
+                  src="/spirit-opt.jpg"
                   alt="Дух"
                   width={36}
                   height={36}
